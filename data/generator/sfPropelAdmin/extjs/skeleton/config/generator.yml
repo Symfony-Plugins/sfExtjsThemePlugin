@@ -1,0 +1,6 @@
+generator:
+  class:              sfExtjsPropelAdminGenerator
+  param:
+    model_class:      ##MODEL_CLASS##
+    theme:            ##THEME##
+   

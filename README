@@ -1,0 +1,1160 @@
+= sfExtjsTheme plugin =
+
+{{{
+#!html
+<div class="wiki-toc" style="float:right;border: solid 1px #C6CDDE;padding:10px;margin:5px;width:250px;font-size:11px;">
+}}}
+[[PageOutline(1-6,,inline)]]
+{{{
+#!html
+</div>
+}}}
+
+= THIS PAGE IS BEING REWRITTEN =
+
+= sfExtjsTheme plugin =
+
+>> Hello All, [[BR]]
+>>  [[BR]]
+>> if you are user, or not (anymore) of this plugin, would you please help me and fill in my little poll and give some feedback which I can use for my master-thesis: [http://www.symfony-project.org/forum/index.php/m/56847/] [[BR]]
+>>  [[BR]]
+>> Thanks in advance, [[BR]]
+>> Leon [[BR]]
+ [[BR]]
+ [[BR]]
+
+== Introduction ==
+
+The `sfExtjsThemeplugin` is just like the name says a theme plugin for ExtJS in Symfony. With this plugin you can generate list and edit ExtJsPanel-objects from your generator.yml file, all you have to do after installation of this plugin is simply defining this theme and its generator in your generator.yml file.
+
+The plugin extends the power of the default generator (see below at features) and uses the `sfExtjs2plugin` in order to include the ExtJS AJAX library to a symfony project, while remaining (almost completely) compatible to the default symfony-theme.
+
+[[Image(http://s8.directupload.net/images/080630/x3yintze.png)]] [[BR]]
+
+Currently Extjs version 2.1 is implemented (with a tiny hack, registered xtype-checking).[[BR]]
+Also included are the Silk-Icons from Mark James.
+
+== Features ==
+
+This plugin currently has the following features:
+  * Administration generation capable of handling foreign values
+  * Distinction between new and edit panels (different titles, different actions)
+  * Sorting (multi-sort not supported by ExtJS grid yet)
+  * Grouping
+  * Mater-detail overviews (like grouping, but including empty groups)
+  * Capable of Lazy-loading its libraries (with the help of the 'Using'  script)
+
+
+== Installation ==
+
+=== Dependencies ===
+
+This plugin depends on:
+  * the '''sfExtjs2Plugin''' to generate ExtJS-Objects (http://trac.symfony-project.com/wiki/sfExtjs2Plugin)
+  * the '''sfPJSPlugin''' to generate (pjs) Javascript output http://trac.symfony-project.com/wiki/sfPJSPlugin
+
+You might also want to take a look at:
+  * the '''sfAjaxWebDebugPlugin''' in order to see the symfony debug-toolbar updated with every ajax-request
+  * the '''sfCombineFilterPlugin''' latest version from KRavEN, to be able to combine and minify your included javascript and css
+
+Future wannahave is probably going to be:
+  * the '''sfPropelFinder''' in combination with Propel 1.3
+  * we are also working on a gui-editor for the yml files, but this has just been started: '''sfExtjsThemeGuiPlugin''' not functional at all yet!
+
+== DEMO ==
+
+In this wiki at the bottom you can find a demo attached: [http://trac.symfony-project.org/attachment/wiki/sfExtjsThemePlugin/sfExtjsThemeExample.tgz sfExtjsThemeExample.tgz] (the other files (test and generator.yml) are OBSOLETE, but I cannot remove them...)
+
+you have to checkout the latest version from [http://trac.symfony-project.org/wiki/sfExtjs2Plugin#Installation sfExtjs2Plugin] and sfExtjsThemePlugin (svn co http://svn.symfony-project.com/plugins/sfExtjsThemePlugin/ or svn export http://svn.symfony-project.com/plugins/sfExtjsThemePlugin/) yourself... (since these are quite large)
+
+you should also add a cache and log folder and execute "symfony fix" to set the correct file/folder-credentials
+
+Maybe you also have to restore the symlinks from the webfolder to the plugins/web-folder
+
+After that setup the database in the config/databases.yml and config/propel.ini files, of course setup your database itself and prepare your web-server.
+
+finally run
+{{{
+symfony propel-build-all-load backend
+}}}
+and it should be up and running
+
+
+== The Generator Configuration ==
+As with every other admin generator in symfony the generator.yml.
+
+TODO: Generator overview, Link to cheat sheet.
+TODO: Explain that there are sections (fields / list / edit, etc)
+
+A very complete generator.yml looks like this (Please note the different '''class''' and '''theme'''):
+{{{
+generator:
+  class:              sfExtjsPropelAdminGenerator
+  param:
+    theme:            extjs
+    model_class:      TransUnit
+
+    object_name: Translation                 # This is used to override the moduleName as text in titles
+
+    peer_method:          doSelectLeftJoin   # doSelectJoinAll is this themes default
+    peer_count_method:    doCountLeftJoin    # doCountJoinAll is this themes default
+
+    tinyMCE: true              # This needs to be used in combination with app.yml use_tinymce: true, we need it here in order to call the triggerSave-method to propagate your text to this modules edit-forms hidden field
+
+    ...
+
+    tabpanel:
+      ...
+
+    related_tables:
+      catalogue:
+        module_name: sfCatalogue
+
+    fields:
+      fieldname:
+        name: Title
+      foreignkey2/custom_method:
+        name: Title 2
+        params:
+          menuDisabled: true
+          fixed:    true
+          width:    175
+          editable: false
+          sortable: true
+          combo:
+            sortField: foreignkey2/realField
+      picture:
+        params:
+          name: model_class[file_info_id-name]
+          xtype: photo
+          fieldLabel: "Preview:"
+          height: 300
+      file:
+        name: Upload file
+        params:
+          name:      upload
+          xtype:     textfield
+          inputType: file
+      ...
+        ...
+
+
+    gridpanel:
+      method:
+        partials:     [_gridpanel_editButton_mouseEvents]
+
+    formpanel:
+      method:
+        partials:     [_formpanel_customSubmit]
+
+    renderer:
+      method:
+        partials:     _renderer_difference
+
+
+    list:
+      params:
+        bbar:   false
+
+      title: Title
+      display: [=field1, field3, foreignkey1/foreignfield5, -hidden_field, +invisible_field, foreignkey2/custom_method, _editButton]
+      #plugins: "new Ext.ux.grid.RowMouseOver({id: \'id\'})"
+
+      actions:
+        _create:        -
+        add_custom:
+          name:   Add Custom
+          class:  btn_create
+          handler_function: "this.ownerCt.newCustom();"
+        _separator:     -
+        _refresh:       -
+        _fill:          -
+        _pdf:           -
+        _print:         -
+      ...
+
+    edit:
+      params:
+        fileUpload: true
+        width: 500
+        heigth: 500
+
+      newtitle: New translation
+      title: Edit %%fieldname%%
+
+      display:
+        "NONE": [title_field]
+        "fieldset 1": [field2, foreignkey1/foreignfield5]
+
+      actions:
+        save:
+          name:       Save
+          class:      btn_create
+          handler_function: "this.customSubmit"
+        _delete: -
+        _cancel: -
+
+      pages:
+        general:
+          title: General Tab page
+          display: [foreignkey2/foreignfield2]
+
+          container_params:
+            xtype: panel  # instead of the default container-type: tabpanel. This is only possible for panels which contain other panels (with the .pages-key in this generator.yml)
+
+          params:
+            style: "background: #F00;"  # you can define the inner panel like this, just like normal for "normal" panels
+
+          pages:
+            general_top:
+              params:
+                layout: column
+                header: false
+
+              display:
+                Product:        [product_id/name, country_id/name, quantity, stowage]
+                "With spaces":  [installation, ex_tank, contract]
+
+              params_Product:   #params for fieldsets can be set like this!
+                columnWidth: 0.5
+                style: "margin:5px;"
+              "params_With spaces":
+                columnWidth: 0.5
+                style: "margin:5px;"
+
+            general_bottom:
+              params:
+                header: false
+
+              display:
+                "Analysis":   [_todo]
+
+
+        file:
+          title: FileUpload Tab page
+          display: [_picture, _file, +file_info_id/name]
+
+      ...
+}}}
+TODO: you are of course allowed to move these items I've added to other examples...
+TODO: explain and define (new) actions
+TODO: explain xtypes, renderers and renderers
+
+You obviously cannot sort custom_methods, since they aren't part of your database. There are two solutions to solve this:
+1. The easiest is to define a different field to sort on, as shown in the example above (under fields a sortField has been set) However at the moment you cannot define multiple sortFields for one column (for example first FirstName then LastName) from the generator.yml. To solve this you have to override your actions.class.php. Also the key "Combo" in the generator.yml will probably change in the future.
+2. Define a custom column in your query by changing your objects Peer-method. This way your database will do the sorting.
+
+=== Globals in app.yml and in generator.yml ===
+TODO: Explain the app.yml
+
+{{{
+# default values
+all:
+  sf_extjs_theme_plugin:
+    theme:                    gray                      # extjs theme
+
+    list_max_per_page:        40                        # used for both grids and combos
+
+    module_returns_layout:    false                     # set to true to let the module return a layout (so you don't have to setup a layout.php) or let the module only return a js-var: App.RequestedModulePanel
+    module_panel_name:        App.RequestedModulePanel  # the name of the var to the panel name returned by the module-action
+
+    list_editable:           true
+    list_tabbed:             false
+
+    open_panel_handler:      App.openPanelHandler      # a method which accepts the event and target from the event-handler the event-object contains the moduleName and item's-key, if this method is not defined, the grids url will open as normal ( window.location will be changed).
+    open_panel:              App.openPanel             # a method which accepts the moduleName and item's-key, if this method is not defined App.openPanel create-buttons from the list will change the window.location
+
+    use_tinymce:             true
+
+    format_date:             "D d-m-y"
+
+}}}
+
+This plugin contains a app.yml in its config folder. When you want to make changes to its default values, copy the app.yml from the plugin/config folder to your project\app\config folder (or merge it with the one you already have). This to prevent problems when updating the plugin.
+
+==== Overriding Globals in generator.yml ====
+TODO: Explain which globals can be redefined on generator level.
+=== Tabpanel & Gridpanel Sections: Create your own Panels ===
+
+TODO: separate these two, tabs are way different from grids, there isn't any similarity.... maybe better is to explain the difference between tabpanel and edit.pages (from the generator.yml file)
+
+What is the difference between a tabpanel and a gridpanel?
+Here are some examples:
+
+The tabpanel consists of the following tabs and the corresponding content:
+
+[[Image(http://s8.directupload.net/images/080630/z3p7tfh6.png)]]
+
+edit.pages can do this:
+
+[[Image(http://s7.directupload.net/images/080723/udi96x7r.png)]]
+
+And this is a gridpanel:
+
+[[Image(http://s8.directupload.net/images/080630/ggata7av.png)]]
+
+
+Here's an tabpanel section that overrides the onRender method:
+{{{
+    # Starts defining the tabpanel
+    tabpanel:
+      # Number of Active Tab, defaults to 0
+      activeTab: 0
+      # Contains all methods to be added or overridden
+      method:
+        # Partials contains functions and variables
+        partials: [ _onClose, _beforeUpdate ]
+        # onRender is the function name and the parameters are the same as the sfExtjs2 as method
+        onRender:
+          parameters: ct, position
+          # Here is place for code
+          source: |
+            MainLayout.getCenter().remove(0);
+            MainLayout.getCenter().add(this).show();
+            MainLayout.getLayout.doLayout();
+      variable:
+        numItems: 100
+      # Place for plugins such as Java plugins
+      plugins: [ App.plugin, new Plugin() ]
+}}}
+
+=== Fields Section: Outlining the fields ===
+The fields section contains the definition of all fields used in the generator. This is what you can use as fields:
+ * Database fields of course, like defined in schema.yml
+ * ORM methods: E.G. a $sfGuardUserProfile->getFullName which returns the values of the first_name and last_name fields delimited by a space.
+ * Partials that implement an xtype.
+
+An example field section:
+
+{{{
+      fields:
+        fieldname:
+          name: Text to show
+          ...
+}}}
+
+==== Basic Field Configuration ====
+TODO: Explain Required / Editable
+==== Foreign keys and related methods ====
+Foreign keys are defined in the fields section as this:
+{{{
+      fields:
+        foreign_id/name:
+          ...
+
+      list:
+        display: [ foreign_id/name ]
+
+      edit:
+        display: [ foreign_id/name ]
+}}}
+The table that's referenced in your foreign_id column is the one defined in the foreignTable attribute of the column in the schema.yml or the one called "foreign" if nothing is mentioned there.
+
+Of course you can define foreign keys on m-m relations too:
+{{{
+
+      fields:
+        product_id/producer_id/company:
+          ...
+
+      list:
+        display: [ product_id/producer_id/company ]
+
+      edit:
+        display: [ product_id/producer_id/company ]
+}}}
+What not works at the moment: Referencing tables with multiple PK's. If you have such, just add a new id column to them.
+
+Like you can use ORM object methods as fields, you can also use them as foreign keys:
+{{{
+      fields:
+        profile_id/fullname:
+          ...
+
+      list:
+        display: [ profile_id/fullname ]
+
+      edit:
+        display: [ profile_id/fullname ]
+}}}
+
+The field profile_id/fullname in this example is not a field in the database but a method, that's returning the value.
+
+// LEON: display-fields can have the following flags:
+|| '''flag''' || '''Description''' ||
+|| = || link ||
+|| ~ || component (not used/tested yet) ||
+|| _ || partial, these fields will become grid-columns/form-fields but won't have a associated column in the datastore, see + for that ||
+|| - || hidden, this column will be hidden in the column headers of the grid, but can be made visible by the user ||
+|| + || invisible, this column will not and cannot be made visible in the grid, but the values are send to grid-datastore so they can be used for partials and renderers ||
+
+
+==== Combos for Related fields and methods ====
+Foreign columns are always shown as combos in list grids or edit forms. There are three kinds of combo's available:
+ * The ﻿Ext.ux.form.ComboBox as known from Extjs.
+ * The Ext.ux.ComboBoxAutoLoad which comes with a store of your possible FK values.
+ * The Ext.ux.grid.ForeignFieldColumn is not a combo! It is a column designed for foreign-fields, which automatically sets up a renderer, can use preloaded values (transport items from grid/form-datastore to combo-datastore) and can setup the combo-store, displayfield, valuefield, etc
+
+The default is to use the ComboBoxAutoLoad. This can be changed in app.yml.
+
+Combos can be configured with many paremeters. In the example below their all implemented. The comboConfig parameter can include every configuration option of your combo xtype.
+
+{{{
+     fields:
+       profile_id/fullname:
+        name:         Full Name
+        params:
+          # xtype: comboboxautoload # This is the default, which can be overwritten here or in app.yml.
+          editable:   true
+          combo:
+            url:      profile/fullnameList
+            displayField: display
+            valueField:   value
+            comboConfig:
+              preLoad: true
+              #editable:   false  #set when preLoad: true
+              #pageSize:   0      #set when preLoad: true
+              #mode:       local  #set when preLoad: true
+}}}
+
+The Url parameter above is used to load a custom datastore. The url has to return the JSON-data for the store:
+{{{
+{"totalCount":5,"data":[{"value":2,"display":"John Doe"},{"value":3,"display":"Jane Doe"}]}
+}}}
+
+By default a data store for the foreign-key is generated.
+
+// Question: Everytime I define a combo like above, it does not work on edit panels... why?
+
+// Question: How can I remove the "Add new" and "Modify" labels on the combo?  (the possibility to add to the user)
+// LEON: at the moment you cannot, These combos will be improved soon
+
+// Question: How can I control if the value of fullName can be emptied (no fullname assigned)? I could add an emptied store to the dataset serverside... can I trigger that also with required true | false? A: At the moment not implemented. Generator will add an emptied set when required: false.
+==== Combos for Sets of values ====
+Many times your user has to choose between a set of values. Not every time this values are worth an own table. Sometimes it's enough to let the user choose between a fixed set of values.
+
+You can do that by defining a combo for a non-FK field. Important when you do this is to add the "store" parameter to your fields params, and set the mode (in comboConfig) to local:
+{{{
+      fields:
+        status:
+          name:         Status
+          params:
+            xtype:        foreignfieldcolumn
+            store:        "[[0,'New'],[1,'Pending'],[2,'Cancelled'],[3,'Closed']]"
+            renderer:     none
+            comboConfig:
+              mode:         local
+              pageSize:     0
+              editable:     false
+}}}
+Editable is set to false and pageSize to 0 by default for such a kind of combo.
+==== Field Partials and Xtypes ====
+TODO: An Example partial and all the configs for it.
+==== Modify the view with Renderers ====
+Most values are not saved in the DB as displayed in your application. Let's say you have a table "product" with a weight. Now when you display the weight in your application, you most likely want the weight to be shown as "10 '''kg'''" (lbs/gr whatever). When you save the weight in the database, you save a number (like 10.0) whitout the unit declaration.
+
+To solve this with sfExtjsThemePlugin you can use renderers in your field definitions:
+{{{
+      fields:
+        id:
+          name:         Delivery ID
+          params:
+            renderer:   none
+        weight:
+          name:         Delivery Weight
+          params:
+            renderer:   this.formatWeight
+        shipping_price:
+          name:         Price
+          params:
+            renderer:   this.formatCurrency
+}}}
+
+In the renderer section of the generator.yml now have to add a partial for your renderer method:
+{{{
+      renderer:
+        method:
+          partials: [ _renderer_format_weight, _renderer_format_currency ]
+        variables:
+          partials: [ _renderer_var_weight, _renderer_var_currency ]
+}}}
+
+The renderers are then implemented by you in partials that look like this:
+{{{
+  // $renderer and $sfExtjs2Plugin are passed to your partial.
+  $renderer->attributes['formatWeight'] = $sfExtjs2Plugin->asMethod(array(
+    'parameters' => 'v',
+    'source' => "return String.format('{0} kg', v);"
+  ));
+}}}
+
+Variables are implemented the same. They can be accessed from the other partials with this.varName.
+
+There are several basic renderers we all use. Of course they are predefined:
+|| '''Name''' || '''Description''' ||
+|| this.formatReadonly || Shows the value in cursive letters to indicate it's a readonly field||
+|| this.formatBoolean || Shows a boolean true / false as Yes / No ||
+|| this.formatNumber || Formats decimals as 0.00 ||
+|| this.formatLongstring || Formats long texts using  Ext.util.Format.ellipsis ||
+|| this.renderWeight || Displays a weight in kg. ||
+|| this.renderLink || Display the value as a link.||
+
+Renderer methods use this set of parameters:
+{{{
+value, params, record, rowIndex, colIndex, store'
+}}}
+
+For more information about the renderers see http://extjs.com/deploy/dev/docs/output/Ext.grid.ColumnModel.html#setRenderer (setRenderer method)
+
+=== List Section: Defining the grid ===
+==== Display / Hide Fields ====
+==== Handlers and Actions ====
+==== Additional Field Parameters ====
+
+
+=== Edit Section: Defining forms ===
+
+==== Pages / Panels ====
+
+{{{
+    edit:
+      params:
+        width: fill
+
+      newtitle: "New item"
+      title: Edit: <b>%%name%%</b>"
+
+      display:
+        fieldset1: [name, _other_partial, +invisible_field]
+
+      pages:
+        tabpage1:
+          title: TabPage 1 with icon
+
+          display: [more, fields]
+
+          params:
+            iconCls: "Ext.ux.IconMgr.getIcon('page_white')"
+
+        tabpage2:
+          title: TabPage 2
+
+          display: [more, fields]
+
+          container_params:
+            xtype: panel
+
+          pages:
+
+            regularpanel2_1:
+
+              params:
+                header: false
+
+              display: [more, fields]
+
+
+}}}
+
+==== Params ====
+
+Every panel can be configured with the params key.
+An example of this can be found below. You can use the Ext-api to configure your panel overrulling settings made by the default generator.
+
+An example, this would setup a tbar in Json:
+{{{
+new Ext.Panel({
+  tbar : [
+    {text: 'OK', handler: okHandler, scope: this}
+  ]
+});
+}}}
+
+And this is how it is done in Yml:
+{{{
+    edit:
+      newtitle: "New Item"
+      title: "Edit: <b>%%name%%</b>"
+
+      params:
+        tbar:
+          - {text: 'Do something',  iconCls: "Ext.ux.IconMgr.getIcon('page_white_text')", handler: this.doSomething, scope: this}
+          - {text: 'Or something', iconCls: "Ext.ux.IconMgr.getIcon('application-symlink/custom-icon-filename')", handler: "function(){alert('Easy');}", scope: 'this'}
+
+        bbar: [{text: 'this is also valid'},{text: 'looks more similar but less easy to read'}]
+
+      display:
+        General: [name, other, fields]
+}}}
+
+==== Icons ====
+We have included the Ext.ux.IconMgr which can be used to include icons, see the examples above to see how.
+
+If you want to include your own custom icons you can make a symlink from "plugins/sfExtjsThemePlugin/web/Ext.ux.IconMgr/icons/[application-name]" to your applications "web/images/icons"-folder.
+That way you can include an icon like:
+
+{{{
+  params:
+    iconCls: "Ext.ux.IconMgr.getIcon('[application-name]/custom-icon')"
+}}}
+
+
+== Application Layout ==
+
+The ThemePlugin generates two kind of panels, which both are extentions of the ordinary Ext.Panel ( http://extjs.com/deploy/dev/docs/output/Ext.Panel.html )
+For every module you will get a list-gridpanel and an edit-formpanel, these panels can be used in any way you want, you don't even have to have a full extjs layout (with for example a viewport http://extjs.com/deploy/dev/docs/output/Ext.Viewport.html )
+{{{
+          panel = {
+            xtype : 'list' + modulename + 'gridpanel'
+          };
+}}}
+
+Simply define the xtype-name of your-modules panel when defining the viewport/panel-items and you will see the item on your screen.
+
+You also don't have to include the pjs-source as a javascript-include in your header for your panels, the plugin will find the source automatically for you during runtime (lazy loading).
+
+You can also have a gridpanel as a field your edit-panel, or link an edit-panel to your grid. I would advise you to continue defining the layout in your app.js just like you can see in the demo. So seperate html and js(-layout)
+
+So getting a edit-panel is done like this:
+{{{
+          // json-config
+          var editPanel = {
+            xtype       : ('Edit' + 'Invoice' + 'FormPanel').toLowerCase(),
+            key         : key,
+
+            //depends on your layout if you want these:
+            hideBorders : true,
+            header      : false,
+
+            width       : 900,
+            height      : 700
+          };
+
+          if (key) editPanel.title = 'Loading...';
+          // create an instance from its xtype
+          editPanel = Ext.ComponentMgr.create(editPanel);
+          // init items in panel
+          editPanel.initItems();
+
+          //create a pop-up-window
+          var editWindow = new Ext.Window({
+            title       :  'Loading...',
+            modal       : true,
+            items       : editPanel,
+            editPanel   : editPanel
+          });
+
+          editWindow.on({
+            'close' : {
+              fn      : function(){
+                  this.destroy();
+              },
+              scope: editWindow
+            }
+          });
+
+
+          editPanel.on({
+            'afterlayout' : {
+              fn : function() {
+                  var height = this.editPanel.body.dom.scrollHeight; // + this.body.getFrameWidth('tb');
+                  this.editPanel.body.setHeight(height);
+
+                  var width = this.editPanel.body.dom.scrollWidth; // + this.body.getFrameWidth('tb');
+                  this.setWidth(width);
+
+                  this.setTitle(this.editPanel.title);
+              },
+              scope : editWindow
+            },
+
+            'titlechange' : {
+              fn : function (p, title) {
+                this.setTitle(title);
+              },
+              scope : editWindow
+            },
+
+            'close_request' : {
+              fn      : function(){
+
+                editWindow.close();
+              },
+              scope   : this
+            },
+            'saved' : {
+              fn      : function(){
+                editWindow.close();
+                this.store.reload();
+              },
+              scope   : this
+            },
+            'deleted' : {
+              fn      : function(){
+                editWindow.close();
+                this.store.reload();
+              },
+              scope   : this
+            }
+
+          });
+
+          //show the pop-up window
+          editWindow.show();
+}}}
+key is used to pass the primary-key, if undefined you will get a create panel.
+
+To get the item which you requested by url (so index.php/module/action ) you can use the App.RequestedModulePanel (which simply contains an instance of the panel with its xtype (and key when it is an edit-action) set.
+
+Like this:
+{{{
+      // content
+      if (typeof App.RequestedModulePanel == 'undefined') {
+        App.RequestedModulePanel = new Ext.Panel({html: 'Please login'});
+      }
+      this.content_panel = Ext.ComponentMgr.create({
+        region:     'center',
+        xtype:      'contentpanel',
+        activeItem: 0,
+        border:     false,
+        defaults: {
+          border:     false,
+          autoScroll: true
+        },
+        items:      [App.RequestedModulePanel]
+      });
+}}}
+
+
+To see if you are dealing with a grid or a list you can ask the object by something like this:
+{{{
+            if (i.getPanelType() == 'list') {
+              i.getStore().reload();
+            }
+}}}
+
+instead of list we also have edit,
+testing for key will getKey() you can see if you are dealing with edit or create, modulename will return the module name
+{{{
+(typeof i.getKey === 'function') && (i.getKey() == key)
+(i.getModulename() == modulename)
+}}}
+
+
+Ps.[[BR]]
+at the moment you will also get a editpanel (without form) which is a wrapper around the formpanel, this will probable become obsolete. Also at the moment there isn't yet a panel for filtering, this should be defined in the future as well, but this is still a todo. If anyone can make one I will merge it with the plugin. This filter-panel can be based on the source for grid and form-panels (gridpanel source is somewhat nicer, edit-panel with its form-layout is what you want for filter-panels.
+
+
+== Tips ==
+== Development ==
+=== Knowledge needed ===
+TODO: Link this
+To develop with this plugin you need knowledge about this things:
+* sfExtjs2Plugin
+* Extjs and xtypes
+* Symfony view layer (partials )
+==== Best approach for fast results ====
+TODO: Provide a few steps to create a basic application with at least 2 tables (e.g. ToDo with categories)
+
+Start with a minimal generator.yml and....
+
+=== Debugging ===
+Debugging your sfExtjsThemePlugin code is like debugging two applications: A PHP application on the server-side and a client-side Extjs JavaScript application. Therefore you need tools and knowledge to debug both of them and all the communication between them.
+
+==== Debugging Tools ====
+You can enable the symfony debug toolbar, to enable it install the sfAjaxWebDebugPlugin
+{{{
+symfony plugin-install http://plugins.symfony-project.com/sfAjaxWebDebugPlugin
+}}}
+Enable it by adding 'ajaxWebdebug' to the enabled_modules in your application/config/settings.yml-file. And while you are there anyway, check if compression is turned on (the compressed: on entry)
+
+After every json-ajax request you will see the debug-bar update!
+
+Use Firebug to debug your JS-Code and http requests. Webdeveloper toolbar allows you to manage cookies and cache.
+==== Debugging Procedures ====
+TODO: Explain debugging procedures like when to clear chaches / session, common errors and their cause. Debugging yml's
+=== Speed up things with third Party Caches ===
+Xcache and syck are both PHP-Extensions for caching. They are very usefull, since symfony isn't fully caching some of the generated PJS-Files.
+
+Also for our ubuntu users, they are very easy to install:
+{{{
+ sudo apt-get install php5-syck php5-xcache
+ sudo /etc/init.d/apache force-reload
+ symfony cc
+}}}
+
+The syck addon is somewhat more strict in checking your json files, so please check your syntax well, I had to remove a ~ in app/config/filters.yml after security: since I have a class defined underneath it.
+
+For xcache you might want to add the second line:
+{{{
+[xcache.admin]
+xcache.admin.enable_auth = Off
+xcache.admin.auth = On
+}}}
+
+to /etc/php5/conf.d/xcache.ini
+
+== Additional Concepts ==
+=== I18n ===
+=== Credentials ===
+== Known  Bugs / Issues ==
+See also Trac: http://trac.symfony-project.com/query?status=new&status=assigned&status=reopened&status=closed&component=sfExtjsThemePlugin&order=status
+
+== TODO ==
+  * Fix Combobox preloading problem
+  * Minify and beautify PJS results
+  * Split generator in two parts (one non-ExtJS, one extending to ExtJS)
+  * clean up sfExtjsPropelAdminGenerator.php
+  * Move as much code from templates to Helpers/Components
+  * Use sfExtjs2Plugin as much as possible
+
+
+  * formbuilder http://tof2k.com/ext/formbuilder/ (converse json to yml) http://tof2k.com/ext/formbuilder/formbuilder.zip and add a schema editor as well!!! WYSIWYG
+  * Improve row action with the help of saki, combining it with current code. http://rowactions.extjs.eu/
+  * Filtering http://extjs.com/forum/showthread.php?t=14503, but I would like to see filter-panels as well (much better accessible)
+  * Fix print-pages http://extjs.com/forum/showthread.php?t=35520 (or with static html rendering?)
+  * Browser BackButton http://extjs.com/forum/showthread.php?t=15453
+  * ObjectStore (reuse stores) http://extjs.com/forum/showthread.php?t=35406
+
+== Active tickets ==
+
+[[TicketQuery(component=sfExtjsThemePlugin&status!=closed)]]
+
+== Links ==
+
+The forum: http://www.symfony-project.com/forum/index.php/m/37256/#msg_37256 (TODO: new threads, one for developpers one for users ?) [[BR]]
+You can also find some of us often at IRC: #sfExtjsThemePlugin at irc.freenode.net
+
+Trac: http://trac.symfony-project.com/query?status=new&status=assigned&status=reopened&status=closed&component=sfExtjsThemePlugin&order=status
+
+Live Demos :
+  * http://fun4me.demon.nl/test/test_dev.php/city (TODO: attach up-to-date source in this wiki)
+  * http://tejohnston.dynora.eu/ (admin:admin)
+
+ExtJS: http://extjs.com [[BR]]
+ExtJS API: http://extjs.com/deploy/dev/docs/
+
+Saki's great examples and info: http://www.extjs.eu
+  * Writing a big application: http://blog.extjs.eu/know-how/writing-a-big-application-in-ext/#comment-157
+
+
+== Credits ==
+This plugin has been made possible by:
+
+  * '''Wolfgang Kubens''' who initialised the idea, and created the early base, together with the ExtJs2Plugin
+  * '''DrCore''' (Andre Schuurman) who provided the base to retreive foreign values.
+  * '''Jérôme''' who helped me structure my code and at the beginning had rewritten a big part of my code
+  * '''KRavEN''' who is constantly using, testing and extending this plugin
+  * '''lukas''' who is also constantly using and testing this plugin, added some improvements and now provides resources for documentation
+  * '''lvanderree''' (Leon) and that will be me. Probably main developer of this plugin
+
+Besides credits need to be given to:
+  * '''Jack Slocum''' together with '''the ExtJS team''', for providing this great Javascript framework.
+  * '''Jozef Sakalos, aka Saki''' for proving great insight in how to develop nice applications in Javascript/ExtJS
+  * '''Doug Hendricks''' for his work on Managed-IFrame and the basex-library.
+  * '''Andrew Mayorov''' for his work on the TinyMCE integration in ExtJs
+  * '''Jay Garcia''' for his work on the Ext.ux.TDGi.iconMgr (which we renamed to Ext.ux.IconMgr)
+
+to:
+  * '''Jon Davis''' for his 'Using' script which made the first version of lazy loading Javascript-libraries possible
+
+and to:
+  * '''Mark James''' for his Silk-Icons.
+
+
+
+
+
+
+
+
+
+= BELOW ARE ALL OLD TEXTS =
+LOTS OF INFO IS OUTDATED! MOSTLY DUE TO THE IMPLEMENTATION OF A NEW SYNTAX FOR THE GENERATOR, WHICH IS ABLE TO PROCESS FOREIGN FIELDS (columns from related tables), by providing the foreign-key/related-column-name, as can be seen in the overview, slightly below.
+
+[[Image(http://fun4me.demon.nl/~leon/symfony-autoCombo.png)]]
+
+Live Demos :
+  * http://fun4me.demon.nl/test/test_dev.php/city (source attached in this wiki, install sfExtjs2Plugin and sfExtjsThemeplugin, change database and propel config-files, outdated!!! old syntax... should be foreign_key/field_name instead of foreign_table/field_name)
+  * http://tejohnston.dynora.eu/backend_dev.php/ (admin:admin)
+
+See also: http://www.symfony-project.com/forum/index.php/m/37256/#msg_37256
+
+Based on the initial work of Wolfgang Kubens who initialised the idea and DrCore (Andre Schuurman) who provided his nice work to get foreign values. My work was about he development of the generator and this is improved by Jérôme. Currently KRavEN and lukas are actively using and enhancing this plugin.
+
+We currently have been added to the trac-ticket-system: http://trac.symfony-project.com/query?component=sfExtjsThemePlugin&order=priority
+
+The new generator-syntax, and what is generated.
+[[Image(http://fun4me.demon.nl/~leon/generator-generic.png)]]
+
+Have fun,
+Leon
+
+=== Troubleshooting ===
+
+Apparently there is a problem (http://extjs.com/forum/archive/index.php/t-12615.html) when you are using latest prototype together with Ext Js. Make sure to disable the prototype plugin on pages you are using sf ext.
+
+Since the update you need the sfExtjs2Plugin (dependancy)
+
+== Features ==
+
+=== Distinction between new and edit ===
+
+Exception 1 of being fully backward compatible...
+
+The title of the edit-page has two titles:
+  * one title for editing and item
+  * one title for adding a new item
+
+{{{
+    edit:
+      title: Edit city "%%name%%"
+      newtitle: Add a new city
+}}}
+
+When newtitle is not set, the default will be "Add a new <class-name>"
+
+=== Default actions ===
+
+Exception 2 of being fully backward compatible...
+
+I changed the behavior of the default action of the edit-page to "Save and List" (instead of "save and edit (again)"), I think this better suits the expectations of a user. The list is giving the feedback of a successfull save-action. You can of course overrule this by defining the actions of your edit-page in your generator.yml file.
+
+Also the "Create" button below your list has been changed. The caption of it now shows "Add new <class-name>".
+
+=== Multisort lists ===
+
+You can have your list been sorted on multiple columns at the same time. You can set the default sort order of multiple columns in your generator. The order in which you define them is important, the first item in the sort-list is the first column on which gets sorted.
+
+PLEASE NOTE: EXTJS DOES NOT SUPPORT SORTING ON MULTIPLE COLUMNS YET, see below in TODO2. If you set ajax: false multisort does work.
+
+Add multisort: true to your list options in your generator.yml
+
+An example of how to sort cities first on country, then on city-name:
+
+{{{
+    list:
+      title:            Cities
+      multisort:        true
+      sort:             [[country, desc], name]
+}}}
+
+If you want to define to one default sort column, you should keep the nested array, so for example:
+
+{{{
+    list:
+      title:            Cities
+      multisort:        true
+      sort:             [[name, asc]]
+}}}
+
+Because ascending is the default value to sort on,
+
+{{{
+    list:
+      title:            Cities
+      multisort:        true
+      sort:             [name]
+}}}
+
+is valid as well. In these cases the user has the ability to sort on multiple columns at the same time.
+
+Please note that in the first example I sort on country, and not on countryid, see new feature: Sort on foreign- and composite-columns. However new functionality in the list (grid) with drop-down combo-boxes reintroduces countryid. If you use country you will not have a drop-down combo-box! setting the sort-field for countryid remains useful in this case.
+
+TODO: Currently the filter-reset button also resets the sort-order, but I think it would be nice to have a seperate reset button for it. And I also think the reset should reset the sort-order to the generator.yml file default settings, not to no-sort-order at all which is currently the case...
+
+TODO2: The Extjs-grid does not support the visual feedback in its multi-sort-column-header. It does work because the sorting is done on the server, but your column-header shows only the sorting of the last column you sorted on. I think it should be possible to overwrite the default behavior of the extjs-column-header and make it behave like http://tablesorter.com/docs/ (holding shift to sort on multiple-columns). This does however requires some extra work on the php-code, to make it reset the sorting when you don't hold shift.
+Multisorting isn't working with ajax set to true, because at the moment extjs cannot handle sorting on mulitple columns. It can only sort one column at a time. If you disable ajax (ajax: false) you can see how it should work. Someone first has to extend extjs with this functionality before this is possible. I very much like the implementation done with jquery: http://tablesorter.com/docs/ (holding the shift-key while pressing the column headers to sort on multiple columns)
+It should be possible to extend extjs with this functionality, but it is not there (yet). At the moment I haven't got time for this yet. And to make it work like the jquery example, there should also be some extention for my plugin, to make the multi-sort reset when you don't hold shift.
+
+=== Sort on foreign- and composite-columns ===
+
+You can now also sort your columns on columns with foreign-values or composite values (from multiple/different columns, like full-names which are combined in a partial). You have to add some information to the generator.yml file to define the sort-order though, it can't do magic (yet)...
+
+TODO: This gets/is? replaced by Andre's work. you should define something like country/name instead of country or countryid (which use the __toString() method, which is limiting). This way you also don't have to define the sort_column and join_fields anymore
+
+{{{
+    list:
+      title:            Cities
+      display:          [ =name, country ]
+      filters:          [ countryid ]
+      fields:
+        country:
+          join_fields:  [CityPeer::COUNTRYID, CountryPeer::COUNTRYID]
+          sort_column:  CountryPeer::NAME
+}}}
+
+If you use the ajax view, you can now also display countryid and see an inline combo-box in the list, when you edit it.
+
+
+=== Group by ===
+
+Todo: fix this, it currently is broken....
+
+With Ajax you have the option to group you list on columns, you do this by setting the group_field option in your generator.yml file under list.
+When you have not set a sort column, the column which you define here will be used, which is recommended!
+
+{{{
+generator:
+  class:              sfExtjsPropelAdminGenerator
+  param:
+    model_class:      City
+    theme:            extjs
+
+    list:
+      title:            Cities
+      multisort:        true
+      sort:             [ country, name ]
+      display:      [ =name, country ]
+      filters:          [ countryid ]
+      grouping:
+        field:          country
+        plugins:        summary
+
+      fields:
+        name:
+          summary_type: 'count'
+          summary_renderer_function: "return ((v === 0 || v > 1) ? '<b>' + v +' Countries</b>' : '<b>1 Country</b>');"
+        country:
+          join_fields:  [CityPeer::COUNTRYID, CountryPeer::COUNTRYID]
+          sort_column:  CountryPeer::NAME
+
+}}}
+
+The summary plugin can be defined by a partial, in which you can write your javascript helper. In this case the total under every group (The number of cities under a country) will be count.
+
+TODO: Sorting with a grouped grid is an issue, need testing! (groups can possibly show up multiple times on different pages)
+
+
+
+=== Master-detail pages ===
+
+Todo: this feature is currently broken.
+
+You can now define master-detail relationships between modules. In the generator.yml file you define the detail-module and its field- and display-options.
+
+Example, where an Assignment can contain multiple parcels: (sorry my classes and fields don't always have underscores)
+{{{
+generator:
+  class:              sfPropelAdminGenerator
+  param:
+    model_class:      Assignment
+    theme:            extjs
+
+    sub_class:
+      model_class:    Assignmentparcel
+      display:        [ =subject ]
+      fields:
+        subject:
+          name: Parcel
+          summary_type: 'count'
+          summary_renderer_function: "return ((v === 0 || v > 1) ? '<b>' + v +' Parcels</b>' : '<b>1 Parcel</b>');"
+
+    fields:
+      sf_guard_user_related_by_created_by:
+        name: Created by
+      sf_guard_user_related_by_updated_by:
+        name: Updated by
+
+    list:
+      title:            Assignments
+      multisort:        false
+      display:          [ subject, vessel, sf_guard_user_related_by_created_by, created_at, sf_guard_user_related_by_updated_by, updated_at ]
+      grouping:
+        field:          subject
+        plugins:        summary
+      fields:
+        vessel:
+          join_fields:  [AssignmentPeer::VESSELID, VesselPeer::VESSELID]
+          sort_column:  VesselPeer::NAME
+}}}
+
+In this example you see the grouping field is defined, but it is optional. If you leave it out, the first field of your main-diplay-list is selected.
+I think sub_class speaks for itself.
+
+TODO0: At the moment I cannot get an instance of sub_class. I now have copied the code from several symfony methods and placed it in the plugin, this is far from optimal of course. I am also not able to find if fields of a sub-class are foreign-keys to other tables, which makes it impossible to let them appear as drop-down combo-boxes.
+
+TODO1: I have to think about mixing the fields of the main_class and the sub_class. (although all fields in a main-column will be the same for a group)
+TODO2: Maybe it is possible to define the generator.yml file of the sub_class in the master-generator.yml file, instead of this sub_class list.
+
+=== Drop-down Combo-boxes in the list ===
+
+Thanks to the work of Andre you can have drop-down boxes at the location of foreign-values (for example a dorp-down list of countries next to a city).
+
+It works like this:
+
+{{{
+generator:
+  class:              sfExtjsPropelAdminGenerator
+  param:
+    model_class:      City
+    theme:            extjs
+
+    ajax: true  # true by default
+
+    fields:
+      name:
+        name: City
+      country/name:
+        name: Country name
+        params:
+          editable: true
+      country/abbreviation:
+        name: Abbreviation
+        params:
+          editable: true
+
+    list:
+      title:            Cities
+      display:          [ =name, country/name, country/abbreviation ]
+      filters:          [ countryid ]
+}}}
+
+By default the fields in a list are not editable, to make the fields editable you can set this with the params option, or you can change the default option to true in your app.yml settings file.
+
+
+=== Disable the Extjs functionality ===
+
+If you want to disable the ajax functionality and only make use of the other new functionalities like the multi-sort feature, you can disable the ajax functions in your application yml file:
+
+app.yml
+{{{
+all::
+...
+  sf_extjs_theme_plugin:
+    ajax: false
+}}}
+
+list_max_per_page is the other option, which can be set application-wide.
+
+
+These options can also be defined in the generator.yml file to define it per module. E.G. add the option ajax: true in your generator.yml (at the same level as theme, css, list) file to overwrite the ajax option from your application settings for a specific module.
+
+{{{
+generator:
+  ...
+  param:
+    theme:            extjs
+    ajax: false
+    ...
+  ...
+}}}
+
+
+== TODO:... Work in progress. ==
+  * Namespace of javascipt in list and edit pages should probably also contain the moduleName (DONE), so multiple modules can be loaded in the same page (E.G. Pop-ups). I think that at the momement you now dynamically load new modules in your page, They overwrite the current load/edit page javascript. Maybe also optimalisations can be made which check if reloading is necessary (for example list and edit pages probably share the same related data stores...)
+  * Fields with Foreign values are shown as drop-down boxes with autocomplete features. It is also possible to define new values, but the event handlers are not perfect yet (far from it). Partly due to the Ext-Js library. This needs some work.
+  * Drop down combo-boxes also have a problem when the data-store is empty. They do not recognize the value they hold and the drop-down and autocomplete is broken at that moment. Stores always need to contain at least the value the current drop-down is showing (which can be done by a onFocus event or something, which makes the store add/load the correct (pre-loaded) json-data)
+  * The plugin dependeds on the sfExtjs2Helper plugin, but more code needs to use this plugin
+  * the add new foreign-object window which appears after typing a unknown foreign-value has a cancel button, which closes the current active tab.... This should of course be the current add-new-foreign-object window... This cancel button should also make the drop-down-combo-box discard the newly entered value.
+  * you cannot use a field both as group-by-field and column in your grid. This will make drop-down comboboxes not working (see city/country-name)
+  * Fix handeling partials and components (For JSON-Data and in getColumnAjaxTag), partly done, need optimisations (remove line-breaks and more testing)
+  * Improve filtering (need drop-down combo-boxes)
+  * Fix (multi)-sorting on columns (need ExtJS - javascript extention, Multi-sort is not visible in column-header, limitation of Extjs library which can be extended with javascript (but has not been done, maybe check extjs-forum and ask overthere))
+  * Edit-pages can be split up into several tab-pages, but this needs some improvements (E.G. namespaces and form-names might need to change)
+  * Improve configurability: more values should loose the hardcoded-part so they can be set (like column width, footer on/off, footer text, etc.)
+  * Improve peer_method, currently join-all is used to minimise the number of queries automatically, but you some want this be disabled by default, nice would be to have auto-detection for foreign-fields (easy) and than set join-all if nothing else has been defined. Even better would be to not call join-all, but join-all-that-I-need, but this probably requires changing the data-model-lib from the generator...
+  * Include UNIT-TESTING, but how??? advice/start up greatly appreciated.
+  * Update the readme and sandbox-howto
+  * More documentation, for now see: http://www.symfony-project.com/forum/index.php/m/37256/#msg_37256
+  * Master-detail with multiple linked grids: like http://www.symfony-project.org/forum/index.php/m/42011/#msg_42011

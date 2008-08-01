@@ -1,0 +1,39 @@
+<?php
+  $list_ns = ucfirst(sfInflector::camelize($this->getModuleName()))."List";
+?>
+
+var UploadDialogController = function()
+{
+  var dialog = null;
+  var button = null;
+  function getDialog()
+  {
+    if (!dialog) {
+      dialog = new Ext.ux.UploadDialog.Dialog({
+        url: '<?php echo $this->controller->genUrl($this->getModuleName().'/ajaxUploadReceive') ?>',
+        reset_on_hide: false,
+        allow_close_on_upload: true,
+        upload_autostart: true
+      });
+
+      dialog.on('uploadsuccess', onUploadSuccess);
+    }
+    return dialog;
+  }
+
+  function showDialog(button){ getDialog().show(button); }
+
+  function onUploadSuccess(dialog, filename, resp_data){
+    <?php echo $list_ns ?>.getDataStore().reload();
+  }
+
+  return {
+    init : function()
+    {
+      Ext.QuickTips.init();
+      showDialog(Ext.get('btn_upload'));
+    }
+  }
+}();
+
+Ext.onReady(UploadDialogController.init);

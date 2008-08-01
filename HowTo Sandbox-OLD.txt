@@ -1,0 +1,216 @@
+Setup the default symfony sandbox: (for the extjs part skip this part)
+
+Start a new project (if you have symfony already installed) or download the sandbox from http://www.symfony-project.com/get/sf_sandbox.tgz
+If you have downloaded the sandbox you can extract it in linux with "tar xvzf sf_sandbox.tgz", place the extracted folder in any map you like, for simplicity I place the entire content in my webfolder /var/www
+Make sure your webserver has permission to write in the log and cache folder (chmod 777 /var/www/sf_sandbox/log; chmod 777 /var/www/sf_sandbox/cache)
+You should now be able to browse to http://localhost/sf_sandbox/web/
+
+
+Setup your database connection:
+
+I prefer to use phpmyadmin, to add a user and database in MySql
+- Add a new user
+  - Comeup with a username, host:localhost, password
+  - Choose to create a database as well: "Create database with same name and grant all privileges"
+  - Click Start
+
+- In your project folder, setup config/database.yml:
+[code]
+all:
+  propel:
+    class:          sfPropelDatabase
+    param:
+      dsn:          mysql://username:password@localhost/username
+[/code]
+
+And setup config/propel.ini: (don't be scared, it is almost default, only changed propel.project and database)
+[code]
+propel.targetPackage       = lib.model
+propel.packageObjectModel  = true
+propel.project             = sf_sandbox_extjs
+
+propel.database            = mysql
+propel.database.createUrl  = mysql://localhost/
+propel.database.url        = mysql://username:password@localhost/username
+propel.mysql.tableType     = InnoDB
+
+propel.addGenericAccessors = true
+propel.addGenericMutators  = true
+propel.addTimeStamp        = false
+
+propel.schema.validate     = false
+
+; directories
+propel.home                    = .
+propel.output.dir              = /var/www/production/sfweb/symfony-for-release/sf_sandbox
+propel.schema.dir              = ${propel.output.dir}/config
+propel.conf.dir                = ${propel.output.dir}/config
+propel.phpconf.dir             = ${propel.output.dir}/config
+propel.sql.dir                 = ${propel.output.dir}/data/sql
+propel.runtime.conf.file       = runtime-conf.xml
+propel.php.dir                 = ${propel.output.dir}
+propel.default.schema.basename = schema
+propel.datadump.mapper.from    = *schema.xml
+propel.datadump.mapper.to      = *data.xml
+
+; builder settings
+propel.builder.peer.class              = addon.propel.builder.SfPeerBuilder
+propel.builder.object.class            = addon.propel.builder.SfObjectBuilder
+
+propel.builder.objectstub.class        = addon.propel.builder.SfExtensionObjectBuilder
+propel.builder.peerstub.class          = addon.propel.builder.SfExtensionPeerBuilder
+propel.builder.objectmultiextend.class = addon.propel.builder.SfMultiExtendObjectBuilder
+propel.builder.mapbuilder.class        = addon.propel.builder.SfMapBuilderBuilder
+propel.builder.interface.class         = propel.engine.builder.om.php5.PHP5InterfaceBuilder
+propel.builder.node.class              = propel.engine.builder.om.php5.PHP5NodeBuilder
+propel.builder.nodepeer.class          = propel.engine.builder.om.php5.PHP5NodePeerBuilder
+propel.builder.nodestub.class          = propel.engine.builder.om.php5.PHP5ExtensionNodeBuilder
+propel.builder.nodepeerstub.class      = propel.engine.builder.om.php5.PHP5ExtensionNodePeerBuilder
+
+propel.builder.addIncludes  = false
+propel.builder.addComments  = false
+
+propel.builder.addBehaviors = false
+[/code]
+
+
+Setup a schema, in config/schema.yml, I shall define a master-detail relationship
+[code]
+propel:
+  assignment:
+    id:
+    name:               {type: varchar(255), required: true}
+
+  parcel:
+    id:
+    assignment_id:
+    name:               {type: varchar(255), required: true}
+[/code]
+
+run "symfony propel-build-all" to generate the model and create the tables in your database
+TIP: if you are running linux, look for the bash completion script, and place it in /etc/bash_completion.d if you now (again) login into a terminal, you have symfony arguments completion. So type "symfony <tab><tab>" and enjoy!
+
+
+Create the modules:
+symfony propel-init-admin frontend assignment Assignment
+symfony propel-init-admin frontend parcel Parcel
+
+That's it, you should now be able to visit
+http://localhost/sf_sandbox/web/frontend_dev.php/assignment
+and
+http://localhost/sf_sandbox/web/frontend_dev.php/parcel
+
+Because at the moment my plugin cannot edit, nor save items, it is wise to add some assignments, and parcels.
+I created assignment1, assignment2, assignment3 and parcel1a, parcel3a, parcel3b and parcel3c
+
+
+----------------
+
+OK, this should all have been great (don't forget how cool symfony is ;-) ), but familiar.
+
+Time for the Extjs part:
+
+For now, you have to do a svn checkout to add the plugin to your project,
+go to your plugin folder and type:
+svn co http://svn.symfony-project.com/plugins/sfExtjsThemePlugin/
+Or use a gui tool like rapidsvn, tortoise, subclipse, what ever makes you happy
+
+Copy the content of the sf_sandbox/plugin/sfExtjsThemePlugin/web folder to your sf_sandbox/web/sfExtjsThemePlugin folder, or in linux, make a symlink:
+cd sf_sandbox/web; ln -s ../plugins/sfExtjsThemePlugin/web/ sfExtjsThemePlugin
+
+
+Include the javascript and stylesheets, add the following code to your applications layout.php file:
+[code]
+<?php
+$Extjsdir = '/sf_sandbox/web/sfExtjsThemePlugin/';
+sfContext::getInstance()->getResponse()->addJavascript($Extjsdir.'extjs/adapter/ext/ext-base');
+sfContext::getInstance()->getResponse()->addJavascript($Extjsdir.'extjs/ext-all-debug');
+sfContext::getInstance()->getResponse()->addJavascript($Extjsdir.'js/extGridGroupSummary');
+
+sfContext::getInstance()->getResponse()->addStylesheet($Extjsdir.'extjs/resources/css/ext-all');
+sfContext::getInstance()->getResponse()->addStylesheet($Extjsdir.'extjs/resources/css/xtheme-default');
+sfContext::getInstance()->getResponse()->addStylesheet($Extjsdir.'css/docs');
+sfContext::getInstance()->getResponse()->addStylesheet($Extjsdir.'css/symfony-extjs');
+
+?>
+[/code]
+
+Now go to your the generator of your module, for example the one from assignment and change the theme from default to extjs.
+
+If you now browse to http://localhost/sf_sandbox/web/frontend_dev.php/assignment you should see a list of assignments (with their id) in the Extjs theme
+
+(Hmmm. For some reason I don't seem to have all css properties. The Add-new button is a square, also the pager buttons look strange, and the column-headers seem to mis a background image, until you hover over them. I haven't firgured out what causes this, yet.)
+(Hmmm2, I don't get the errors you people seem to have about group_field not being defined. Can it be a php.ini setting? I think I can add some code to prevent the error, but I can't test it as it does not happen to me...)
+
+
+Now to make things more interesting, lets make a master detail, change the generator.yml file from assignment to this:
+[code]
+generator:
+  class:              sfExtjsPropelAdminGenerator
+  param:
+    model_class:      Assignment
+    theme:            extjs
+  
+    list:
+      display:        [name]
+      actions:
+       _create:
+          name: Add new Assignment
+       _refresh: -
+       _print: -
+       _pdf: -
+[/code]
+I did find one bug. Unfortunately currently I haven't figured out how to automatically resolve the foreign-key-field between two tables, so you have to define the foreign-key-field yourself (I named it join_field). In my situation it went good, because of some lucky field-naming.
+
+Reload http://localhost/sf_sandbox/web/frontend_dev.php/assignment to see the results. (you won't have to ClearCache when you have changed the generator.yml file in this case)
+
+You can click on the header: "parcel-name" to change the sort order within every assignment (click it twice to sort descending)
+You can click on a parcel-name field, to change it name. (Saving the changes still have to be implemented)
+
+In the generator.yml file, place a '=' before the diplay name under the sub_class, to make the field a hyperlink to the sub_class edit page. (display: [=name])
+
+To give an other example I will use the parcel class.
+
+First add the folowing code to the lib/model/Assignment.php file:
+[code]
+class Assignment extends BaseAssignment
+{
+  public function __toString()
+  {
+    return $this->getName();
+  }
+}
+[/code]
+
+Change the generator.yml file of parcel to:
+[code]
+generator:
+  class:              sfExtjsPropelAdminGenerator
+  param:
+    model_class:      Parcel
+    theme:            extjs
+   
+    field:
+      name:
+         params:
+          editable: true  
+    
+    list:
+      display:        [=id, assignment_id/name, name]
+
+    edit:
+      fields:
+        name:
+          disabled: true
+[/code]
+and now load:
+http://localhost/sf_sandbox/web/frontend_dev.php/parcel
+
+I have to change some things over here. Most obvious: I want the disabled flag placed under the list, not under the edit tag. Besides I also want to have a general fields-tag where you can define this. This way you can distinguish if you can edit a field in your list and/or your edit-view.
+
+The result looks the same in this case, but in this case you cannot see assignment2, because there is no parcel related to it, which makes a huge difference.
+
+Please also try to add group-totals (with the plugin, feature) and also check the Readme.
+
+One other thing which does not work yet is the correct total-count in the master-detail page.
+

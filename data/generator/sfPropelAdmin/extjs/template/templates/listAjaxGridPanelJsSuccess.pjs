@@ -1,0 +1,18 @@
+[?php
+  use_helper('I18N', 'Date');
+  $sfExtjs2Plugin = new sfExtjs2Plugin();
+?]
+
+[?php include_partial('list_ajax_toolbar_top_js',     array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
+[?php include_partial('list_ajax_toolbar_paging_js',  array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
+
+[?php include_partial('list_ajax_datastore_js',       array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
+[?php include_partial('list_ajax_renderer_js',        array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
+[?php include_partial('list_ajax_columnmodel_js',     array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
+
+[?php include_partial('list_ajax_gridpanel_js',       array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
+<?php if ($this->getParameterValue('tabpanel')):?>
+[?php include_partial('list_ajax_tabpanel_js',        array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
+<?php endif;?>
+
+

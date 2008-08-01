@@ -1,0 +1,6 @@
+[?php
+  use_helper('I18N', 'Date');
+  $sfExtjs2Plugin = new sfExtjs2Plugin();
+?]
+
+[?php include_partial('list_ajax_layout_js',     array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]

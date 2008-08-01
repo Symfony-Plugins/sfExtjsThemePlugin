@@ -1,0 +1,102 @@
+#sf_admin_container table {
+  margin-bottom: 0;
+}
+
+.required label em {
+  display: block;
+  color: #933 !important;
+  font-weight: bold !important;
+  font-size: 75%;
+  text-transform: uppercase;
+}
+
+.x-plain-header {
+  margin: 10px 0px 5px 0px;
+}
+
+.x-plain-header-text {
+  font-weight: bold !important;
+  font-size: 125%;
+  margin-left: 10px;
+}
+
+.x-form-element {
+  padding-bottom: 11px;
+}
+
+.x-form-combo-label {
+  width: 'auto' !important;
+  float: none !important;
+  clear: none !important;
+  display: inline !important;
+  margin-left: 25px;
+}
+
+.x-grid3-row-alt {
+  background-color: #F4F2EC;
+}
+
+.x-grid3-row-over {
+  background-color: #D0DEF0;
+  background-image: none;
+}
+
+.x-grid-group-body-hide {
+  display: none
+}
+
+.no-tabs .x-tab-panel-header-disabled {
+  display: none
+}
+
+.highTabs .x-tab-strip span {
+  height: 45px;
+}
+
+.x-form-item label {
+  font-size: 11px;
+}
+
+.x-form-text,.x-form-field {
+  font-size: 11px;
+}
+
+.x-menu {
+  text-align: left;
+}
+
+/* XCheckbox css */
+.xcheckbox-wrap {
+  line-height: 18px;
+  padding-top: 2px;
+}
+
+.xcheckbox-wrap a {
+  display: block;
+  width: 16px;
+  height: 16px;
+  float: left;
+}
+
+.x-toolbar .xcheckbox-wrap {
+  padding: 0 0 2px 0;
+}
+
+.xcheckbox-on {
+  background: transparent
+    url(../../sfExtjs2Plugin/extjs/resources/images/default/menu/checked.gif)
+    no-repeat 0 0;
+}
+
+.xcheckbox-off {
+  background: transparent
+    url(../../sfExtjs2Plugin/extjs/resources/images/default/menu/unchecked.gif)
+    no-repeat 0 0;
+}
+
+.xcheckbox-disabled {
+  opacity: 0.5;
+  -moz-opacity: 0.5;
+  filter: alpha(opacity = 50);
+  cursor: default;
+}

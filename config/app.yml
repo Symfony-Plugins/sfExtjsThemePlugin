@@ -1,0 +1,25 @@
+all: # these are the defaults, you should override them in your application/config/app.yml file
+  sf_extjs_theme_plugin:
+    table_delimiter:          "-"
+
+    ajax:                     true
+    theme:                    aero
+
+    list_max_per_page:        20
+
+    border_panel:             true
+    list_tabbed:              true
+    list_editable:            false
+
+    module_returns_layout:    true                      # set to true to let the module return a layout (so you don't have to setup a layout.php) or let the module only return a js-var: App.RequestedModulePanel
+    module_panel_name:        App.RequestedModulePanel  # the name of the var to the panel name returned by the module-action
+
+    use_tinymce:              false
+
+    #open_panel_handler:       App.openPanelHandler      # a method which accepts the event and target from the event-handler the event-object contains the moduleName and item's-key, if this method is not defined, the grids url will open as normal ( window.location will be changed).
+    #open_panel:               App.openPanel             # a method which accepts the moduleName and item's-key, if this method is not defined App.openPanel create-buttons from the list will change the window.location
+
+    combo_box_xtype:          comboboxautoload # combo
+    checkbox_type:            xcheckbox        # checkbox
+
+    format_date:               "m/d/Y"
