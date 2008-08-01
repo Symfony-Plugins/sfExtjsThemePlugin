@@ -196,7 +196,7 @@ $formpanel->methods['setKey'] = $sfExtjs2Plugin->asMethod(array(
 ));
 
 $formpanel->methods['isNew'] = $sfExtjs2Plugin->asMethod("
-  return ((typeof this.key=='undefined') || (this.key==null) || (this.key=='create_<?php echo $this->getModuleName() ?>'));
+  return ((typeof this.key=='undefined') || (this.key==null)); // OBSOLETE (this.key=='create_<?php echo $this->getModuleName() ?>')
 ");
 
 // updateButtonsVisibility

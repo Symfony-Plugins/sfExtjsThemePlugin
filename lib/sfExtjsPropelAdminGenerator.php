@@ -181,12 +181,12 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
 
           if ($openPanelFunction = sfConfig::get('app_sf_extjs_theme_plugin_open_panel', null))
           {
-            $default_handler_function = $openPanelFunction."('".strtolower($this->getModuleName())."', 'create_".$this->getModuleName()."')";
+            $default_handler_function = $openPanelFunction."('".strtolower($this->getModuleName())."')";
           }
 
           if ($gridListCreateLink = sfConfig::get('app_sf_extjs_theme_plugin_list_action_handler', null))
           {
-            $default_handler_function = $gridListCreateLink."('".$this->controller->genUrl($this->getModuleName().'/create')."', 'create_".$default_name."',  '".$default_name."')";
+            $default_handler_function = $gridListCreateLink."('".$this->controller->genUrl($this->getModuleName().'/create')."', null,  '".$default_name."')";
           }
           break;
         case 'refresh':
