@@ -455,10 +455,10 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     {
 <?php if ($sort = $this->getParameterValue('list.sort')): ?>
 <?php if (is_array($sort)): ?>
-      $this->getUser()->setAttribute('sort', '<?php echo $sort[0] ?>', 'sf_admin/<?php echo $this->getSingularName() ?>/sort');
+      $this->getUser()->setAttribute('sort', '<?php echo str_replace('/', $tableDelimiter, $sort[0]) ?>', 'sf_admin/<?php echo $this->getSingularName() ?>/sort');
       $this->getUser()->setAttribute('type', '<?php echo $sort[1] ?>', 'sf_admin/<?php echo $this->getSingularName() ?>/sort');
 <?php else: ?>
-      $this->getUser()->setAttribute('sort', '<?php echo $sort ?>', 'sf_admin/<?php echo $this->getSingularName() ?>/sort');
+      $this->getUser()->setAttribute('sort', '<?php echo str_replace('/', $tableDelimiter, $sort) ?>', 'sf_admin/<?php echo $this->getSingularName() ?>/sort');
       $this->getUser()->setAttribute('type', 'asc', 'sf_admin/<?php echo $this->getSingularName() ?>/sort');
 <?php endif; ?>
 <?php endif; ?>

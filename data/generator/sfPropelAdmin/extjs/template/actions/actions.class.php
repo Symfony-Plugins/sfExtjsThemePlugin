@@ -828,19 +828,19 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 <?php if (is_array($sort)): //multiple sort columns ?>
 
 <?php if (!$multisort) :?>
-      $this->getUser()->setAttribute('<?php echo $sort[0] ?>', '<?php echo $sort[1] ?>', "sf_admin/$namespace/sort");
+      $this->getUser()->setAttribute('<?php echo str_replace('/', $tableDelimiter, $sort[0]) ?>', '<?php echo $sort[1] ?>', "sf_admin/$namespace/sort");
 <?php else: // if multisort ?>
 <?php foreach ($sort as $s) : ?>
 <?php if (is_array($s)): // if [column, direction] ?>
-      $this->getUser()->setAttribute('<?php echo $s[0] ?>', '<?php echo $s[1] ?>', "sf_admin/$namespace/sort");
+      $this->getUser()->setAttribute('<?php echo str_replace('/', $tableDelimiter, $s[0]) ?>', '<?php echo $s[1] ?>', "sf_admin/$namespace/sort");
 <?php else: // if sort-column is not an array: only sort column ?>
-      $this->getUser()->setAttribute('<?php echo $s ?>', 'asc', "sf_admin/$namespace/sort");
+      $this->getUser()->setAttribute('<?php echo str_replace('/', $tableDelimiter, $s) ?>', 'asc', "sf_admin/$namespace/sort");
 <?php endif; ?>
 <?php endforeach; ?>
 <?php endif; //end multisort ?>
 
 <?php else: // if only one sort column ?>
-      $this->getUser()->setAttribute('<?php echo $sort ?>', 'asc', "sf_admin/$namespace/sort");
+      $this->getUser()->setAttribute('<?php echo str_replace('/', $tableDelimiter, $sort) ?>', 'asc', "sf_admin/$namespace/sort");
 <?php endif; //end columns array test ?>
 
 <?php endif; // endif list.sort parameter ?>
