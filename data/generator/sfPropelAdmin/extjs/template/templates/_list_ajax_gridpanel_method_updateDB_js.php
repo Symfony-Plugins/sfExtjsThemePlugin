@@ -9,7 +9,7 @@ $configArr = array(
   'parameters' => 'grid',
   'source' => "
     var rowRecord = grid.grid.store.getAt(grid.row);
-    if(grid.record.fields.key(grid.field).type =='date') grid.value = grid.value.dateFormat('<?php echo sfConfig::get('app_sf_extjs_theme_plugin_format_date', 'm/d/Y') ?>');
+    if(grid.value && grid.record.fields.key(grid.field).type =='date') grid.value = grid.value.dateFormat('<?php echo sfConfig::get('app_sf_extjs_theme_plugin_format_date', 'm/d/Y') ?>');
     Ext.Ajax.request(
       {
         url:'<?php echo $this->controller->genUrl($this->getModuleName().'/ajaxEdit') ?>',
