@@ -28,7 +28,7 @@ $gridpanel->config_array = array(
                             'singleSelect' => <?php echo $this->getParameterValue('list.single_select', true) ? 'true' : 'false' ?> // this should probably also be defined application wide
                            )),
   'clicksToEdit'        => 1, //should this be default? Leon: otherwise make it a (application)config option
-  'trackMouseOver'      => true,
+  'trackMouseOver'      => false, //this will cause the firefox permission denied errors if true
   //'loadMask'            => false, //false is ext default
 );
 
