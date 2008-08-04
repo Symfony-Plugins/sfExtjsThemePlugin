@@ -10,6 +10,8 @@ all: # these are the defaults, you should override them in your application/conf
     border_panel:             true
     list_tabbed:              true
     list_editable:            false
+    list_trackMouseOver:      false
+    list_loadMask:            false
 
     module_returns_layout:    true                      # set to true to let the module return a layout (so you don't have to setup a layout.php) or let the module only return a js-var: App.RequestedModulePanel
     module_panel_name:        App.RequestedModulePanel  # the name of the var to the panel name returned by the module-action
