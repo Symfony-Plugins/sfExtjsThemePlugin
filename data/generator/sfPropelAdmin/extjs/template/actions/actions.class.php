@@ -335,7 +335,8 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends <?php echo 'B
 
     $<?php echo $this->getSingularName() ?> = $this-><?php echo $this->getSingularName() ?>;
 
-    $this->success = true;
+    // this lets us set success to false somewhere else if needed
+    $this->success = (isset($this->success))?$this->success:true;
     $this->id = <?php echo $params['id'] ?>;
     $this->title = <?php echo $this->getI18NString('edit.title', 'Edit '.$objectName, false) ?>;
     return $this->sendAjaxResponse();
