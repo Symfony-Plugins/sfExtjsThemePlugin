@@ -23,6 +23,7 @@ $configArr = array(
         success: function(result, request) {
           var result = Ext.decode(result.responseText);
 
+          //we will always get into success even if result.success: false
           if(result.success){
             // marks 'dirty' records as committed (no red triangle)
             grid.grid.store.commitChanges();
@@ -33,11 +34,14 @@ $configArr = array(
             var message = (result.message)?result.message:'Your modification could not be saved!';
             //this.fireEvent('new_message', title, message, this);
             Ext.Msg.alert(result.title, result.message);
+            //reject the changes as they should have not been committed to the database if success:false is being sent
+            grid.grid.store.rejectChanges();
           }
 
         },
         failure: function(form, action) {
           //this.fireEvent('new_message', '".__('Saving data')."', 'Your modification could not be saved!', this);
+          //we only get here if there was a communications error and the server sent no response
           Ext.Msg.alert('".__('Saving data')."', 'Your modification could not be saved!');
         }
       }
