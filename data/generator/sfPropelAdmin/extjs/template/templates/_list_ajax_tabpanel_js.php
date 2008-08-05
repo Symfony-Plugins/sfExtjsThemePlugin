@@ -78,3 +78,5 @@ $sfExtjs2Plugin->beginClass(
 
 $sfExtjs2Plugin->endClass();
 ?]
+// register xtype
+Ext.reg('<?php echo $panelName_xtype ?>', Ext.app.sx.<?php echo $panelName ?>);
