@@ -1008,14 +1008,24 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
           }
         }
 
-        if (!$found)
-        {
-          throw new Exception('Sort column "'.$sort_column.'" not found');
-        }
+// not throwing error anymore, since you want to be able to sort on custom columns, with $criteria->addAsColumn()
+//        if (!$found)
+//        {
+//          throw new Exception('Sort column "'.$sort_column.'" not found');
+//        }
 
         try
         {
-          $fieldName = call_user_func(array($className.'Peer', 'translateFieldName'), $column->getPhpName(), BasePeer::TYPE_PHPNAME, BasePeer::TYPE_COLNAME);
+          if ($found)
+          {
+            $fieldName = call_user_func(array($className.'Peer', 'translateFieldName'), $column->getPhpName(), BasePeer::TYPE_PHPNAME, BasePeer::TYPE_COLNAME);
+          }
+          // Because of this the sort-exception below will probably never fire anymore...
+          // This else-clause is there to make it possible to sort on custom collumns ( $c->addAsColumn(...) )
+          else
+          {
+            $fieldName = str_replace('-', '_', $sort_column);
+          }
           $sort_columns[$fieldName] = $sort_type;
         }
         catch (Exception $e)
