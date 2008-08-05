@@ -1,6 +1,7 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $panelName = "List".$moduleName."FilterPanel";
+  $panelName_xtype = strtolower("List".$this->getModuleName()."FilterPanel");
 ?>
 [?php
 $filterpanel = new stdClass();
@@ -70,3 +71,5 @@ $sfExtjs2Plugin->beginClass(
 
 $sfExtjs2Plugin->endClass();
 ?]
+// register xtype
+Ext.reg('<?php echo $panelName_xtype ?>', Ext.app.sx.<?php echo $panelName ?>);

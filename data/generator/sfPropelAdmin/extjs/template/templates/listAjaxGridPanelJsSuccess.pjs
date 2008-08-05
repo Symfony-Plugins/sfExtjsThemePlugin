@@ -14,5 +14,8 @@
 <?php if ($this->getParameterValue('tabpanel')):?>
 [?php include_partial('list_ajax_tabpanel_js',        array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
 <?php endif;?>
+<?php if ($this->getParameterValue('filterpanel')):?>
+[?php include_partial('list_ajax_filterpanel_js',        array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
+<?php endif;?>
 
 
