@@ -4,6 +4,7 @@
  * http://www.famfamfam.com/lab/icons/silk/ : Warranty : none Price : free
  */
 Ext.ns('Ext.ux');
+var x;
 Ext.ux.IconMgr = function(iconName)
 {
   var cssClasses = new Ext.data.JsonStore({
@@ -20,35 +21,28 @@ Ext.ux.IconMgr = function(iconName)
     }]
   });
 
+  x = cssClasses;
   var styleSheetId = 'IconMgr';
   var styleSheet;
 
   var ruleBodyTpl = ' \n\r .{0} {  background-image: url({1}) !important; }';
 
   return {
-    init : function()
-    {
-      // for IE. Stupid microsoft!!
-      // this assumes that stylesheets will not be deleted.
-      this.styleSheetNum = document.styleSheets.length;
-
-      styleSheet = Ext.util.CSS.createStyleSheet('/* IconMgr stylesheet */\n', styleSheetId);
-
-      (Ext.isIE6) ? this.imgExtension = '.gif' : this.imgExtension = '.png';
-    },
-
     getIcon : function(icon)
     {
-      if (!styleSheet)
-      {
-        this.init();
-      }
-
       var cls = 'iconmgr_' + Ext.id();
-      var iconImgPath = this.iconPath + '/icons/' + icon + this.imgExtension;
+      var extension = (icon.substring(icon.length-4,icon.length-3)!='.') ? this.imgExtension :'';
+      var iconImgPath = this.iconPath + '/icons/' + icon + extension;
       var styleBody = String.format(ruleBodyTpl, cls, iconImgPath);
 
-      var foundIcon = cssClasses.find('name', icon);
+      var foundIcon = cssClasses.findBy(function(rec, ind)
+      {
+        if (rec.data.name == icon)
+        {
+          return (ind);
+        }
+      });
+
       if (foundIcon < 0)
       {
         cssClasses.add(new Ext.data.Record({
@@ -81,6 +75,9 @@ Ext.ux.IconMgr = function(iconName)
     setIconPath : function(path)
     {
       this.iconPath = path || '';
+      this.styleSheetNum = document.styleSheets.length;
+      styleSheet = Ext.util.CSS.createStyleSheet('/* Ext.ux.IconMgr stylesheet */\n', styleSheetId);
+      (Ext.isIE6) ? this.imgExtension = '.gif' : this.imgExtension = '.png';
     }
   }
 }();
@@ -142,6 +139,7 @@ Ext.ux.IconBrowser = function()
 
         });
       }
+
     },
     hide : function()
     {
@@ -152,9 +150,9 @@ Ext.ux.IconBrowser = function()
       this.init();
       if (!this.dataFilePath)
       {
-        Ext.MesageBox
+        Ext.MessageBox
             .alert('Error',
-                   'Please set the path! E.g. Ext.ux.IconMgr.setPath("relative_path_to_IconMgr_folder").show();');
+                   'Please set the path! E.g. Ext.ux.IconMgr.setPath("/sfExtjsThemePlugin/Ext.ux.IconMgr").show();');
         return;
       }
       win.show();
