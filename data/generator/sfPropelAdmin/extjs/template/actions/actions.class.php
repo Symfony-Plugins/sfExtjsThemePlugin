@@ -757,23 +757,26 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
       $filters = $this->getRequestParameter('filters');
 
 <?php if ($this->getParameterValue('list.filters')): ?>
-<?php foreach ($this->getColumns('list.filters') as $column):
-    $type = $column->getCreoleType();
+<?php
+    //foreach ($this->getColumns('list.filters') as $column)
+    //{
+      //$type = $column->getCreoleType();
 
-    $last = strrpos($column->key, '/');
-    $cname = substr($column->key, $last + 1);
+      //$last = strrpos($column->key, '/');
+      //$cname = substr($column->key, $last + 1);
+//if ($type == CreoleTypes::DATE || $type == CreoleTypes::TIMESTAMP): //TODO replace $column->getName with $columnName
 ?>
-<?php if ($type == CreoleTypes::DATE || $type == CreoleTypes::TIMESTAMP): //TODO replace $column->getName with $columnName ?>
-      if (isset($filters['<?php echo $cname ?>']['from']) && $filters['<?php echo $cname ?>']['from'] !== '')
-      {
-        $filters['<?php echo $cname ?>']['from'] = sfI18N::getTimestampForCulture($filters['<?php echo $cname ?>']['from'], $this->getUser()->getCulture());
-      }
-      if (isset($filters['<?php echo $cname ?>']['to']) && $filters['<?php echo $cname ?>']['to'] !== '')
-      {
-        $filters['<?php echo $cname ?>']['to'] = sfI18N::getTimestampForCulture($filters['<?php echo $cname ?>']['to'], $this->getUser()->getCulture());
-      }
-<?php endif; ?>
-<?php endforeach; ?>
+//      if (isset($filters['<?php //echo $cname ?>']['from']) && $filters['<?php //echo $cname ?>']['from'] !== '')
+//      {
+//        $filters['<?php //echo $cname ?>']['from'] = sfI18N::getTimestampForCulture($filters['<?php //echo $cname ?>']['from'], $this->getUser()->getCulture());
+//      }
+//      if (isset($filters['<?php //echo $cname ?>']['to']) && $filters['<?php //echo $cname ?>']['to'] !== '')
+//      {
+//        $filters['<?php //echo $cname ?>']['to'] = sfI18N::getTimestampForCulture($filters['<?php //echo $cname ?>']['to'], $this->getUser()->getCulture());
+//      }
+<?php //endif;
+    //}
+    ?>
 <?php endif; ?>
 
       /* reset Multi-sort // TODO, this should be done somewhere else,
