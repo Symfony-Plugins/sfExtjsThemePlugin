@@ -48,27 +48,32 @@ $filterpanel->attributes = array();
     [?php endif; ?]
 <?php endif; ?>
 <?php endforeach; ?>
-<?php
-$buttons = array
-(
-  $this->sfExtjs2Plugin->Button(array
-  (
-    'text'    => '[?php echo __(\'Filter\') ?]',
-    'handler' => $this->sfExtjs2Plugin->asMethod($list_ns.'.getDataStore().baseParams={filter:1}; var params=formPanel.form.getValues(); params.start=0; params.limit='.$limit.'; '.$list_ns.'.getDataStore().load({params:params});')
-  )),
-  $this->sfExtjs2Plugin->Button(array
-  (
-    'text'    => '[?php echo __(\'Reset\') ?]',
-    'handler' => $this->sfExtjs2Plugin->asMethod($list_ns.'.getDataStore().baseParams=""; formPanel.form.reset(); '.$list_ns.'.getDataStore().load({params:{start:0,limit:'.$limit.'}});')
-  ))
-);
-?>
+
 /* FilterPanel Configuration */
 
 // default config
 $filterpanel->config_array = array(
   'deferredRender'      => true,
-  'items' => <?php var_export($formFields) ?>
+  'title'      => 'Filters',
+  'autoScroll' => true,
+  'bodyStyle'  => 'padding: 5px 0px 0px 10px; position: relative;',
+  'labelAlign' => 'top',
+  'defaults'   => array('xtype' => 'textfield', 'anchor' => '85%'),
+  'items'      => <?php var_export($formFields) ?>,
+  'buttons'    => array(
+    $sfExtjs2Plugin->Button(array
+    (
+      'text'    => 'Filter',
+      //TODO:  Handler needs work
+      //'handler' => $sfExtjs2Plugin->asMethod('<?php echo $moduleName ?>.getDataStore().baseParams={filter:1};var params=formPanel.form.getValues();params.start=0;params.limit=<?php echo $limit ?>;<?php echo $moduleName ?>.getDataStore().load({params:params});')
+    )),
+    $sfExtjs2Plugin->Button(array
+    (
+      'text'    => 'Reset',
+      //TODO:  Handler needs work
+      //'handler' => $sfExtjs2Plugin->asMethod('<?php echo $moduleName ?>.getDataStore().baseParams="";formPanel.form.reset();<?php echo $moduleName ?>.getDataStore().load({params:{start:0,limit:<?php echo $limit ?>}});')
+    ))
+  )
 );
 
 /* FilterPanel methods and variables */
