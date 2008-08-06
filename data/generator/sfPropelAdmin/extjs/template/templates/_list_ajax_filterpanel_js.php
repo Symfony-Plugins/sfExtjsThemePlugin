@@ -23,6 +23,7 @@ $filterpanel->attributes = array();
   // "sort" output on index, since index should be unique, this is easy
   // first create a new array
   $temp = $formFields = array();
+  $credArr = array();
   foreach ($columns as $column)
   {
     $temp[$column->index] = $column;
@@ -32,22 +33,21 @@ $filterpanel->attributes = array();
   // put sorted array back
   $columns  = $temp;
 
-  foreach ($columns as $column):
+  $i = 0;
+  foreach ($columns as $column){
     $type = $column->getCreoleType();
     $columnName = $column->key;
+    $credentials = $this->getParameterValue('list.fields.'.$columnName.'.credentials');
+    if ($credentials){
+      $credentials = str_replace("\n", ' ', var_export($credentials, true));
+      $credArr[] = 'if(!$sf_user->hasCredential('.$credentials.')) unset($filterpanel->config_array["items"]['.$i.']);';
+    }
+
+    //TODO, change this so drop-down columnboxes and checkboxes appear...
+    $formFields[] = array('fieldLabel' => str_replace("'", "\\'", $this->getParameterValue('list.fields.'.$columnName.'.name')), 'name' => 'filters['.str_replace('/', $this->tableDelimiter, $columnName).']');
+    $i++;
+  }
 ?>
-<?php $credentials = $this->getParameterValue('list.fields.'.$columnName.'.credentials') ?>
-<?php if ($credentials): $credentials = str_replace("\n", ' ', var_export($credentials, true)) ?>
-    [?php if ($sf_user->hasCredential(<?php echo $credentials ?>)): ?]
-<?php endif; ?>
-<?php
-  //TODO, change this so drop-down columnboxes and checkboxes appear...
-  $formFields[] = array('fieldLabel' => str_replace("'", "\\'", $this->getParameterValue('list.fields.'.$columnName.'.name')), 'name' => 'filters['.str_replace('/', $this->tableDelimiter, $columnName).']');
-?>
-<?php if ($credentials): ?>
-    [?php endif; ?]
-<?php endif; ?>
-<?php endforeach; ?>
 
 /* FilterPanel Configuration */
 
@@ -84,6 +84,10 @@ $filterpanel->config_array = array(
     ))
   )
 );
+
+/* handle user credentials */
+<?php echo implode("\n", $credArr) ?>
+
 
 /* FilterPanel methods and variables */
 
