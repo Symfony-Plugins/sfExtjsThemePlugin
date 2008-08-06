@@ -65,13 +65,22 @@ $filterpanel->config_array = array(
     (
       'text'    => 'Filter',
       //TODO:  Handler needs work
-      //'handler' => $sfExtjs2Plugin->asMethod('<?php echo $moduleName ?>.getDataStore().baseParams={filter:1};var params=formPanel.form.getValues();params.start=0;params.limit=<?php echo $limit ?>;<?php echo $moduleName ?>.getDataStore().load({params:params});')
+      'handler' => '('.$sfExtjs2Plugin->asMethod("
+  ticketTabs.getComponent(0).store.baseParams={filter:1};
+  var params=this.form.getValues();
+  params.start=0;params.limit=<?php echo $limit ?>;
+  ticketTabs.getComponent(0).store.load({params:params});
+").').createDelegate(this)'
     )),
     $sfExtjs2Plugin->Button(array
     (
       'text'    => 'Reset',
       //TODO:  Handler needs work
-      //'handler' => $sfExtjs2Plugin->asMethod('<?php echo $moduleName ?>.getDataStore().baseParams="";formPanel.form.reset();<?php echo $moduleName ?>.getDataStore().load({params:{start:0,limit:<?php echo $limit ?>}});')
+      'handler' => '('.$sfExtjs2Plugin->asMethod("
+  ticketTabs.getComponent(0).store.baseParams='';
+  this.form.reset();
+  ticketTabs.getComponent(0).store.load({params:{start:0,limit:<?php echo $limit ?>}});
+").').createDelegate(this)'
     ))
   )
 );
