@@ -3,4 +3,21 @@ generator:
   param:
     model_class:      ##MODEL_CLASS##
     theme:            ##THEME##
-   
+    peer_count_method:
+    peer_method:
+
+    fields:
+
+    list:
+
+    edit:
+
+    columnmodel:
+
+    datastore:
+
+    gridpanel:
+
+    tabpanel:
+
+    filterpanel:

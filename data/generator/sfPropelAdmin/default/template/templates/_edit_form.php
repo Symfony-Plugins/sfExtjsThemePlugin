@@ -69,11 +69,7 @@
 </fieldset>
 <?php endforeach; ?>
 
-<?php if ($this->getParameterValue('ajax', sfConfig::get('app_sf_extjs_theme_plugin_ajax', true))): ?>
 [?php include_partial('edit_actions', array('<?php echo $this->getSingularName() ?>' => $<?php echo $this->getSingularName() ?>)) ?]
-<?php else: ?>
-[?php include_partial('edit_actions_ajax', array('<?php echo $this->getSingularName() ?>' => $<?php echo $this->getSingularName() ?>)) ?]
-<?php endif; ?>
 
 </form>
 
@@ -84,7 +80,7 @@
  */
  $editActions = $this->getParameterValue('edit.actions');
 ?>
-  <?php if (null === $editActions || (null !== $editActions && isset($editActions['_delete']))): ?>
+  <?php if (null === $editActions || (null !== $editActions && array_key_exists('_delete', $editActions))): ?>
     <?php echo $this->addCredentialCondition($this->getButtonToAction('_delete', $editActions['_delete'], true), $editActions['_delete']) ?>
   <?php endif; ?>
 </ul>

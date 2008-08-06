@@ -8,7 +8,7 @@
 </tr>
 </thead>
 <tfoot>
-<tr><th colspan="<?php echo 0 //$this->getParameterValue('list.object_actions') ? count($this->getColumns('list.display')) + 1 : count($this->getColumns('list.display')) ?>">
+<tr><th colspan="<?php echo $this->getParameterValue('list.object_actions') ? count($this->getColumns('list.display')) + 1 : count($this->getColumns('list.display')) ?>">
 <div class="float-right">
 [?php if ($pager->haveToPaginate()): ?]
   [?php echo link_to(image_tag(sfConfig::get('sf_admin_web_dir').'/images/first.png', array('align' => 'absmiddle', 'alt' => __('First'), 'title' => __('First'))), '<?php echo $this->getModuleName() ?>/list?page=1') ?]

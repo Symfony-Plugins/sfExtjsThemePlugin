@@ -1,3 +1,5 @@
+[?php
+
 /**
  * <?php echo $this->getGeneratedModuleName() ?> actions.
  *
@@ -5,9 +7,12 @@
  * @subpackage <?php echo $this->getGeneratedModuleName() ?>
 
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: actions.class.php 9855 2008-06-25 11:26:01Z FabianLange $
+ * @version    SVN: $Id: actions.class.php 3501 2007-02-18 10:28:17Z fabien $
  */
-class Base<?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
+<?php
+  $tableDelimiter = sfConfig::get('app_sf_extjs_theme_plugin_table_delimiter', '-');
+?>
+class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
 {
   public function executeIndex()
   {

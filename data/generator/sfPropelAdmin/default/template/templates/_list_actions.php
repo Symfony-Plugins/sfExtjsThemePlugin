@@ -5,6 +5,6 @@
     <?php echo $this->addCredentialCondition($this->getButtonToAction($actionName, $params, false), $params) ?>
   <?php endforeach; ?>
 <?php else: ?>
-  <?php echo $this->getButtonToAction('_create', array('name' => 'Add '.$this->getClassName()), false) ?>
+  <?php echo $this->getButtonToAction('_create', array(), false) ?>
 <?php endif; ?>
 </ul>

@@ -4,8 +4,7 @@
 
 <div id="sf_admin_container">
 
-<?php $objectName = $this->getParameterValue('object_name', $this->getModuleName()) ?>
-<h1><?php echo $this->getI18NString('list.title', $objectName.' overview') ?></h1>
+<h1><?php echo $this->getI18NString('list.title', $this->getModuleName().' list') ?></h1>
 
 <div id="sf_admin_header">
 [?php include_partial('<?php echo $this->getModuleName() ?>/list_header', array('pager' => $pager)) ?]
@@ -22,11 +21,9 @@
 [?php if (!$pager->getNbResults()): ?]
 [?php echo __('no result') ?]
 [?php else: ?]
-[?php include_partial('<?php echo $this->getModuleName() ?>/list', array('pager' => $pager, 'print' => $print)) ?]
+[?php include_partial('<?php echo $this->getModuleName() ?>/list', array('pager' => $pager)) ?]
 [?php endif; ?]
-[?php if ($print != true) : ?]
 [?php include_partial('list_actions') ?]
-[?php endif; ?]
 </div>
 
 <div id="sf_admin_footer">

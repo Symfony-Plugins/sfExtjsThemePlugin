@@ -105,7 +105,7 @@ include_partial('list_ajax_store_method_initComponent_js', array('sfExtjs2Plugin
 include_partial('list_ajax_store_method_initEvents_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'store' => $store));
 
 <?php
-$methods =  $this->getParameterValue('store.method');
+$methods =  $this->getParameterValue('datastore.method');
 if(isset($methods['partials'])):
 if (!is_array($methods['partials']))
 {
@@ -122,7 +122,7 @@ include_partial('<?php echo substr($method,1) ?>', array('sfExtjs2Plugin' => $sf
   endforeach;
 endif;
 
-$variables =  $this->getParameterValue('store.variable');
+$variables =  $this->getParameterValue('datastore.variable');
 if (isset($variables['partials'])):
 if (!is_array($variables['partials']))
 {

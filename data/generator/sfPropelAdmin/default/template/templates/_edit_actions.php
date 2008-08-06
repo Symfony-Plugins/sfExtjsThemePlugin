@@ -6,8 +6,8 @@
   <?php echo $this->addCredentialCondition($this->getButtonToAction($actionName, $params, true), $params) ?>
 <?php endforeach; ?>
 <?php else: ?>
-  <?php echo $this->getButtonToAction('_list', array('name' => 'Cancel'), true) ?>
-  <?php echo $this->getButtonToAction('_save_and_list', array('name' => 'Save'), true) ?>
-  <?php echo $this->getButtonToAction('_save_and_add', array('name' => 'Save and add new '.$this->getSingularName()), true) ?>
+  <?php echo $this->getButtonToAction('_list', array(), true) ?>
+  <?php echo $this->getButtonToAction('_save', array(), true) ?>
+  <?php echo $this->getButtonToAction('_save_and_add', array(), true) ?>
 <?php endif; ?>
 </ul>

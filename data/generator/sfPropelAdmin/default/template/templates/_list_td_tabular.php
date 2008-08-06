@@ -1,5 +1,5 @@
 <?php $hs = $this->getParameterValue('list.hide', array()) ?>
-<?php foreach (array() as $column): // $this->getColumns('list.display') ?>
+<?php foreach ($this->getColumns('list.display') as $column): ?>
 <?php if (in_array($column->getName(), $hs)) continue ?>
 <?php $credentials = $this->getParameterValue('list.fields.'.$column->getName().'.credentials') ?>
 <?php if ($credentials): $credentials = str_replace("\n", ' ', var_export($credentials, true)) ?>
