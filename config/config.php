@@ -41,8 +41,9 @@ $default_javascripts = array(
 
   '/sfExtjsThemePlugin/js/Ext.ux.grid.ForeignFieldColumn.js', // grid-column which knows how to handle data from related- les (sets renderers, and combos)
 
-  '/sfExtjsThemePlugin/Ext.ux.form.Checkbox/Ext.ux.form.Checkbox.js',  //makes checkboxes look and behave correctly (or at least that was the idea...)
-  '/sfExtjsThemePlugin/js/Ext.ux.form.XCheckbox.js',             // Saki's idea about checkboxes...
+// not needed anymore due to ExtJS2.2 and Basex override for serializeForm (data += this.encoder(name) + '=' + this.encoder(el.checked ? true : false) + '&';)
+// also extra css has been added for X-Checkbox left-align in symfony-extjs.css
+//  '/sfExtjsThemePlugin/Ext.ux.form.Checkbox/Ext.ux.form.Checkbox.js',  //makes checkboxes look and behave correctly (or at least that was the idea...)
 
   '/sfExtjsThemePlugin/Ext.ux.UploadDialog/Ext.ux.UploadDialog.js',  // an uploadDialog
   '/sfExtjsThemePlugin/js/extConstants.js',                   // set some constants in here

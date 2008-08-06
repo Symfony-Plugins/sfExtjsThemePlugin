@@ -296,9 +296,9 @@ Ext.apply( A ,
                                 break;
                             case 'radio':
                             case 'checkbox':
-                                if (el.checked) {
-                                    data += this.encoder(name) + '=' + this.encoder(val) + '&';
-                                }
+//                                if (el.checked) {
+                                    data += this.encoder(name) + '=' + this.encoder(el.checked ? true : false) + '&';
+//                                }
                                 break;
                             case 'file':
 
