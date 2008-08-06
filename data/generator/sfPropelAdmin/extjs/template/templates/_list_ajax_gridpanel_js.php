@@ -5,6 +5,8 @@
 
   $group_field = $this->getParameterValue('list.grouping.field', null);
   $grid_view_extras = $this->getParameterValue('list.grid_view_extras', '');
+
+  $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20));
 ?>
 [?php
 $gridpanel = new stdClass();
@@ -75,6 +77,21 @@ include_partial('list_ajax_gridpanel_method_onLinkClick_js', array('sfExtjs2Plug
 
 // updateDB
 include_partial('list_ajax_gridpanel_method_updateDB_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'gridpanel' => $gridpanel));
+
+// setFilter
+$gridpanel->attributes['setFilter'] = $sfExtjs2Plugin->asMethod(array(
+  'parameters' => 'params',
+  'source' => "
+    this.store.baseParams={filter:1};
+    this.store.load({params:params});
+"));
+
+// resetFilter
+$gridpanel->attributes['resetFilter'] = $sfExtjs2Plugin->asMethod("
+  this.store.baseParams='';
+  this.store.load({params:{start:0,limit:<?php echo $limit ?>}});
+");
+
 
 //** OBSOLETE, moved to partial definition in the generator
 // custom methodes/attributes to this gridpanel

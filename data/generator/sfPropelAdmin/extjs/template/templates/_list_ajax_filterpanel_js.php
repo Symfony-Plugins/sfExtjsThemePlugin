@@ -56,22 +56,26 @@ $filterpanel->config_array = array(
     (
       'text'    => 'Filter',
       //TODO:  Handler needs work
-      'handler' => '('.$sfExtjs2Plugin->asMethod("
-  ticketTabs.getComponent(0).store.baseParams={filter:1};
-  var params=this.form.getValues();
-  params.start=0;params.limit=<?php echo $limit ?>;
-  ticketTabs.getComponent(0).store.load({params:params});
-").').createDelegate(this)'
+      'handler' => $sfExtjs2Plugin->asMethod("
+        var params=this.form.getValues();
+        params.start=0;params.limit=<?php echo $limit ?>;
+        this.fireEvent('filter_set', params, this);
+//        ticketTabs.getComponent(0).store.baseParams={filter:1};
+//        ticketTabs.getComponent(0).store.load({params:params});
+      "),
+      'scope' => 'this'
     )),
     $sfExtjs2Plugin->Button(array
     (
       'text'    => 'Reset',
       //TODO:  Handler needs work
-      'handler' => '('.$sfExtjs2Plugin->asMethod("
-  ticketTabs.getComponent(0).store.baseParams='';
-  this.form.reset();
-  ticketTabs.getComponent(0).store.load({params:{start:0,limit:<?php echo $limit ?>}});
-").').createDelegate(this)'
+      'handler' => $sfExtjs2Plugin->asMethod("
+        this.form.reset();
+        this.fireEvent('filter_reset', this);
+//        ticketTabs.getComponent(0).store.baseParams='';
+//        ticketTabs.getComponent(0).store.load({params:{start:0,limit:<?php echo $limit ?>}});
+      "),
+      'scope' => 'this'
     ))
   )
 );
