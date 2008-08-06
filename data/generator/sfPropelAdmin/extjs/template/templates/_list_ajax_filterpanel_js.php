@@ -2,17 +2,7 @@
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $panelName = "List".$moduleName."FilterPanel";
   $panelName_xtype = strtolower("List".$this->getModuleName()."FilterPanel");
-?>
-[?php
-$filterpanel = new stdClass();
-$filterpanel->attributes = array();
-
-<?php
-  $list_ns = ucfirst(sfInflector::camelize($this->getModuleName()))."List";
-
   $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20));
-
-  //TODO: take a look at: http://www.sk-typo3.de/index.php?id=345
 
   // iterate through all (related) columns of all classes
   $for = 'list.filters';
@@ -20,15 +10,13 @@ $filterpanel->attributes = array();
   $columns = $this->getListColumns($groupedColumns);
   $tableName = $this->getTableName();
 
-  // "sort" output on index, since index should be unique, this is easy
-  // first create a new array
   $temp = $formFields = array();
   $credArr = array();
   foreach ($columns as $column)
   {
     $temp[$column->index] = $column;
   }
-  // do real sortining
+  // do real sorting
   ksort($temp);
   // put sorted array back
   $columns  = $temp;
@@ -48,6 +36,9 @@ $filterpanel->attributes = array();
     $i++;
   }
 ?>
+[?php
+$filterpanel = new stdClass();
+$filterpanel->attributes = array();
 
 /* FilterPanel Configuration */
 

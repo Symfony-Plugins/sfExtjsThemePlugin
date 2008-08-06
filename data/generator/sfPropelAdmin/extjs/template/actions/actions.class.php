@@ -1202,7 +1202,6 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   {
     sfLoader::loadHelpers('Date');
     $row = array();
-
 <?php
     $hs = $this->getParameterValue($for.'.hide', array());
 
@@ -1245,20 +1244,20 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
       if ($column->isPartial()) continue; //partials will not end up in json-data
 
       if (($for == 'autocomplete') && (false === strpos($column->key, '/'))) continue; // skip local fields for autocompletion
-?>
-<?php
+
       $credentials = $this->getParameterValue($for.'.fields.'.$column->key.'.credentials'); //TODO this key does not exists for 'autocomplete'
-      if ($credentials): $credentials = str_replace("\n", ' ', var_export($credentials, true));
+      if ($credentials):
+        $credentials = str_replace("\n", ' ', var_export($credentials, true));
 ?>
-    if ($sf_user->hasCredential(<?php echo $credentials ?>)):
-<?php endif; ?>
-<?php if ($for != 'autocomplete'): ?>
+    if ($this->getUser()->hasCredential(<?php echo $credentials ?>))<?php endif;
+      if ($for != 'autocomplete'): ?>
     $row['<?php echo str_replace('/', $this->tableDelimiter, $column->key)  ?>'] = <?php echo $this->getColumnListTag($column) ?>;
 <?php else: // if autocompleting
         list($relatedTableName) = explode('/', $column->key, 2); //$relatedColumnName
         $relatedTableName = $column->getTable()->getName();
 ?>
-  if (strtolower($this->getRequestParameter('class')) == "<?php echo strtolower($relatedTableName) ?>"):
+      if (strtolower($this->getRequestParameter('class')) == "<?php echo strtolower($relatedTableName) ?>")
+      {
 <?php
   $last                 = strrpos($column->key, '/');
   $relatedTableFKs      = substr($column->key, 0, $last);
@@ -1267,19 +1266,14 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 
   $columnname = substr($column->key, $last + 1);
 ?>
-    $row['<?php echo $relatedTableName.$this->tableDelimiter.$relatedTablePK->getName() ?>'] = $<?php echo $this->getSingularName() ?>->get<?php echo sfInflector::camelize($relatedTablePK->getName()) ?>();
-    $row['<?php echo $relatedTableName.$this->tableDelimiter.$columnname ?>'] = $<?php echo $this->getSingularName() ?>->get<?php echo sfInflector::camelize($columnname) ?>();
-  endif;
+      $row['<?php echo $relatedTableName.$this->tableDelimiter.$relatedTablePK->getName() ?>'] = $<?php echo $this->getSingularName() ?>->get<?php echo sfInflector::camelize($relatedTablePK->getName()) ?>();
+      $row['<?php echo $relatedTableName.$this->tableDelimiter.$columnname ?>'] = $<?php echo $this->getSingularName() ?>->get<?php echo sfInflector::camelize($columnname) ?>();
+    }
 <?php endif; ?>
 <?php $hs[] = $column->key; //don't add it twice ?>
-<?php if ($credentials): ?>
-    endif;
-<?php endif; ?>
 <?php endforeach; ?>
-
     return $row;
   }
-
 <?php endforeach; ?>
 <?php endif; ?>
 }
