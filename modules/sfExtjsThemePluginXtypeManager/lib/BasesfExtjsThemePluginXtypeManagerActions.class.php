@@ -19,8 +19,13 @@ class BasesfExtjsThemePluginXtypeManagerActions extends sfActions
           $module = substr($xtype,4,-9);
           $action = 'listAjaxGridPanelJs';
         }
+        else if (substr($xtype,-11) == 'filterpanel')
+        {
+          $module = substr($xtype,4,-11);
+          $action = 'listAjaxFilterPanelJs';
+        }
 
-        if ($module) $url = 'js/'.$module.'/listAjaxGridPanelJs.pjs';
+        if ($module) $url = 'js/'.$module.'/'.$action.'.pjs';
         break;
 
       case 'edit':

@@ -1104,6 +1104,12 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 
   }
 
+  public function executeListAjaxFilterPanelJs()
+  {
+
+  }
+
+
   public function executeRelatedAjaxEditors()
   {
     $this->setTemplate('relatedAjaxEditors');
