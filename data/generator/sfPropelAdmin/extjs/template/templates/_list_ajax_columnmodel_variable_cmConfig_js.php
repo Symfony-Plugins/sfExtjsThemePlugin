@@ -34,7 +34,7 @@
     if (in_array($column->key, $hs) || ($column->isInvisible())) continue;
     if ($column->isPartial())
     {
-      $cmItems[] = get_partial('gridcolumn_<?php echo $column->getName() ?>'); // TODO, maybe add $this->getSingularName() ?]
+      $cmItems[] = 'get_partial("gridcolumn_'.$column->getName().'")'; // TODO, maybe add $this->getSingularName() // TODO2: maybe maintain a second array of partials
     }
     else
     {
@@ -44,7 +44,7 @@
   }
 ?>
 
-[?php $columnmodel->config_array = <?php var_export($cmItems) ?>;
+[?php $columnmodel->config_array = <?php echo preg_replace("/'(get_partial\([^\)]*\))',/", '\1,', var_export($cmItems, true)) ?>;
 
 
 /* handle user credentials */

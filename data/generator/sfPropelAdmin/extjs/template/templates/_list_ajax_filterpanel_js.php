@@ -4,6 +4,8 @@
   $panelName_xtype = strtolower("List".$this->getModuleName()."FilterPanel");
   $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20));
 
+  //TODO: take a look at: http://www.sk-typo3.de/index.php?id=345
+
   // iterate through all (related) columns of all classes
   $for = 'list.filters';
   $groupedColumns = $this->getColumnsGrouped($for);
