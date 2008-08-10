@@ -165,12 +165,12 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     $this->addFiltersCriteria($c);
     $this->pager->setCriteria($c);
     $this->pager->setPage($page);
-<?php $peerMethod = $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : 'doSelectJoinAll';
+<?php $peerMethod = $this->getParameterValue('list.peer_method') ? $this->getParameterValue('list.peer_method') : $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : 'doSelectJoinAll';
     if (is_callable(array($this->getPeerClassName(), $peerMethod))): ?>
     $this->pager->setPeerMethod('<?php echo $peerMethod ?>');
 <?php endif; ?>
 
-<?php $peerCountMethod = $this->getParameterValue('peer_count_method') ? $this->getParameterValue('peer_count_method') : 'doCountJoinAll';
+<?php $peerCountMethod = $this->getParameterValue('list.peer_count_method') ? $this->getParameterValue('list.peer_count_method') : $this->getParameterValue('peer_count_method') ? $this->getParameterValue('peer_count_method') : 'doCountJoinAll';
     if (is_callable(array($this->getPeerClassName(), $peerCountMethod))): ?>
     $this->pager->setPeerCountMethod('<?php echo $peerCountMethod ?>');
 <?php endif; ?>
@@ -203,12 +203,12 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     $this->pager->setCriteria($c);
     $this->pager->setPage($page);
 
-<?php $peerMethod = $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : 'doSelectJoinAll';
+<?php $peerMethod = $this->getParameterValue('edit.peer_method') ? $this->getParameterValue('edit.peer_method') : $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : 'doSelectJoinAll';
     if (is_callable(array($this->getPeerClassName(), $peerMethod))): ?>
     $this->pager->setPeerMethod('<?php echo $peerMethod ?>');
 <?php endif; ?>
 
-<?php $peerCountMethod = $this->getParameterValue('peer_count_method') ? $this->getParameterValue('peer_count_method') : 'doCountJoinAll';
+<?php $peerCountMethod = $this->getParameterValue('edit.peer_count_method') ? $this->getParameterValue('edit.peer_count_method') : $this->getParameterValue('peer_count_method') ? $this->getParameterValue('peer_count_method') : 'doCountJoinAll';
     if (is_callable(array($this->getPeerClassName(), $peerCountMethod))): ?>
     $this->pager->setPeerCountMethod('<?php echo $peerCountMethod ?>');
 <?php endif; ?>
@@ -256,11 +256,11 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     $this->addFiltersCriteria($c);
     $this->pager->setCriteria($c);
     $this->pager->setPage($this->getRequestParameter('page', 1));
-<?php if ($this->getParameterValue('peer_method')): ?>
-    $this->pager->setPeerMethod('<?php echo $this->getParameterValue('peer_method') ?>');
+<?php if ($peerMethod = $this->getParameterValue('list.peer_method') ? $this->getParameterValue('list.peer_method') : $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : false): ?>
+    $this->pager->setPeerMethod('<?php echo $peerMethod ?>');
 <?php endif; ?>
-<?php if ($this->getParameterValue('peer_count_method')): ?>
-    $this->pager->setPeerCountMethod('<?php echo $this->getParameterValue('peer_count_method') ?>');
+<?php if ($peerCountMethod = $this->getParameterValue('list.peer_count_method') ? $this->getParameterValue('list.peer_count_method') : $this->getParameterValue('peer_count_method') ? $this->getParameterValue('peer_count_method') : false): ?>
+    $this->pager->setPeerCountMethod('<?php echo $peerCountMethod ?>');
 <?php endif; ?>
     $this->pager->init();
 
