@@ -5,22 +5,16 @@ Ext.ux.grid.NoteColumn = function(config) {
     this.id = Ext.id();
   }
   this.renderer = this.renderer.createDelegate(this);
-  //this.grid = grid;
-  this.grid.on('render', function()
-  {
-    var view = this.grid.getView();
-    view.mainBody.on('mousedown', this.onMouseDown, this);
-  }, this);
 };
 
 Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
-//  init : function(grid) {
-//    this.grid = grid;
-//    this.grid.on('render', function() {
-//      var view = this.grid.getView();
-//      view.mainBody.on('mousedown', this.onMouseDown, this);
-//    }, this);
-//  },
+  init : function(grid) {
+    this.grid = grid;
+    this.grid.on('render', function() {
+      var view = this.grid.getView();
+      view.mainBody.on('mousedown', this.onMouseDown, this);
+    }, this);
+  },
 
   onMouseDown : function(e, t) {
     if (t.className && t.className.indexOf('x-grid3-cc-' + this.id) != -1) {
