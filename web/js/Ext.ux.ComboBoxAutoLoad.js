@@ -67,7 +67,7 @@ Ext.extend(Ext.ux.ComboBoxAutoLoad, Ext.form.ComboBox, {
 
     updateBoxLabel : function() {
         // only add boxLabel in form, bot in grid
-        if (this.ownerCt){
+        if (this.ownerCt && !this.filter){
             if ((typeof this.value != 'undefined')  && (this.value !== '')) {
                 this.boxLabel = '<a href="#" class="showEditor">Modify</a>';
             } else {
@@ -146,7 +146,7 @@ Ext.extend(Ext.ux.ComboBoxAutoLoad, Ext.form.ComboBox, {
      */
     setValue : function(v){
         var text = v;
-        if(this.valueField){
+        if(this.valueField && !this.filter){
             var r = this.findRecord(this.valueField, v);
             if(r){
                 text = r.data[this.displayField];

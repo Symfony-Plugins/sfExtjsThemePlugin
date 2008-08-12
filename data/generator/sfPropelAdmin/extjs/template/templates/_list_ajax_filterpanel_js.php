@@ -4,8 +4,6 @@
   $panelName_xtype = strtolower("List".$this->getModuleName()."FilterPanel");
   $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20));
 
-  //TODO: take a look at: http://www.sk-typo3.de/index.php?id=345
-
   // iterate through all (related) columns of all classes
   $for = 'list.filters';
   $groupedColumns = $this->getColumnsGrouped($for);
@@ -33,8 +31,13 @@
       $credArr[] = 'if(!$sf_user->hasCredential('.$credentials.')) unset($filterpanel->config_array["items"]['.$i.']);';
     }
 
+    $fieldArr = $this->getColumnAjaxFilterDefinition($column, $groupedColumns);
+
+    if(isset($fieldArr['renderer'])) unset($fieldArr['renderer']);
+    $formFields[] = $fieldArr;
+
     //TODO, change this so drop-down columnboxes and checkboxes appear...
-    $formFields[] = array('fieldLabel' => str_replace("'", "\\'", $this->getParameterValue('list.fields.'.$columnName.'.name')), 'name' => 'filters['.str_replace('/', $this->tableDelimiter, $columnName).']');
+    //$formFields[] = array('fieldLabel' => str_replace("'", "\\'", $this->getParameterValue('list.fields.'.$columnName.'.name')), 'name' => 'filters['.str_replace('/', $this->tableDelimiter, $columnName).']');
     $i++;
   }
 ?>
@@ -62,8 +65,6 @@ $filterpanel->config_array = array(
         var params=this.form.getValues();
         params.start=0;params.limit=<?php echo $limit ?>;
         this.fireEvent('filter_set', params, this);
-//        ticketTabs.getComponent(0).store.baseParams={filter:1};
-//        ticketTabs.getComponent(0).store.load({params:params});
       "),
       'scope' => 'this'
     )),
@@ -74,8 +75,6 @@ $filterpanel->config_array = array(
       'handler' => $sfExtjs2Plugin->asMethod("
         this.form.reset();
         this.fireEvent('filter_reset', this);
-//        ticketTabs.getComponent(0).store.baseParams='';
-//        ticketTabs.getComponent(0).store.load({params:{start:0,limit:<?php echo $limit ?>}});
       "),
       'scope' => 'this'
     ))

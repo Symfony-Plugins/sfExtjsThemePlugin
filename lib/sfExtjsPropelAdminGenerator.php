@@ -1240,6 +1240,59 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
         return $definition;
       }
 
+      public function getColumnAjaxFilterDefinition($column, $groupedColumns = array())
+      {
+        $definition = array();
+
+        $tableName = $this->getTableName();
+
+        $last = strrpos($column->key, '/');
+        $relatedTableFKs = substr($column->key, 0, $last);
+        $fieldName = str_replace('/', $this->tableDelimiter, $column->key);
+
+        if (!$column->isPartial())
+        {
+          $definition['name'] = 'filters['.$fieldName.']';
+        }
+        $definition['fieldLabel'] = str_replace("'", "\\'", $this->getParameterValue('edit.fields.'.$column->key.'.name')).':';
+        $definition['labelSeparator'] = '';
+
+        $user_params = $this->getParameterValue('list.fields.'.$column->key.'.params');
+        $params = is_array($user_params) ? $user_params : sfToolkit::stringToArray($user_params);
+
+        // columns with related data except date columns
+        if (strpos($column->key, '/') !== false && $this->getFieldType($column) != 'date')
+        {
+          $definition = array_merge($definition, $this->getRelatedColumnAjaxFilterDefinition($column, $groupedColumns));
+        }
+        else
+        {
+          // set CSS id in the first column
+          if (isset($params['id'])) $definition['id'] = str_replace("'", "\\'", $params['id']);
+
+          //default
+          $definition['xtype'] = $this->getXtypeForColumn($column);
+
+          switch($this->getFieldType($column))
+          {
+            case 'date':
+              $defaultFormat = sfConfig::get('app_sf_extjs_theme_plugin_format_date', 'm/d/Y'); // TODO set default format from symfony user culture (and replace "-" by "/")
+              $definition['format'] = isset($params['date_format']) ? $params['date_format'] : $defaultFormat;
+              $definition['minValue'] = isset($params['date_min_value']) ? $params['date_min_value'] : '01/01/00';
+              if (isset($params['date_disabled_days']))
+              {
+                $definition['disabledDays'] = _extjs_array_encode($params['date_disabled_days']);
+                $definition['disabledDaysText'] = isset($params['date_disabled_days_text']) ? $params['date_disabled_days_text'] : 'This days are not avaible';
+              }
+              break;
+
+          }
+          $definition = array_merge($definition, $params);
+        } // end local field setup
+
+        return $definition;
+      }
+
       // maybe move to helper
       function getXtypeForColumn($column)
       {
@@ -1430,6 +1483,57 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
             $ffcolumn['blankText']    = 'This field is required';
           }
 
+
+          return $ffcolumn;
+        }
+      }
+
+      function getRelatedColumnAjaxFilterDefinition($column, $groupedColumns)
+      {
+        if (strpos($column->key, '/') !== false)
+        {
+          $fields = explode('/', $column->key);
+
+          $last                 = strrpos($column->key, '/');
+          $columnname           = substr($column->key, $last + 1);
+          $relatedTableFKs      = substr($column->key, 0, $last);
+          $relatedTableGrouped  = $this->getSubGroupedColumns($relatedTableFKs, $groupedColumns);
+          $relatedTablePK       = $relatedTableGrouped['pk'];
+          $relatedTableName     = $relatedTablePK->getTableName();
+          $relatedModuleName    = $this->getParameterValue('related_tables.'.$relatedTableName.'.module_name') ? $this->getParameterValue('related_tables.'.$relatedTableName.'.module_name') : $relatedTableName;
+          $relatedFKColumn      = $this->getColumnForFieldName($fields[0]);
+
+          $tableName = $this->getTableName();
+          $fieldName = str_replace('/', $this->tableDelimiter, $column->key);
+
+          $ffcolumn['xtype'] = 'comboboxautoload';
+          $ffcolumn['url'] = $this->controller->genUrl($this->getModuleName().'/jsonAutocomplete?class='.$relatedTableName);
+          $ffcolumn['valueField']   = $this->getRelatedFieldName($column);
+          $ffcolumn['displayField'] = $this->getRelatedFieldName($column);
+          $ffcolumn['dataIndex']    = str_replace('/', $this->tableDelimiter, $relatedTableFKs);
+          $ffcolumn['preloadedField'] = strtolower($tableName).'['.$fieldName.']';
+          $ffcolumn['relatedTableName'] = $relatedTableName;
+          $ffcolumn['relatedModuleName'] = $relatedModuleName;
+          $ffcolumn['relatedFieldName'] = $columnname;
+          $ffcolumn['queryParam'] = 'filters['.str_replace('/', $this->tableDelimiter, $column->key).']';
+          $ffcolumn['sortField'] = str_replace('/', $this->tableDelimiter, $column->key);
+          $ffcolumn['pageSize'] = 0;
+          $ffcolumn['filter'] = true;
+
+          //make sure our columnConfig in the generator.yml overrides the generated values
+          $fieldConfig = $this->getParameterValue('list.fields.'.$column->key.'.params.combo');
+          if($fieldConfig) $ffcolumn = array_merge($ffcolumn,$fieldConfig);
+
+          if(isset($ffcolumn['store']))
+          {
+            $ffcolumn['editable'] = false;
+            $ffcolumn['mode'] = 'local';
+            $ffcolumn['pageSize'] = 0;
+          }
+
+          //make sure our comboConfig in the generator.yml overrides the generated values
+          $comboConfig = $this->getParameterValue('list.fields.'.$column->key.'.params.combo.comboConfig');
+          if($comboConfig) $ffcolumn = array_merge($ffcolumn['comboConfig'], $comboConfig);
 
           return $ffcolumn;
         }

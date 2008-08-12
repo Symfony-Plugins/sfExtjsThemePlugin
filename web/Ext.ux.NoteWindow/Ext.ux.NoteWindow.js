@@ -35,10 +35,7 @@ Ext.ux.NoteWindow = Ext.extend(Ext.Window, {
         + '<div class="cuser" ext:qtip="{username}">{user}:</div>' + '<div class="commentmetadata">{date}</div>'
         + '</div>' + '<span>{comment}</span>' + '</div>' + '</tpl>');
 
-    this.noteStore.baseParams = {
-      id : c.id
-    };
-    this.noteStore.load();
+    this.noteStore.load({params:{id: c.id}});
 
     this.editFormPanel = new Ext.form.FormPanel({
       method : 'POST',
@@ -54,8 +51,8 @@ Ext.ux.NoteWindow = Ext.extend(Ext.Window, {
         xtype : 'fieldset',
         autoHeight : true,
         title : 'Notes',
-        defaultType : 'htmleditor',
         items : [{
+          xtype: 'htmleditor',
           hideLabel : true,
           name : 'note',
           enableFont : false,
@@ -115,8 +112,9 @@ Ext.ux.NoteWindow = Ext.extend(Ext.Window, {
       Ext.util.CSS.refreshCache();
     }
 
-
-
+    this.on('hide', function(){
+      this.editFormPanel.findBy(function(f){return f.name=='note' })[0].reset();
+    }, this)
   }
 });;
 
