@@ -11,6 +11,13 @@
 
   $hs = $this->getParameterValue('list.hide', array());
 
+  $sort_field = $this->getParameterValue('list.sort', null);
+  $sort_dir = 'asc';
+  if (is_array($sort_field))
+  {
+    $sort_dir   = $sort_field[1];
+    $sort_field = $sort_field[0];
+  }
   // set group field
   $group_field = $this->getParameterValue('list.grouping.field', null);
   if ($group_field)
@@ -62,6 +69,14 @@
     //'reader' => $jsonReader
   );
 
+  //set default sort, can be overruled by groupfield
+  if ($sort_field)
+  {
+    $options['sortInfo'] = array(
+      'field'     => str_replace('/', $this->tableDelimiter, $sort_field),
+      'direction' => $sort_dir
+    );
+  }
   if ($group_field)
   {
     $options['groupField'] = $group_field;
