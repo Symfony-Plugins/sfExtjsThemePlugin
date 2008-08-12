@@ -8,6 +8,8 @@
 $configArr = Array(
   'parameters' => 'c',
   'source' => "
+    this.cm = ".$sfExtjs2Plugin->asVar($gridpanel->column_model).";
+
     // combine <?php echo $panelName ?>Config with arguments
     Ext.app.sx.<?php echo $panelName ?>.superclass.constructor.call(this, Ext.apply(".$sfExtjs2Plugin->asAnonymousClass($gridpanel->config_array).", c));
 

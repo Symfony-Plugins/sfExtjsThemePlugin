@@ -2,6 +2,7 @@
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $cmName = "List".$moduleName.'ColumnModel';
   $rendererName = "List".$moduleName.'Renderers';
+  $plugins = false;
 
   // iterate through all (related) columns of all classes
   $for = array('list.display');
@@ -32,6 +33,13 @@
       continue;
     }
     if (in_array($column->key, $hs) || ($column->isInvisible())) continue;
+
+    if($this->getParameterValue('list.fields.'.$column->key.'.plugin')){
+      $plugins[$this->getParameterValue('list.fields.'.$column->key.'.plugin')] = $this->getColumnAjaxListDefinition($column, $groupedColumns);
+      $cmItems[] = 'this.'.$this->getParameterValue('list.fields.'.$column->key.'.plugin');
+      continue;
+    }
+
     if ($column->isPartial())
     {
       $cmItems[] = 'get_partial("gridcolumn_'.$column->getName().'")'; // TODO, maybe add $this->getSingularName() // TODO2: maybe maintain a second array of partials
@@ -45,7 +53,7 @@
 ?>
 
 [?php $columnmodel->config_array = <?php echo preg_replace("/'(get_partial\([^\)]*\))',/", '\1,', var_export($cmItems, true)) ?>;
-
+$columnmodel->plugins = <?php var_export($plugins) ?>;
 
 /* handle user credentials */
 <?php echo implode("\n", $credArr) ?>

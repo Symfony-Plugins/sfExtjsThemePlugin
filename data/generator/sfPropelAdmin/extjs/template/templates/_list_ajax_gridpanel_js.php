@@ -7,6 +7,18 @@
   $grid_view_extras = $this->getParameterValue('list.grid_view_extras', '');
 
   $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20));
+  $pluginArr = false;
+
+  if($this->getParameterValue('list.plugins'))
+  {
+    $pluginArr = (!is_array($this->getParameterValue('list.plugins'))) ? array($this->getParameterValue('list.plugins')) : $this->getParameterValue('list.plugins');
+
+  }
+
+  foreach($this->getParameterValue('list.display') as $col)
+  {
+    if($this->getParameterValue('list.fields.'.$col.'.plugin')) $pluginArr[] = 'this.cm.'.$this->getParameterValue('list.fields.'.$col.'.plugin');
+  }
 ?>
 [?php
 $gridpanel = new stdClass();
@@ -17,12 +29,13 @@ $gridpanel->attributes = array();
 <?php $objectName = $this->getParameterValue('object_name', $this->getModuleName()) ?>
 
 $sfExtjs2_gridpanel_view = 'new Ext.grid.GridView({forceFit: true, autoFill: true <?php echo $grid_view_extras ?>})';
+$gridpanel->column_model = 'new Ext.app.sx.<?php echo 'List'.$moduleName.'ColumnModel' ?>()';
 
 // default config
 $gridpanel->config_array = array(
   'title'               => <?php echo $this->getI18NString('list.title', $objectName.' overview', false) ?>,
   'ds'                  => $sfExtjs2Plugin->asVar('new Ext.app.sx.<?php echo 'List'.$moduleName.(($group_field)?'Grouping':'Store') ?>()'),
-  'cm'                  => $sfExtjs2Plugin->asVar('new Ext.app.sx.<?php echo 'List'.$moduleName.'ColumnModel' ?>()'),
+  'cm'                  => 'this.cm',
   'view'                => $sfExtjs2Plugin->asVar($sfExtjs2_gridpanel_view),
   'autoScroll'          => true,  //needed to set a height on the toolbar so the scroll doesnt mess up when adding buttons to an empty bar
   'autoLoadStore'       => true,
@@ -39,8 +52,8 @@ $gridpanel->config_array['header'] = false;
 <?php endif; ?>
 
 // get plugins from generator
-<?php if($this->getParameterValue('list.plugins')): ?>
-$gridpanel->config_array['plugins'] = array('<?php echo $this->getParameterValue('list.plugins') ?>');
+<?php if(is_array($pluginArr)): ?>
+$gridpanel->config_array['plugins'] = <?php echo var_export($pluginArr); ?>;
 <?php endif; ?>
 
 // get autoExpandColumn from generator
@@ -91,11 +104,6 @@ $gridpanel->attributes['resetFilter'] = $sfExtjs2Plugin->asMethod("
   this.store.baseParams='';
   this.store.load({params:{start:0,limit:<?php echo $limit ?>}});
 ");
-
-
-//** OBSOLETE, moved to partial definition in the generator
-// custom methodes/attributes to this gridpanel
-//include_partial('list_ajax_gridpanel_customs', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'gridpanel' => $gridpanel));
 
 // create the getters
 // have to do this as lcfirst is still in php cvs
