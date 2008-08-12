@@ -1,6 +1,8 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
 
+  $gridPanelName = "List".$moduleName."GridPanel";
+
   $listActions = $this->getParameterValue('list.actions');
   $bbar = $this->getParameterValue('list.params.bbar');
   /*
@@ -28,7 +30,30 @@ $configArr = array(
   this.bbar = <?php echo $bbar ?>;
 <?php endif; ?>
 
-    Ext.app.sx.<?php echo "List".$moduleName."GridPanel" ?>.superclass.initComponent.apply(this, arguments);
+    Ext.app.sx.<?php echo $gridPanelName ?>.superclass.initComponent.apply(this, arguments);
+
+    //TODO these events should be implemented
+    this.addEvents(
+      /**
+       * @event saved
+       * Fires when an item is saved successfully
+       * @param {Ext.app.sx.<?php echo $gridPanelName ?>} this List-GridPanel
+       */
+      'saved',
+      /**
+       * @event save_failed
+       * Fires when an item is not saved successfully
+       * @param {Ext.app.sx.<?php echo $gridPanelName ?>} this List-GridPanel
+       */
+      'save_failed',
+      /**
+       * @event deleted
+       * Fires when an item is deleted successfully
+       * @param {Ext.app.sx.<?php echo $gridPanelName ?>} this List-GridPanel
+       */
+      'deleted'
+    );
+
   "
 );
 
