@@ -10,10 +10,10 @@ $configArr = Array(
   'source' => "
     // columnmodel config
     //TODO, this should be asAnonymousClass, when config_array really is an array, and not a javascript-object in a string
-    cmConfig = [".substr($sfExtjs2Plugin->asAnonymousClass($columnmodel->config_array),1,-1)."];
+    this.cmConfig = [".substr($sfExtjs2Plugin->asAnonymousClass($columnmodel->config_array),1,-1)."];
 
     // combine <?php echo $cmName ?>Config with arguments
-    Ext.app.sx.<?php echo $cmName ?>.superclass.constructor.call(this, Ext.apply(cmConfig, c));
+    Ext.app.sx.<?php echo $cmName ?>.superclass.constructor.call(this, Ext.apply(this.cmConfig, c));
 
     this.defaultSortable = <?php echo $this->getParameterValue('list.params.default_sortable', true) ? 'true': 'false' ?>;
   "
