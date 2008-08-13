@@ -115,6 +115,12 @@ $formpanel->methods['initComponent'] = $sfExtjs2Plugin->asMethod("
 
   this.addEvents(
     /**
+     * @event load_item_failed
+     * Fires when the item is not loaded successfully
+     * @param {Ext.app.sx.<?php echo $formName ?>} this Edit-FormPanel
+     */
+    'load_item_failed',
+    /**
      * @event load_item_success
      * Fires when the item is loaded successfully
      * @param {Ext.app.sx.<?php echo $formName ?>} this Edit-FormPanel
@@ -223,6 +229,7 @@ $formpanel->methods['loadItem'] = $sfExtjs2Plugin->asMethod("
   var load_config = ".$sfExtjs2Plugin->asAnonymousClass(array(
     'waitMsg' => 'Loading data',
     'success' => $sfExtjs2Plugin->asVar('this.onLoadSuccess'),
+    'failure' => $sfExtjs2Plugin->asVar('this.onLoadFailure'),
     'scope'   => $sfExtjs2Plugin->asVar('this'),
     'params'  => array(
         'key' => $sfExtjs2Plugin->asVar('this.key'),
@@ -231,6 +238,21 @@ $formpanel->methods['loadItem'] = $sfExtjs2Plugin->asMethod("
 
   this.getForm().load(load_config);
 ");
+
+
+$formpanel->methods['onLoadFailure'] = $sfExtjs2Plugin->asMethod(array(
+      'parameters'  => 'form, action',
+      'source'      => "
+        Ext.Msg.show({
+          title:'Loading failed!',
+          msg: 'Loading of the data failed!',
+          buttons: Ext.Msg.OK
+        });
+        //throw load (item) failed
+        this.fireEvent('load_item_failed', this);
+      "
+));
+
 
 $formpanel->methods['onLoadSuccess'] = $sfExtjs2Plugin->asMethod(array(
       'parameters'  => 'form, action',
