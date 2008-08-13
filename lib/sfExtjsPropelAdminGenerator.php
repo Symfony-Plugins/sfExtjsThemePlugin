@@ -1285,12 +1285,10 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
                 $definition['disabledDaysText'] = isset($params['date_disabled_days_text']) ? $params['date_disabled_days_text'] : 'This days are not avaible';
               }
               break;
-
           }
-          $definition = array_merge($definition, $params);
         } // end local field setup
 
-        return $definition;
+        return array_merge($definition, $params);
       }
 
       // maybe move to helper
