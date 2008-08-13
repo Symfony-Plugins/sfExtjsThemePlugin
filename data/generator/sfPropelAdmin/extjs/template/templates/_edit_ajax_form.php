@@ -280,6 +280,9 @@ $formpanel->methods['doSubmit'] = $sfExtjs2Plugin->asMethod("
     {
       url_key = '?<?php echo sfInflector::underscore($groupedColumns['pk']->getPhpName()) ?>='+this.key;
     }
+<?php if ($this->getParameterValue('tinyMCE', false)): ?>
+    tinyMCE.triggerSave();
+<?php endif; ?>
     this.getForm().submit(".$sfExtjs2Plugin->asAnonymousClass(array(
       'url'     => $sfExtjs2Plugin->asVar('this.url + url_key'),
       'scope'   => $sfExtjs2Plugin->asVar('this'),
@@ -301,7 +304,11 @@ $formpanel->methods['onSubmitSuccess'] = $sfExtjs2Plugin->asMethod(array(
         if (this.trackResetOnLoad) {
           form.items.each(function (i) {
             if (i.isFormField) {
-              i.originalValue = i.getValue();
+              if (i.xtype != 'tinymce') {
+                i.originalValue = i.getValue();
+              } else {
+                i.ed.startContent = i.ed.getContent({format : 'raw', no_events : 1});
+              }
             }
           });
         }

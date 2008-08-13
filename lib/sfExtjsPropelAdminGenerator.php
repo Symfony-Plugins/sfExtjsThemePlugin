@@ -334,19 +334,30 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
 
           case 'reload':
             $default_icon = 'page_white_refresh_arrows';
-            $default_handler_function = "function() { this.loadItem(); }";
+            $default_handler_function = "function() {
+              if (!this.getForm().isDirty()) {
+                this.loadItem();
+              } else {
+                Ext.Msg.show({
+                  title:'Discard changes?',
+                  msg: 'If you reload, your changes will be lost!<br>Are you sure you want to reload?',
+                  buttons: Ext.Msg.YESNO,
+                  fn: function(btn){
+                    if (btn == 'yes') this.loadItem();
+                  },
+                  scope: this,
+                  icon: Ext.MessageBox.WARNING
+                });
+              }
+            }";
             $default_hide_when_new = true;
             break;
 
           case 'save':
             $default_icon = 'page_white_accept';
             $type = 'submit';
-            $extra = '';
-            if ($this->getParameterValue('tinyMCE', false))
-            {
-              $extra = "tinyMCE.triggerSave();";
-            }
-            $default_handler_function = "function() {".$extra." this.doSubmit() }";
+
+            $default_handler_function = "function() { this.doSubmit() }";
             break;
 
           case 'delete':
