@@ -42,7 +42,7 @@ $gridpanel->config_array = array(
   'selModel'            => $sfExtjs2Plugin->RowSelectionModel(array(
                             'singleSelect' => <?php echo $this->getParameterValue('list.single_select', true) ? 'true' : 'false' ?> // this should probably also be defined application wide
                            )),
-  'clicksToEdit'        => 1, //should this be default? Leon: otherwise make it a (application)config option
+  'clicksToEdit'        => <?php var_export(sfConfig::get('app_sf_extjs_theme_plugin_list_clicksToEdit', 1)) ?>,
   'trackMouseOver'      => <?php var_export(sfConfig::get('app_sf_extjs_theme_plugin_list_trackMouseOver', false)) ?>, //this will cause the firefox permission denied errors if true
   'loadMask'            => <?php var_export(sfConfig::get('app_sf_extjs_theme_plugin_list_loadMask', false)) ?>,
 );
