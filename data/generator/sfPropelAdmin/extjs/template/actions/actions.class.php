@@ -873,6 +873,13 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     //TODO get TablePhpName with help of groupedColumns hierarchy and part of $column->key till last /
     $peerClassName = sfInflector::camelize($column->getTable()->getPhpName()).'Peer';
   }
+
+  // Hack to eliminate misspelled camelize classes (like sfGuard...)
+  if(strpos($peerClassName, 'Sf') === 0)
+  {
+    $peerClassName = str_replace('Sf', 'sf', $peerClassName);
+  }
+
 ?>
 <?php if (($column->isPartial() || $column->isComponent()) && $this->getParameterValue('list.fields.'.$column->getName().'.filter_criteria_disabled')) continue; ?>
 <?php if (!$column->isPrimaryKey()): ?>
@@ -885,35 +892,15 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     else
 <?php endif; ?>
 <?php if ($type == CreoleTypes::DATE || $type == CreoleTypes::TIMESTAMP): ?>
-    if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']))
+    if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']) && $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>'] !== '')
     {
-      if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']['from']) && $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']['from'] !== '')
-      {
-<?php if ($type == CreoleTypes::DATE): ?>
-        $criterion = $c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, date('Y-m-d', $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']['from']), Criteria::GREATER_EQUAL);
-<?php else: ?>
-        $criterion = $c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']['from'], Criteria::GREATER_EQUAL);
-<?php endif; ?>
-      }
-      if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']['to']) && $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']['to'] !== '')
-      {
-        if (isset($criterion))
-        {
-<?php if ($type == CreoleTypes::DATE): ?>
-          $criterion->addAnd($c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, date('Y-m-d', $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']['to']), Criteria::LESS_EQUAL));
-<?php else: ?>
-          $criterion->addAnd($c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']['to'], Criteria::LESS_EQUAL));
-<?php endif; ?>
-        }
-        else
-        {
-<?php if ($type == CreoleTypes::DATE): ?>
-          $criterion = $c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, date('Y-m-d', $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']['to']), Criteria::LESS_EQUAL);
-<?php else: ?>
-          $criterion = $c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']['to'], Criteria::LESS_EQUAL);
-<?php endif; ?>
-        }
-      }
+      $dateStart = strtotime($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']);
+      $dateEnd = mktime(0, 0, 0, date("m",$dateStart)  , date("d",$dateStart)+1, date("Y",$dateStart));
+
+      $criterion = $c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, date('Y-m-d', $dateStart), Criteria::GREATER_EQUAL);
+
+      $criterion->addAnd($c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, date('Y-m-d', $dateEnd), Criteria::LESS_THAN));
+
 
       if (isset($criterion))
       {
