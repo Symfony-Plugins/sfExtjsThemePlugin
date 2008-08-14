@@ -1078,6 +1078,11 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 
   }
 
+  public function executeListAjaxTabPanelJs()
+  {
+
+  }
+
 
   public function executeRelatedAjaxEditors()
   {
