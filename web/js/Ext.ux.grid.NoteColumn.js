@@ -69,8 +69,9 @@ Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
     if (!v)
       return '<p class="x-grid3-note-col x-grid3-nc-' + this.id + '">None</div>';
     c.css = c.css + "note-r";
-    return String.format('<p ext:qtitle="{0} Wrote:" ext:qtip=\'{1}\' class="note-l  x-grid3-nc-' + this.id
-      + '">{0}</p>', v, r.data['last_comment']);
+    return String
+        .format('<p ext:qtitle="{3}<br />{0} Wrote:" ext:qtip="{1}" class="note-l  x-grid3-nc-{2}">{0}</p></div>', v,
+                r.data['last_comment'], this.id, r.data['last_comment_time']);
   }
 });
 
