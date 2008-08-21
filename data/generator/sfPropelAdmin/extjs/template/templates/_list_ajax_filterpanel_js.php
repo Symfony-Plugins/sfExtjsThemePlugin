@@ -62,9 +62,10 @@ $filterpanel->config_array = array(
       'text'    => 'Filter',
       //TODO:  Handler needs work
       'handler' => $sfExtjs2Plugin->asMethod("
-        var params=this.form.getValues();
+        var formpanel = (typeof this.scope != 'undefined')? this.scope : this;
+        var params=formpanel.form.getValues();
         params.start=0;params.limit=<?php echo $limit ?>;
-        this.fireEvent('filter_set', params, this);
+        formpanel.fireEvent('filter_set', params, this);
       "),
       'scope' => 'this'
     )),
@@ -73,8 +74,9 @@ $filterpanel->config_array = array(
       'text'    => 'Reset',
       //TODO:  Handler needs work
       'handler' => $sfExtjs2Plugin->asMethod("
-        this.form.reset();
-        this.fireEvent('filter_reset', this);
+        var formpanel = (typeof this.scope != 'undefined')? this.scope : this;
+        formpanel.form.reset();
+        formpanel.fireEvent('filter_reset', this);
       "),
       'scope' => 'this'
     ))

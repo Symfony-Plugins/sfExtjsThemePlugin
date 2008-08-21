@@ -4,6 +4,8 @@
  * http://extjs.com/license
  */
 
+Ext.namespace("Ext.ux.grid");
+
 Ext.ux.grid.RowExpander = function(config) {
   Ext.apply(this, config);
 

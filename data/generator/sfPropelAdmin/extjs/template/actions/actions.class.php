@@ -43,28 +43,18 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     $this->addGroupCriteria($c);
     $this->addSortCriteria($c);
     $this->addFiltersCriteria($c);
-<?php $peerMethod = $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : 'doSelectJoinAll';
-    if (is_callable(array($this->getPeerClassName(), $peerMethod))): ?>
-    $combos = <?php echo $this->getClassName() ?>Peer::<?php echo $peerMethod ?>($c);
-<?php endif; ?>
-
-    $i=0;
-    foreach($combos as $combo){
-      if(count($group)>1){
-        $related = substr(sfInflector::camelize($group[0]),0,-2);
-        $column = sfInflector::camelize($group[1]);
-        $cmd = sprintf('$jsonArr[$i]["%s"] =  $combo->get%s()->get%s();',$this->getRequestParameter('group'),$related,$column);
-        eval($cmd);
+    $rs = <?php echo $this->getClassName() ?>Peer::doSelectRS($c);
+    $rs->setFetchmode(ResultSet::FETCHMODE_ASSOC);
+    while($rs->next())
+    {
+      $resultRow = $rs->getRow();
+      foreach( $resultRow as $key => $value)
+      {
+        $jsonArr[][$this->getRequestParameter('group')] = $value;
       }
-      else{
-        $column = sfInflector::camelize($group[0]);
-        $cmd = sprintf('$jsonArr[$i]["%s"] =   $combo->get%s();',$this->getRequestParameter('group'),$column);
-        eval($cmd);
-      }
-      $i++;
     }
 
-    $json =  '{combo:'.json_encode($jsonArr).'}';
+    $json =  '{"totalCount":'.count($jsonArr).', "data":'.json_encode($jsonArr).'}';
 
     return $this->renderText($json);
   }
@@ -832,6 +822,63 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 <?php endif; // endif list.sort parameter ?>
 
     }
+  }
+
+  protected function addGroupCriteria($c)
+  {
+<?php
+  $for = array('list.filters', 'list.display', 'edit.display');
+  $groupedColumns = $this->getColumnsGrouped($for, false);
+
+  $pk = clone($groupedColumns['pk']); //OBSOLETE copy by value, you don't want to add $pk->key to groupedColumns['pk']
+  $pk->key = strtolower($pk->getName()); // $pk->getTableName().'/'.
+
+  $columns = array();
+  $columns[] = $pk; // add primary key
+  // add primary keys of related classes
+  foreach ($groupedColumns['related'] as $foreignKey => $relatedGroupedColumns)
+  {
+    $pkr = clone($relatedGroupedColumns['pk']); //copy by value, you don't want to add $pk->key to groupedColumns['pk']
+    $pkr->key = strtolower($pkr->getTableName().'/'.$pkr->getName()); // $pk->getTableName().'/'.
+
+    $columns[] = $pkr; // add related primary key
+  }
+  // add default keys below PKs
+  $columns = array_merge($columns, $this->getListUniqueColumns($groupedColumns, false));
+
+?>
+<?php foreach ($columns as $column):
+    $last = strrpos($column->key, '/');
+    $cname = $column->key;
+    if ($last>0) $cname = substr($cname, $last + 1);
+?>
+<?php $columnName = strtoupper($cname); ?>
+<?php if (($column->key == '*') || ($cname=='')) continue ?>
+<?php $type = $column->getCreoleType() ?>
+<?php
+  $peerClassName = $this->getPeerClassName();
+  if ((false !== strpos($column->key, '/')) ) //&& (!$column->isPartial())) //get peerclass name if different way (from line 505 or something...)
+  {
+    //TODO get TablePhpName with help of groupedColumns hierarchy and part of $column->key till last /
+    $peerClassName = sfInflector::camelize($column->getTable()->getPhpName()).'Peer';
+  }
+
+  // Hack to eliminate misspelled camelize classes (like sfGuard...)
+  if(strpos($peerClassName, 'Sf') === 0)
+  {
+    $peerClassName = str_replace('Sf', 'sf', $peerClassName);
+  }
+
+?>
+<?php if (($column->isPartial() || $column->isComponent()) && $this->getParameterValue('list.fields.'.$column->getName().'.filter_criteria_disabled')) continue; ?>
+<?php if (!$column->isPrimaryKey()): ?>
+    if (isset($this->groupby['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']))
+    {
+      $c->addSelectColumn(<?php echo $peerClassName ?>::<?php echo $columnName ?>);
+      $c->addGroupByColumn(<?php echo $peerClassName ?>::<?php echo $columnName ?>);
+    }
+<?php endif; ?>
+<?php endforeach; ?>
   }
 
   protected function addFiltersCriteria($c, $namespace = '<?php echo $this->getSingularName() ?>')

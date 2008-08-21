@@ -1297,8 +1297,31 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
               }
               break;
           }
+
+          // if combo set in the generator create a combo that gets unique values for the local column
+          // TODO: figure out a good way to do chained combos
+          // TODO: add in support for Ext.state.Manager to save the filter state via cookie
+          if( isset($params['filter_field']) && $params['filter_field'] == 'combo')
+          {
+            $params['xtype'] = 'comboboxautoload';
+            $definition['url'] = $this->controller->genUrl($this->getModuleName().'/jsonCombo?group='.$column->key);
+            $definition['valueField'] = $column->key;
+            $definition['hiddenName'] = $column->key;
+            $definition['displayField'] = $column->key;
+            $definition['typeAhead'] = false;
+            $definition['sortField'] = $column->key;
+            $definition['pageSize'] = 0;
+            $definition['filter'] = true;
+            // TODO: chained support is in comboboxautoload and on the server but it needs some work to allow.
+            // my idea is to add a second trigger to the field when the combo is in a filtered state that will
+            // change the baseParams on the combo store to send filter: 0 and reset the filters on the server.
+            // clearing one chained filter will need to remove the extra trigger from all chained combos in the
+            // filter panel as the filter state is kept server side and resetting one resets all.
+            //$definition['chained'] = 1;
+          }
         } // end local field setup
 
+        if(isset($params['width'])) unset($params['width']);
         return array_merge($definition, $params);
       }
 

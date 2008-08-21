@@ -14,6 +14,7 @@ Ext.ux.ComboBoxAutoLoad = function(config)
   this.lazyRender = (typeof config.lazyRender != 'undefined') ? config.lazyRender : true;
   this.triggerAction = config.triggerAction || 'all';
   this.editable = (typeof config.editable != 'undefined') ? config.editable : true;
+  this.chained = (typeof config.chained != 'undefined') ? config.chained : 'query';
   this.forceSelection = config.forceSelection || false;
   this.selectOnFocus = (typeof config.selectOnFocus != 'undefined') ? config.selectOnFocus : true;
   this.typeAhead = (typeof config.typeAhead != 'undefined') ? config.typeAhead : true;
@@ -35,7 +36,7 @@ Ext.ux.ComboBoxAutoLoad = function(config)
   {
     this.store = new Ext.data.Store({
       baseParams : {
-        filter : 'query'
+        filter : this.chained
       },
       proxy : new Ext.data.HttpProxy({
         url : this.url,
@@ -68,7 +69,17 @@ Ext.extend(Ext.ux.ComboBoxAutoLoad, Ext.form.ComboBox, {
   {
     Ext.ux.ComboBoxAutoLoad.superclass.initEvents.call(this);
 
-    // this.on('expand', function(){console.log('expand')});
+    if (this.filter)
+    {
+      this.on('select', function()
+      {
+        if (this.value)
+        {
+          this.filterpanel.buttons[0].handler()
+        }
+      }, this);
+    }
+    // this.on('expand', function(){console.log(this.store.load())});
     // this.on('collapse', function(){console.log('collapse')});
   },
 
@@ -165,6 +176,11 @@ Ext.extend(Ext.ux.ComboBoxAutoLoad, Ext.form.ComboBox, {
   {
     Ext.ux.ComboBoxAutoLoad.superclass.onRender.call(this, ct, position);
     this.updateBoxLabel();
+    if (this.filter)
+      this.filterpanel = this.findParentBy(function(p)
+      {
+        return p.title == 'Filters'
+      });
   },
 
   /**
@@ -186,13 +202,15 @@ Ext.extend(Ext.ux.ComboBoxAutoLoad, Ext.form.ComboBox, {
       if (r)
       {
         text = r.data[this.displayField];
-        if(!this.filter) this.valueNotFoundText = text;
+        if (!this.filter)
+          this.valueNotFoundText = text;
       }
       else if (this.valueNotFoundText !== undefined)
       {
         text = this.valueNotFoundText;
         // restore add it to combostore
-        if(!this.filter) this.preload(v, text);
+        if (!this.filter)
+          this.preload(v, text);
       }
     }
 
@@ -270,6 +288,12 @@ Ext.extend(Ext.ux.ComboBoxAutoLoad, Ext.form.ComboBox, {
 
     Ext.ux.ComboBoxAutoLoad.superclass.onBlur.call(this);
   },
+
+  // controlFilterOnSelect : function(combo, record, index)
+  // {
+  // this.filterpanel = this.findParentBy(function(p){return
+  // p.title=='Filters'});
+  // },
 
   showEditor : function()
   {
