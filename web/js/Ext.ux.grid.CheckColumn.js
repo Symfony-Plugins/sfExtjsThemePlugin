@@ -5,6 +5,8 @@ Ext.ux.grid.CheckColumn = function(config) {
     this.id = Ext.id();
   }
   this.renderer = this.renderer.createDelegate(this);
+  //default to editable false
+  this.editable = (typeof this.editable != 'undefined')?this.editable:'true';
 };
 
 Ext.extend(Ext.ux.grid.CheckColumn, Ext.util.Observable, {
@@ -17,11 +19,20 @@ Ext.extend(Ext.ux.grid.CheckColumn, Ext.util.Observable, {
   },
 
   onMouseDown : function(e, t) {
-    if (t.className && t.className.indexOf('x-grid3-cc-' + this.id) != -1) {
+    if (t.className && t.className.indexOf('x-grid3-cc-' + this.id) != -1 && this.editable) {
       e.stopEvent();
       var index = this.grid.getView().findRowIndex(t);
       var record = this.grid.store.getAt(index);
       record.set(this.dataIndex, !record.data[this.dataIndex]);
+      this.grid.fireEvent('afterEdit', {
+        grid : this.grid,
+        record : record,
+        field : this.dataIndex,
+        value : record.data[this.dataIndex],
+        originalValue : !record.data[this.dataIndex],
+        row : index,
+        column : this.grid.getColumnModel().getIndexById(this.id)
+      });
     }
   },
 
