@@ -141,3 +141,4 @@ Ext.extend(Ext.ux.grid.RowExpander, Ext.util.Observable, {
     }
   }
 });
+Ext.reg('rowexpander', Ext.ux.grid.RowExpander);
