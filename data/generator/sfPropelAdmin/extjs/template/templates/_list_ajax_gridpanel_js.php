@@ -6,6 +6,8 @@
   $group_field = $this->getParameterValue('list.grouping.field', null);
   $grid_view_extras = $this->getParameterValue('list.grid_view_extras', '');
 
+  $listDisplay = $this->getParameterValue('list.display', null);
+
   $expander =  $this->getParameterValue('list.expand_columns');
 
   $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20));
@@ -22,9 +24,12 @@
     $pluginArr[] = 'this.rowExpander';
   }
 
-  foreach($this->getParameterValue('list.display') as $col)
+  if (isset($listDisplay))
   {
-    if($this->getParameterValue('list.fields.'.$col.'.plugin')) $pluginArr[] = 'this.cm.'.$this->getParameterValue('list.fields.'.$col.'.plugin');
+    foreach($this->getParameterValue('list.display') as $col)
+    {
+      if($this->getParameterValue('list.fields.'.$col.'.plugin')) $pluginArr[] = 'this.cm.'.$col.'_'.$this->getParameterValue('list.fields.'.$col.'.plugin');
+    }
   }
 ?>
 [?php
