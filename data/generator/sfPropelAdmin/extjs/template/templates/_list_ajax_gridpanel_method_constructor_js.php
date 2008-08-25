@@ -5,10 +5,13 @@
 
 [?php
 // constructor
-$configArr = Array(
-  'parameters' => 'c',
-  'source' => "
-    this.rowExpander = ".$sfExtjs2Plugin->asVar($gridpanel->rowExpander).";
+$source = '';
+if(isset($gridpanel->rowExpander))
+{
+  $source .= "this.rowExpander = ".$sfExtjs2Plugin->asVar($gridpanel->rowExpander);
+}
+
+$source .= "
     this.cm = ".$sfExtjs2Plugin->asVar($gridpanel->column_model).";
 
     // combine <?php echo $panelName ?>Config with arguments
@@ -24,7 +27,10 @@ $configArr = Array(
 
       this.store.baseParams = baseParams;
     }
-  "
+  ";
+$configArr = Array(
+  'parameters' => 'c',
+  'source' => $source
 );
 
 $gridpanel->attributes['constructor'] = $sfExtjs2Plugin->asMethod($configArr);
