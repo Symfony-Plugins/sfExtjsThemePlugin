@@ -37,6 +37,7 @@ foreach ($columns as $column)
   if($this->getParameterValue('list.fields.'.$column->key.'.plugin'))
   {
     $plugins[$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin')] = $this->getColumnAjaxListDefinition($column, $groupedColumns);
+    $plugins[$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin')]['xtype'] = $this->getParameterValue('list.fields.'.$column->key.'.plugin');
     $cmItems[] = 'this.'.$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin');
     continue;
   }

@@ -9,6 +9,8 @@ if($columnmodel->plugins)
 {
 foreach($columnmodel->plugins as $key => $value)
 {
+  //I think this is desired as I don't see many instances where you would want the default renderer for a plugin
+  if(isset($value['renderer']) && !strpos($value['renderer'], 'this')) unset($value['renderer']);
   $srcStr .= "\nthis.".$key." = Ext.ComponentMgr.create(".$sfExtjs2Plugin->asAnonymousClass($value).");";
 }
 }
