@@ -5,6 +5,11 @@
 
   // TODO: parts of this should be moved to the actions.class one day
   // iterate through all (related) columns of all classes
+  if($this->getParameterValue('list.expand_column'))
+  {
+    //$list = $this->getParameterValue('list.display');
+    //$this->setParameterValue('list.display') = array_push($list,'+'.$this->getParameterValue('list.expand_column'));
+  }
   $for = 'list.display';
   $groupedColumns = $this->getColumnsGrouped($for);
   $columns = $this->getListUniqueColumns($groupedColumns, true);
@@ -34,6 +39,7 @@
   $i=0;
   foreach ($columns as $column)
   {
+    if ($column->key == '*') continue;  //expander column not in json-data
     if ($column->isPartial()) continue; //partials will not end up in json-data
 
     $columnName = $column->key;

@@ -6,6 +6,8 @@
   $group_field = $this->getParameterValue('list.grouping.field', null);
   $grid_view_extras = $this->getParameterValue('list.grid_view_extras', '');
 
+  $expander =  $this->getParameterValue('list.expand_columns');
+
   $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20));
   $pluginArr = false;
 
@@ -13,6 +15,11 @@
   {
     $pluginArr = (!is_array($this->getParameterValue('list.plugins'))) ? array($this->getParameterValue('list.plugins')) : $this->getParameterValue('list.plugins');
 
+  }
+
+  if (isset($expander['renderer_partial']))
+  {
+    $pluginArr[] = 'this.rowExpander';
   }
 
   foreach($this->getParameterValue('list.display') as $col)
@@ -29,6 +36,10 @@ $gridpanel->attributes = array();
 <?php $objectName = $this->getParameterValue('object_name', $this->getModuleName()) ?>
 
 $sfExtjs2_gridpanel_view = 'new Ext.grid.GridView({forceFit: true, autoFill: true <?php echo $grid_view_extras ?>})';
+<?php if (isset($expander['renderer_partial'])): ?>
+// initialise the row expander plugin
+$gridpanel->rowExpander = 'this.getRowExpander()';
+<?php endif; ?>
 $gridpanel->column_model = 'new Ext.app.sx.<?php echo 'List'.$moduleName.'ColumnModel' ?>()';
 
 // default config
@@ -136,6 +147,48 @@ if (!is_array($methods['partials']))
 include_partial('<?php echo substr($method,1) ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'gridpanel' => $gridpanel));
 <?php
     $this->createPartialFile($method,'<?php // @object $sfExtjs2Plugin and @object $gridpanel provided ?>');
+  endforeach;
+endif;
+
+if (isset($expander['renderer_partial'])):
+if (!is_array($expander['renderer_partial']))
+{
+  $expander['renderer_partial'] = array($expander['renderer_partial']);
+}
+if (isset($expander['fields']))
+{
+  if (!is_array($expander['fields']))
+  {
+    $expander['fields'] = array($expander['fields']);
+  }
+  $template = '';
+  foreach($expander['fields'] as $field)
+  {
+    $template .= "<tr><td><p>{".$field."}</p></td></tr>";
+  }
+}
+?>
+// generator expand columns renderer partial
+<?php
+  foreach($expander['renderer_partial'] as $expanderRenderer):
+    $this->createPartialFile($expanderRenderer,'<?php // @object $sfExtjs2Plugin and @object $gridpanel provided
+  $configArr["source"] = "
+  if(typeof this.rowExpander ==\'undefined\')
+  {
+    this.rowExpander = Ext.ComponentMgr.create({
+      xtype: \'rowexpander\',
+      tpl : new Ext.Template(
+        \'<table width=\"100%\">'.$template.'</table>\'
+      )
+    });
+  }
+  return this.rowExpander";
+  $gridpanel->attributes["getRowExpander"] = $sfExtjs2Plugin->asMethod($configArr);
+?>');
+?>
+include_partial('<?php echo substr($expanderRenderer,1) ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'gridpanel' => $gridpanel));
+<?php
+
   endforeach;
 endif;
 

@@ -8,6 +8,7 @@
 $configArr = Array(
   'parameters' => 'c',
   'source' => "
+    this.rowExpander = ".$sfExtjs2Plugin->asVar($gridpanel->rowExpander).";
     this.cm = ".$sfExtjs2Plugin->asVar($gridpanel->column_model).";
 
     // combine <?php echo $panelName ?>Config with arguments
