@@ -55,10 +55,11 @@ $renderer->attributes = array();
   ));
 
   $renderer->attributes['formatLongstring'] = $sfExtjs2Plugin->asMethod(array(
-    'parameters' => 'v',
+    'parameters' => 'v, metaData',
     'source' => "
+      metaData.css = 'x-grid3-cell-wrap';
       v = Ext.util.Format.stripTags(v);
-      return Ext.util.Format.ellipsis(v, 50);
+      return Ext.util.Format.ellipsis(v, 255);
     "
   ));
 

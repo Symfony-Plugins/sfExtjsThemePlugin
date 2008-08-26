@@ -66,3 +66,8 @@
 
 /* remove the button-look for the refresh-button in a grid-pager */
 .x-tbar-loading{background-image:url(../../sfExtjs2Plugin/extjs/resources/images/default/grid/done.gif)!important;}
+
+/* whitespace normal for grids using formatLongstring renderer */
+.x-grid3-cell-wrap .x-grid3-cell-inner {
+  white-space: normal;
+}
