@@ -1028,20 +1028,20 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       {
         if(!$renderParam) $renderParam = 'this.renderHeader';
       }
-      //      else // not grouped by this column
-      //      {
-      //        if ($column->isLink() && !$renderParam) $renderParam = 'this.renderLink';
-      //
-      //        // TODO: summaryRenderers of what? since we are not grouping here...
-      //        $summaryAttributes = array(
-      //          'summaryRenderer' => 'summary_renderer',
-      //          'summaryType'     => 'summary_type'
-      //          );
-      //          foreach ($summaryAttributes as $extjsParam => $paramValue)
-      //          {
-      //            if (isset($params[$paramValue])) $definition[$extjsParam] = $params[$paramValue];
-      //          }
-      //      }
+      else // not grouped by this column
+      {
+        if ($column->isLink() && !$renderParam) $renderParam = 'this.renderLink';
+
+//        // TODO: summaryRenderers of what? since we are not grouping here...
+//        $summaryAttributes = array(
+//          'summaryRenderer' => 'summary_renderer',
+//          'summaryType'     => 'summary_type'
+//          );
+//          foreach ($summaryAttributes as $extjsParam => $paramValue)
+//          {
+//            if (isset($params[$paramValue])) $definition[$extjsParam] = $params[$paramValue];
+//          }
+      }
 
       //default
       $editor['xtype'] = $this->getXtypeForColumn($column);
