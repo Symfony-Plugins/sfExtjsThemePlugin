@@ -12,10 +12,10 @@ if($columnmodel->plugins)
   {
     //I can't think of a better way to do this right now.
     //We have to determine available credentials during generation but can't compare them until page load
-    if(isset($value['credstr']))
+    if(isset($value['editcreds']))
     {
-      eval($value['credstr']);
-      unset($value['credstr']);
+      if(!$sf_user->hasCredential($value['editcreds'])) $value['editable']=false;
+      unset($value['editcreds']);
     }
     $srcStr .= "\nthis.".$key." = Ext.ComponentMgr.create(".$sfExtjs2Plugin->asAnonymousClass($value).");";
   }

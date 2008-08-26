@@ -44,7 +44,7 @@ foreach ($columns as $column)
     if ($editcreds = $this->getParameterValue('edit.fields.'.$column->key.'.credentials'))
     {
       $editcreds = str_replace("\n", ' ', var_export($editcreds, true));
-      $plugins[$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin')]['credstr'] = 'if(!$sf_user->hasCredential('.$editcreds.')) $value["editable"]=false;';
+      $plugins[$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin')]['editcreds'] = $editcreds;
     }
     //set the column item to our generated plugin
     $cmItems[] = 'this.'.$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin');
