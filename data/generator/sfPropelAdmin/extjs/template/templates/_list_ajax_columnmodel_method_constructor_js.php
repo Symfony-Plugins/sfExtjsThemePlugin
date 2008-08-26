@@ -10,8 +10,6 @@ if($columnmodel->plugins)
 {
   foreach($columnmodel->plugins as $key => $value)
   {
-    //I think this is desired as I don't see many instances where you would want the default renderer for a plugin
-    //if(isset($value['renderer']) && !strpos($value['renderer'], 'this')) unset($value['renderer']);
     //I can't think of a better way to do this right now.
     //We have to determine available credentials during generation but can't compare them until page load
     if(isset($value['credstr']))

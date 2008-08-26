@@ -46,8 +46,6 @@ foreach ($columns as $column)
       $editcreds = str_replace("\n", ' ', var_export($editcreds, true));
       $plugins[$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin')]['credstr'] = 'if(!$sf_user->hasCredential('.$editcreds.')) $value["editable"]=false;';
     }
-    //set the xtype for our plugin
-    //$plugins[$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin')]['xtype'] = $this->getParameterValue('list.fields.'.$column->key.'.plugin');
     //set the column item to our generated plugin
     $cmItems[] = 'this.'.$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin');
     $i++;
@@ -58,7 +56,6 @@ foreach ($columns as $column)
   {
     $editcreds = str_replace("\n", ' ', var_export($editcreds, true));
     $credArr[] = 'if(!$sf_user->hasCredential('.$editcreds.')&& is_array($columnmodel->config_array['.$i.'])&& isset($columnmodel->config_array['.$i.']["editor"])) unset($columnmodel->config_array['.$i.']["editor"]);';
-    $credArr[] = 'if(!$sf_user->hasCredential('.$editcreds.')&& is_array($columnmodel->config_array['.$i.'])&& isset($columnmodel->config_array['.$i.']["editable"])) unset($columnmodel->config_array['.$i.']["editable"]);';
   }
 
   if ($column->isPartial())
