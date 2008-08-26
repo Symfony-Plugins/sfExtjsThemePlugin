@@ -994,7 +994,14 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     $user_params = $this->getParameterValue('list.fields.'.$column->key.'.params');
     $params = is_array($user_params) ? $user_params : sfToolkit::stringToArray($user_params);
 
-    $editable = ((isset($params['editable']) && $params['editable']) || (!isset($params['editable']) && sfConfig::get('app_sf_extjs_theme_plugin_list_editable', false))) ? true : false;
+    // moved to list.editable
+    //$editable = ((isset($params['editable']) && $params['editable']) || (!isset($params['editable']) && sfConfig::get('app_sf_extjs_theme_plugin_list_editable', false))) ? true : false;
+
+    $listedit = (is_array($this->getParameterValue('list.editable')))?$this->getParameterValue('list.editable'):array($this->getParameterValue('list.editable'));
+
+    //check list.editable for editable fields or go with the app.yml config
+
+    $editable = (in_array($column->key, $listedit)||!in_array($column->key, $listedit) && sfConfig::get('app_sf_extjs_theme_plugin_list_editable', false)) ? true : false;
 
     // columns with related data, which are editable
     if (strpos($column->key, '/') !== false && $editable)
@@ -1047,7 +1054,6 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
             $editor['disabledDaysText'] = isset($params['date_disabled_days_text']) ? $params['date_disabled_days_text'] : 'This days are not avaible';
           }
           break;
-
       }
 
       //'function(value, params, record, rowIndex, colIndex, store){'..'}';
@@ -1061,9 +1067,27 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
 
       // if xtype defined in generator.yml overrule default
       if(isset($params['xtype'])) $definition = array_merge($definition,$params);
-
     } // end local field setup
 
+    //handle plugin settings
+    $listplugin = $this->getParameterValue('list.fields.'.$column->key.'.plugin');
+    if(isset($listplugin))
+    {
+      //plugins usually have their own renderer, so remove it unless it's specifically set, then use that
+      if(isset($definition['renderer']) && !isset($params['renderer']))
+      {
+        unset($definition['renderer']);
+      }
+
+      //plugins usually have their own editors, so remove it unless it's specifically set, then use that
+      if(isset($definition['editor']) && !isset($params['editor']))
+      {
+        unset($definition['editor']);
+      }
+
+      //xtype is set to the value of plugin
+      $definition['xtype'] = $listplugin;
+    }
 
     if ($column->isHidden())
     {

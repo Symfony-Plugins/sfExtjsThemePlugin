@@ -22,24 +22,43 @@ $credArr = array();
 $i=0;
 foreach ($columns as $column)
 {
-  $credentials = $this->getParameterValue('list.fields.'.$column->key.'.credentials');
-  if ($credentials){
-    $credentials = str_replace("\n", ' ', var_export($credentials, true));
-    $credArr[] = 'if(!$sf_user->hasCredential('.$credentials.')) unset($columnmodel->config_array['.$i.']);';
+  $listcreds = $this->getParameterValue('list.fields.'.$column->key.'.credentials');
+  if ($listcreds)
+  {
+    $listcreds = str_replace("\n", ' ', var_export($listcreds, true));
+    $credArr[] = 'if(!$sf_user->hasCredential('.$listcreds.')) unset($columnmodel->config_array['.$i.']);';
   }
+
   if ($column->key == '*')
   {
     $cmItems[] = "{xtype: 'rowexpander'}";
+    $i++;
     continue;
   }
   if (in_array($column->key, $hs) || ($column->isInvisible())) continue;
 
   if($this->getParameterValue('list.fields.'.$column->key.'.plugin'))
   {
+    //setup the data for generating the new plugin instance
     $plugins[$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin')] = $this->getColumnAjaxListDefinition($column, $groupedColumns);
-    $plugins[$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin')]['xtype'] = $this->getParameterValue('list.fields.'.$column->key.'.plugin');
+    if ($editcreds = $this->getParameterValue('edit.fields.'.$column->key.'.credentials'))
+    {
+      $editcreds = str_replace("\n", ' ', var_export($editcreds, true));
+      $plugins[$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin')]['credstr'] = 'if(!$sf_user->hasCredential('.$editcreds.')) $value["editable"]=false;';
+    }
+    //set the xtype for our plugin
+    //$plugins[$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin')]['xtype'] = $this->getParameterValue('list.fields.'.$column->key.'.plugin');
+    //set the column item to our generated plugin
     $cmItems[] = 'this.'.$column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin');
+    $i++;
     continue;
+  }
+
+  if ($editcreds = $this->getParameterValue('edit.fields.'.$column->key.'.credentials'))
+  {
+    $editcreds = str_replace("\n", ' ', var_export($editcreds, true));
+    $credArr[] = 'if(!$sf_user->hasCredential('.$editcreds.')&& is_array($columnmodel->config_array['.$i.'])&& isset($columnmodel->config_array['.$i.']["editor"])) unset($columnmodel->config_array['.$i.']["editor"]);';
+    $credArr[] = 'if(!$sf_user->hasCredential('.$editcreds.')&& is_array($columnmodel->config_array['.$i.'])&& isset($columnmodel->config_array['.$i.']["editable"])) unset($columnmodel->config_array['.$i.']["editable"]);';
   }
 
   if ($column->isPartial())
