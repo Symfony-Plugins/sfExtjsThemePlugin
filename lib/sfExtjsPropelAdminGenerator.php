@@ -994,14 +994,19 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     $user_params = $this->getParameterValue('list.fields.'.$column->key.'.params');
     $params = is_array($user_params) ? $user_params : sfToolkit::stringToArray($user_params);
 
-    // moved to list.editable
-    //$editable = ((isset($params['editable']) && $params['editable']) || (!isset($params['editable']) && sfConfig::get('app_sf_extjs_theme_plugin_list_editable', false))) ? true : false;
-
-    $listedit = (is_array($this->getParameterValue('list.editable')))?$this->getParameterValue('list.editable'):array($this->getParameterValue('list.editable'));
-
-    //check list.editable for editable fields or go with the app.yml config
-
-    $editable = (in_array($column->key, $listedit)||!in_array($column->key, $listedit) && sfConfig::get('app_sf_extjs_theme_plugin_list_editable', false)) ? true : false;
+    $listedit = (is_array($this->getParameterValue('list.editable'))) ? $this->getParameterValue('list.editable') : array($this->getParameterValue('list.editable'));
+    //check list.editable for editable fields, else check fields.fieldname.params.editable, else go with generator.yml config option else go with the app.yml config
+    // TODO: fields.fieldname.params.editable is matching the extjs API, I think credential checking will also work for it, but it isn't nice to have both list.editable and field.editable, what if one says true, other false... makes things complicated
+    $editable = (
+      in_array($column->key, $listedit) || // if column in list.editable
+      !in_array($column->key, $listedit) && ( // else
+        (isset($params['editable']) && $params['editable']) || // if isset (list.)fields.fieldname.params.editable and true
+        (!isset($params['editable']) && ( // if not set
+          (($this->getParameterValue('list.default_editable', null) !== null) && $this->getParameterValue('list.default_editable')) ||
+          (($this->getParameterValue('list.default_editable', null) === null) && sfConfig::get('app_sf_extjs_theme_plugin_list_editable', false))
+        ))
+      )
+    ) ? true : false;
 
     // columns with related data, which are editable
     if (strpos($column->key, '/') !== false && $editable)
