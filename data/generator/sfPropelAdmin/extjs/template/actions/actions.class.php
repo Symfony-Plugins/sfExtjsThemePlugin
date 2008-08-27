@@ -929,14 +929,15 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 
 ?>
 <?php if (($column->isPartial() || $column->isComponent()) && $this->getParameterValue('list.fields.'.$column->getName().'.filter_criteria_disabled')) continue; ?>
-<?php if (!$column->isPrimaryKey()): ?>
-    if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>_is_empty']))
-    {
-      $criterion = $c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, '');
-      $criterion->addOr($c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, null, Criteria::ISNULL));
-      $c->add($criterion);
-    }
-    else
+<?php if (!$column->isPrimaryKey()&& $type != CreoleTypes::BOOLEAN): ?>
+//we don't do any is_empty filters
+//    if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>_is_empty']))
+//    {
+//      $criterion = $c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, '');
+//      $criterion->addOr($c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, null, Criteria::ISNULL));
+//      $c->add($criterion);
+//    }
+//    else
 <?php endif; ?>
 <?php if ($type == CreoleTypes::DATE || $type == CreoleTypes::TIMESTAMP): ?>
     if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']) && $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>'] !== '')
@@ -947,7 +948,6 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
       $criterion = $c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, date('Y-m-d', $dateStart), Criteria::GREATER_EQUAL);
 
       $criterion->addAnd($c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, date('Y-m-d', $dateEnd), Criteria::LESS_THAN));
-
 
       if (isset($criterion))
       {
@@ -961,14 +961,11 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
       $q = '';
       if ($this->getRequest()->getParameter('filter') == 'query') $q = '%';
       $c->add(<?php echo $peerClassName ?>::<?php echo $columnName ?>, strtr($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>'].$q, '*', '%'), Criteria::LIKE);
-<?php else: ?>
-<?php if ($type == CreoleTypes::CHAR || $type == CreoleTypes::VARCHAR || $type == CreoleTypes::LONGVARCHAR): ?>
-      $q = '';
-      if ($this->getRequest()->getParameter('filter') == 'query') $q = '%';
-      $c->add(<?php echo $peerClassName ?>::<?php echo $columnName ?>, strtr($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>'].$q, '*', '%'), Criteria::LIKE);
+<?php elseif ($type == CreoleTypes::BOOLEAN): ?>
+      $bool = ($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']=='true')?true:false;
+      if($bool) $c->add(<?php echo $peerClassName ?>::<?php echo $columnName ?>, $bool);
 <?php else: ?>
       $c->add(<?php echo $peerClassName ?>::<?php echo $columnName ?>, $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']);
-<?php endif; ?>
 <?php endif; ?>
     }
 <?php endif; ?>

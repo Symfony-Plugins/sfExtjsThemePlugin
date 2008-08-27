@@ -63,7 +63,7 @@ $filterpanel->config_array = array(
       //TODO:  Handler needs work
       'handler' => $sfExtjs2Plugin->asMethod("
         var formpanel = (typeof this.scope != 'undefined')? this.scope : this;
-        var params=formpanel.getValues();
+        var params=formpanel.form.getValues();
         params.start=0;
         params.limit=<?php echo $limit ?>;
         formpanel.fireEvent('filter_set', params, this);
@@ -98,9 +98,6 @@ include_partial('list_ajax_filterpanel_method_initComponent_js', array('sfExtjs2
 
 // initEvents
 include_partial('list_ajax_filterpanel_method_initEvents_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'filterpanel' => $filterpanel));
-
-// getValues
-include_partial('list_ajax_filterpanel_method_getValues_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'filterpanel' => $filterpanel));
 
 
 <?php
