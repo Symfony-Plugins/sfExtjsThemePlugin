@@ -11,3 +11,10 @@
 [?php include_partial('list_ajax_columnmodel_js',     array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
 
 [?php include_partial('list_ajax_gridpanel_js',       array('sfExtjs2Plugin' => $sfExtjs2Plugin)) ?]
+
+[?php //include_partial('list_ajax_tabpanel_js',        array('sfExtjs2Plugin' => $sfExtjs2Plugin)) //uncomment to debug ?]
+
+[?php //include_partial('list_ajax_filterpanel_js',        array('sfExtjs2Plugin' => $sfExtjs2Plugin)) //uncomment to debug ?]
+
+
+
