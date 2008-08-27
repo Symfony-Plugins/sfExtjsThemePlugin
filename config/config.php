@@ -9,7 +9,6 @@ sfRouting::getInstance()->prependRoute('sf_extjs_theme_plugin_get_xtype',
   )
 );
 
-
 $quoteExcept = array(
   'key' => array('renderer', 'store'),
   'value' => array('true', 'false', 'new Ext.', 'function', 'Ext.')
@@ -19,7 +18,7 @@ sfConfig::set('extjs_quote_except', $quoteExcept);
 
 $default_stylesheets = array(
   '/sfExtjsThemePlugin/css/symfony-extjs.css',
-  //'/sfExtjsThemePlugin/Ext.ux.form.Checkbox/checkbox.css'
+//  '/sfExtjsThemePlugin/Ext.ux.form.Checkbox/checkbox.css'
 );
 
 $default_javascripts = array(
@@ -56,3 +55,4 @@ $default_javascripts = array(
 );
 
 sfConfig::set('extjs_default_javascripts', $default_javascripts);
+sfConfig::set('extjs_default_stylesheets', $default_stylesheets);

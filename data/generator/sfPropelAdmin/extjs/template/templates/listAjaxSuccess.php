@@ -23,8 +23,8 @@
   </script>
 
 [?php
-$css = sfConfig::get('extjs_default_stylesheets', array());
-$js = sfConfig::get('extjs_default_javascripts', array());
+<?php $css = sfConfig::get('extjs_default_stylesheets', array()); ?>
+<?php $js = sfConfig::get('extjs_default_javascripts', array()); ?>
 <?php if ($use_tinymce): ?>
    $js[] = '/sfExtjsThemePlugin/js/tiny_mce/tiny_mce';
    $js[] = '/sfExtjsThemePlugin/js/ext.ux.tinymce/Ext.ux.TinyMCE.min.js';
@@ -38,8 +38,8 @@ $sfExtjs2Plugin = new sfExtjs2Plugin(
     'adapter' => '<?php echo $this->getParameterValue('adapter'); ?>'
   ),
   array(
-    'css' => $css,
-    'js'  => $js
+    'css' => <?php var_export($css) ?>,
+    'js'  => <?php var_export($js) ?>
   )
 );
 $sfExtjs2Plugin->load();
