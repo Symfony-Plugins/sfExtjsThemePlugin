@@ -11,7 +11,7 @@ $configArr = array(
   this.form.items.each(function(field){
     if (field.name != undefined)
     {
-      var value = (field.xtype=='checkbox')?((field.getValue())?true:''):field.getValue();
+      var value = (field.xtype=='checkbox')?((field.getValue())?1:''):field.getValue();
       values[field.name] = value;
     }
   });
