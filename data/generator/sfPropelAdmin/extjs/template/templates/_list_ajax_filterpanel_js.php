@@ -1,7 +1,7 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $panelName = "List".$moduleName."FilterPanel";
-  $panelName_xtype = strtolower("List".$this->getModuleName()."FilterPanel");
+  $panelName_xtype = "list".$this->getModuleName()."filterpanel";
   $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20));
 
   // iterate through all (related) columns of all classes

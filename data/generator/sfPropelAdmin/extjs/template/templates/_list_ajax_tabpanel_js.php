@@ -1,7 +1,7 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $panelName = "List".$moduleName."TabPanel";
-  $panelName_xtype = strtolower("List".$this->getModuleName()."TabPanel");
+  $panelName_xtype = "list".$this->getModuleName()."tabpanel";
 ?>
 [?php
 $tabpanel = new stdClass();

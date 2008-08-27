@@ -1,7 +1,7 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $panelName = "List".$moduleName."GridPanel";
-  $panelName_xtype = strtolower("List".$this->getModuleName()."GridPanel");
+  $panelName_xtype = "list".$this->getModuleName()."gridpanel";
 
   $group_field = $this->getParameterValue('list.grouping.field', null);
   $grid_view_extras = $this->getParameterValue('list.grid_view_extras', '');

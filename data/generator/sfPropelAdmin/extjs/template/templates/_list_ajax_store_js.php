@@ -1,7 +1,7 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $panelName = "List".$moduleName."Store";
-  $panelName_xtype = strtolower("List".$this->getModuleName()."Store");
+  $panelName_xtype = "list".$this->getModuleName()."store";
 
   // TODO: parts of this should be moved to the actions.class one day
   // iterate through all (related) columns of all classes
