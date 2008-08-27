@@ -17,6 +17,11 @@ $quoteExcept = array(
 
 sfConfig::set('extjs_quote_except', $quoteExcept);
 
+$default_stylesheets = array(
+  '/sfExtjsThemePlugin/css/symfony-extjs.css',
+  //'/sfExtjsThemePlugin/Ext.ux.form.Checkbox/checkbox.css'
+);
+
 $default_javascripts = array(
   '/sfExtjsThemePlugin/js/Ext.form.BasicForm.override.js',    // allow preloading combo-items
   '/sfExtjsThemePlugin/js/Ext.grid.ColumnModel.override.js',  // adds construction from xtype (for columns and their editors) and sets event-handlers

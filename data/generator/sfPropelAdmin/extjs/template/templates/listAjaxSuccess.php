@@ -23,6 +23,7 @@
   </script>
 
 [?php
+$css = sfConfig::get('extjs_default_stylesheets', array());
 $js = sfConfig::get('extjs_default_javascripts', array());
 <?php if ($use_tinymce): ?>
    $js[] = '/sfExtjsThemePlugin/js/tiny_mce/tiny_mce';
@@ -31,14 +32,16 @@ $js = sfConfig::get('extjs_default_javascripts', array());
 <?php endif ?>
 
 // TODO: Need to put in a mechanism to only include extensions we are currently using in the generator.yml
-$sfExtjs2Plugin = new sfExtjs2Plugin(array('theme'   => sfConfig::get('app_sf_extjs_theme_plugin_theme'),
-                                           'adapter' => '<?php echo $this->getParameterValue('adapter'); ?>'),
-                                     array('css' => array('/sfExtjsThemePlugin/css/symfony-extjs.css',
-                                                          '/sfExtjsThemePlugin/Ext.ux.form.Checkbox/checkbox.css'
-                                           ),
-                                           'js'  => $js
-                                          )
-                                    );
+$sfExtjs2Plugin = new sfExtjs2Plugin(
+  array(
+    'theme'   => sfConfig::get('app_sf_extjs_theme_plugin_theme'),
+    'adapter' => '<?php echo $this->getParameterValue('adapter'); ?>'
+  ),
+  array(
+    'css' => $css,
+    'js'  => $js
+  )
+);
 $sfExtjs2Plugin->load();
 ?]
 
