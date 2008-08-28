@@ -1026,7 +1026,8 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
 
       if ($groupBy) // group by this column
       {
-        if(!$renderParam) $renderParam = 'this.renderHeader';
+        //deprecated I think
+        //if(!$renderParam) $renderParam = 'this.renderHeader';
       }
       else // not grouped by this column
       {
