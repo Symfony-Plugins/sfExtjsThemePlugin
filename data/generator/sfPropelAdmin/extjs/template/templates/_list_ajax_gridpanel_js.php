@@ -4,7 +4,14 @@
   $panelName_xtype = "list".$this->getModuleName()."gridpanel";
 
   $group_field = $this->getParameterValue('list.grouping.field', null);
-  $grid_view_extras = $this->getParameterValue('list.grid_view_extras', '');
+
+  $grid_view['forceFit'] = true;
+  $grid_view['autoFill'] = true;
+  if($this->getParameterValue('list.grouping.text_tpl',false)) $grid_view['groupTextTpl'] = $this->getParameterValue('list.grouping.text_tpl');
+
+  //NOTE: this isn't right
+  //$grid_view_extras = (is_array($this->getParameterValue('list.grid_view_extras')))? $this->getParameterValue('list.grid_view_extras') : array($this->getParameterValue('list.grid_view_extras'));
+  //if(count($grid_view_extras)>1)$grid_view = array_merge($grid_view,$grid_view_extras);
 
   $listDisplay = $this->getParameterValue('list.display', null);
 
@@ -16,7 +23,6 @@
   if($this->getParameterValue('list.plugins'))
   {
     $pluginArr = (!is_array($this->getParameterValue('list.plugins'))) ? array($this->getParameterValue('list.plugins')) : $this->getParameterValue('list.plugins');
-
   }
 
   if (isset($expander['renderer_partial']))
@@ -40,7 +46,7 @@ $gridpanel->attributes = array();
 
 <?php $objectName = $this->getParameterValue('object_name', $this->getModuleName()) ?>
 
-$sfExtjs2_gridpanel_view = 'new Ext.grid.GridView({forceFit: true, autoFill: true <?php echo $grid_view_extras ?>})';
+$sfExtjs2_gridpanel_view = 'new Ext.grid.<?php echo (($group_field)?'Grouping':'') ?>View(<?php echo json_encode($grid_view) ?>)';
 <?php if (isset($expander['renderer_partial'])): ?>
 // initialise the row expander plugin
 $gridpanel->rowExpander = 'this.getRowExpander()';
