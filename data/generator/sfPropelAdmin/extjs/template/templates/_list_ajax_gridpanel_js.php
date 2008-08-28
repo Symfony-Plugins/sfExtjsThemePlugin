@@ -46,7 +46,7 @@ $gridpanel->attributes = array();
 
 <?php $objectName = $this->getParameterValue('object_name', $this->getModuleName()) ?>
 
-$sfExtjs2_gridpanel_view = 'new Ext.grid.<?php echo (($group_field)?'Grouping':'') ?>View(<?php echo json_encode($grid_view) ?>)';
+$sfExtjs2_gridpanel_view = 'new Ext.grid.<?php echo (($group_field)?'Grouping':'Grid') ?>View(<?php echo json_encode($grid_view) ?>)';
 <?php if (isset($expander['renderer_partial'])): ?>
 // initialise the row expander plugin
 $gridpanel->rowExpander = 'this.getRowExpander()';
