@@ -7,11 +7,17 @@
 
   // get PK
   $pkn = $this->getPrimaryKeyAdminColumn()->getName();
-
 ?>
 [?php
 $renderer = new stdClass();
 $renderer->attributes = array();
+<?php if ($this->getParameterValue('list.grouping.field', null)):?>
+  $renderer->attributes['renderHeader'] = $sfExtjs2Plugin->asMethod(array(
+    'parameters' => 'value, params, record, attr',
+    'source' => "return value"
+  ));
+<?php endif; ?>
+
 
   // initComponent
   $renderer->attributes['initComponent'] = $sfExtjs2Plugin->asMethod("

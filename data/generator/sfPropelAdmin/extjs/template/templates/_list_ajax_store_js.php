@@ -1,7 +1,5 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
-  $panelName = "List".$moduleName."Store";
-  $panelName_xtype = "list".$this->getModuleName()."store";
 
   // TODO: parts of this should be moved to the actions.class one day
   // iterate through all (related) columns of all classes
@@ -31,7 +29,8 @@
   }
 
   $store = 'Store'; if ($group_field) $store = 'Grouping'.$store;
-  $storeName = "List".$moduleName.$store;
+  $panelName = "List".$moduleName.$store;
+  $panelName_xtype = "list".$this->getModuleName().$store;
 
   $listDisplay = array();
   $credArr = array();
@@ -113,17 +112,18 @@ $reader = <?php var_export($jsonReader) ?>;
 
 
 $store->config_array['reader'] = $sfExtjs2Plugin->JsonReader($reader);
+$panelName = '<?php echo $panelName ?>';
 
 /* Datastore methods and variables */
 
 // constructor
-include_partial('list_ajax_store_method_constructor_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'store' => $store));
+include_partial('list_ajax_store_method_constructor_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'store' => $store, 'panelName' => $panelName));
 
 // initComponent
-include_partial('list_ajax_store_method_initComponent_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'store' => $store));
+include_partial('list_ajax_store_method_initComponent_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'store' => $store, 'panelName' => $panelName));
 
 // initEvents
-include_partial('list_ajax_store_method_initEvents_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'store' => $store));
+include_partial('list_ajax_store_method_initEvents_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'store' => $store, 'panelName' => $panelName));
 
 <?php
 $methods =  $this->getParameterValue('datastore.method');
@@ -165,7 +165,7 @@ endif;
 $sfExtjs2Plugin->beginClass(
   'Ext.app.sx',
   '<?php echo $panelName ?>',
-  'Ext.data.Store',
+  'Ext.data.<?php echo $store ?>',
   $store->attributes
 );
 

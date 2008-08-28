@@ -50,7 +50,7 @@ $gridpanel->column_model = 'new Ext.app.sx.<?php echo 'List'.$moduleName.'Column
 // default config
 $gridpanel->config_array = array(
   'title'               => <?php echo $this->getI18NString('list.title', $objectName.' overview', false) ?>,
-  'ds'                  => $sfExtjs2Plugin->asVar('new Ext.app.sx.<?php echo 'List'.$moduleName.(($group_field)?'Grouping':'Store') ?>()'),
+  'ds'                  => $sfExtjs2Plugin->asVar('new Ext.app.sx.<?php echo 'List'.$moduleName.(($group_field)?'GroupingStore':'Store') ?>()'),
   'cm'                  => 'this.cm',
   'view'                => $sfExtjs2Plugin->asVar($sfExtjs2_gridpanel_view),
   'autoScroll'          => true,  //needed to set a height on the toolbar so the scroll doesnt mess up when adding buttons to an empty bar
