@@ -9,10 +9,6 @@
   $grid_view['autoFill'] = true;
   if($this->getParameterValue('list.grouping.text_tpl',false)) $grid_view['groupTextTpl'] = $this->getParameterValue('list.grouping.text_tpl');
 
-  //NOTE: this isn't right
-  //$grid_view_extras = (is_array($this->getParameterValue('list.grid_view_extras')))? $this->getParameterValue('list.grid_view_extras') : array($this->getParameterValue('list.grid_view_extras'));
-  //if(count($grid_view_extras)>1)$grid_view = array_merge($grid_view,$grid_view_extras);
-
   $listDisplay = $this->getParameterValue('list.display', null);
 
   $expander =  $this->getParameterValue('list.expand_columns');

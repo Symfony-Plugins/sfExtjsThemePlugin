@@ -127,29 +127,29 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     // pager
     $this->pager = new sfPropelPager('<?php echo $this->getClassName() ?>', $limit);
     $c = new Criteria();
-<?php if ($sortColumnName = $this->getGroupField()) :
-    $sortColumnName = str_replace($tableDelimiter, '/', $sortColumnName);
-    $sortColumn = $this->getColumnForFieldName($sortColumnName);
-
-    $className = $this->getClassName();
-    if (false !== strpos($sortColumnName, '/'))
-    {
-      $className = $sortColumn->getTable()->getPhpName();
-    }
-
-    try
-    {
-      $fieldName = call_user_func(array($className.'Peer', 'translateFieldName'), $sortColumn->getPhpName(), BasePeer::TYPE_PHPNAME, BasePeer::TYPE_COLNAME);
-    }
-    catch (Exception $e)
-    {
+<?php if (false)://($sortColumnName = $this->getGroupField()) :  //obsolete
+//    $sortColumnName = str_replace($tableDelimiter, '/', $sortColumnName);
+//    $sortColumn = $this->getColumnForFieldName($sortColumnName);
+//
+//    $className = $this->getClassName();
+//    if (false !== strpos($sortColumnName, '/'))
+//    {
+//      $className = $sortColumn->getTable()->getPhpName();
+//    }
+//
+//    try
+//    {
+//      $fieldName = call_user_func(array($className.'Peer', 'translateFieldName'), $sortColumn->getPhpName(), BasePeer::TYPE_PHPNAME, BasePeer::TYPE_COLNAME);
+//    }
+//    catch (Exception $e)
+//    {
       // sort column does not exist, throw error
-      throw new sfException(sprintf('Cannot sort on column "%s", the column does not exist. Clearing your cookies (to remove the session-key) will (temporarily) fix this error. If this happens often and you can reproduce, please inform me at the forum!', $sortColumn));
-    }
+//      throw new sfException(sprintf('Cannot sort on column "%s", the column does not exist. Clearing your cookies (to remove the session-key) will (temporarily) fix this error. If this happens often and you can reproduce, please inform me at the forum!', $sortColumn));
+//    }
 ?>
     // first sort on group-by column
     // TODO: this can be enhanced with options for the generator.yml file.
-    $c->addAscendingOrderByColumn('<?php echo $fieldName ?>');
+    //$c->addAscendingOrderByColumn('<?php //echo $fieldName ?>');
 <?php endif;  ?>
     $this->addSortCriteria($c);
     $this->addFiltersCriteria($c);
@@ -796,11 +796,10 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
       $this->getUser()->setAttribute($sort, $type, "sf_admin/$namespace/sort");
     }
 
+<?php if ($sort = $this->getParameterValue('list.sort')): ?>
     // If not yet sorting, sort as specified in generator.yml (if specified)
     if (!$this->getUser()->getAttributeHolder()->getAll("sf_admin/$namespace/sort"))
     {
-<?php if ($sort = $this->getParameterValue('list.sort')): ?>
-
 <?php if (is_array($sort)): //multiple sort columns ?>
 
 <?php if (!$multisort) :?>
@@ -818,10 +817,8 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 <?php else: // if only one sort column ?>
       $this->getUser()->setAttribute('<?php echo str_replace('/', $tableDelimiter, $sort) ?>', 'asc', "sf_admin/$namespace/sort");
 <?php endif; //end columns array test ?>
-
-<?php endif; // endif list.sort parameter ?>
-
     }
+<?php endif; // endif list.sort parameter ?>
   }
 
   protected function addGroupCriteria($c)

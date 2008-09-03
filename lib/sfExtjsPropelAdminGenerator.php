@@ -612,39 +612,34 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       $for = array($for);
     }
 
-
-
     $columnNames = array();
 
     if (!$strict)
     {
-
-
       // check if you want to display list, add groupes automatically
       if (in_array('list.display', $for))
       {
         // add our expand column to the datastore
-//        $expander = array();
         if($this->getParameterValue('list.expand_columns.fields'))
         {
           $for[] = 'list.expand_columns.fields';
         }
 
         // add grouping.field if set
-        if ($groupColumnName = $this->getParameterValue('list.grouping.field', null))
-        {
-          $columnNames[] = $groupColumnName;
-        }
+//        if ($groupColumnName = $this->getParameterValue('list.grouping.field', null))
+//        {
+//          $columnNames[] = $groupColumnName;
+//        }
 
         // you don't have to add 'list.grouping.display' to the arguments of this method, it is taken into account automatically if you provide 'list.display'
-        if (!in_array('list.grouping.display', $for))
-        {
-
-          if ($groupColumnDisplay = $this->getParameterValue('list.grouping.display', null))
-          {
-            $for[] = 'list.grouping.display';
-          }
-        }
+//        if (!in_array('list.grouping.display', $for))
+//        {
+//
+//          if ($groupColumnDisplay = $this->getParameterValue('list.grouping.display', null))
+//          {
+//            $for[] = 'list.grouping.display';
+//          }
+//        }
       }
       // check if you want to display edit, add pages automatically
       if (in_array('edit.display', $for))
@@ -915,10 +910,10 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
           $group_field = str_replace('/', $this->tableDelimiter, $group_field);
         }
       }
-      else
-      {
-        $group_field = sfInflector::underscore($this->getClassName()).$this->tableDelimiter.$group_field;
-      }
+//      else
+//      {
+//        $group_field = sfInflector::underscore($this->getClassName()).$this->tableDelimiter.$group_field;
+//      }
     }
 
     return $group_field;
