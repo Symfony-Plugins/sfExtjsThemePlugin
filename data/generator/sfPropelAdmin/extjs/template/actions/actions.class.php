@@ -127,30 +127,6 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     // pager
     $this->pager = new sfPropelPager('<?php echo $this->getClassName() ?>', $limit);
     $c = new Criteria();
-<?php if (false)://($sortColumnName = $this->getGroupField()) :  //obsolete
-//    $sortColumnName = str_replace($tableDelimiter, '/', $sortColumnName);
-//    $sortColumn = $this->getColumnForFieldName($sortColumnName);
-//
-//    $className = $this->getClassName();
-//    if (false !== strpos($sortColumnName, '/'))
-//    {
-//      $className = $sortColumn->getTable()->getPhpName();
-//    }
-//
-//    try
-//    {
-//      $fieldName = call_user_func(array($className.'Peer', 'translateFieldName'), $sortColumn->getPhpName(), BasePeer::TYPE_PHPNAME, BasePeer::TYPE_COLNAME);
-//    }
-//    catch (Exception $e)
-//    {
-      // sort column does not exist, throw error
-//      throw new sfException(sprintf('Cannot sort on column "%s", the column does not exist. Clearing your cookies (to remove the session-key) will (temporarily) fix this error. If this happens often and you can reproduce, please inform me at the forum!', $sortColumn));
-//    }
-?>
-    // first sort on group-by column
-    // TODO: this can be enhanced with options for the generator.yml file.
-    //$c->addAscendingOrderByColumn('<?php //echo $fieldName ?>');
-<?php endif;  ?>
     $this->addSortCriteria($c);
     $this->addFiltersCriteria($c);
     $this->pager->setCriteria($c);
@@ -210,7 +186,6 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
 
     return $this->renderText($result);
   }
-
 
   public function executeListPrint()
   {
@@ -550,20 +525,6 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
         {
           try
           {
-            //$dateFormat = new sfDateFormat($this->getUser()->getCulture());
-            <?php $inputPattern  = $type == CreoleTypes::DATE ? 'd' : 'g'; ?>
-            <?php $outputPattern = $type == CreoleTypes::DATE ? 'i' : 'I'; ?>
-            //TODO : check $columnName below, this was $name, but this was obviously wrong! I don't know if $columnName is correct here..
-            //moved the dataformat to _list_ajax_gridpanel_method_updateDB_js method
-//            if (!is_array($<?php echo $this->getSingularName() ?>['<?php echo $columnName ?>']))
-//            {
-//              $value = $dateFormat->format($columnValue, '<?php echo $outputPattern ?>', $dateFormat->getInputPattern('<?php echo $inputPattern ?>'));
-//            }
-//            else
-//            {
-//              $value_array = $columnValue;
-//              $value = $value_array['year'].'-'.$value_array['month'].'-'.$value_array['day'].(isset($value_array['hour']) ? ' '.$value_array['hour'].':'.$value_array['minute'].(isset($value_array['second']) ? ':'.$value_array['second'] : '') : '');
-//            }
             $this-><?php echo $this->getSingularName() ?>->set<?php echo $column->getPhpName() ?>($columnValue);
           }
           catch (sfException $e)
@@ -827,16 +788,16 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   $for = array('list.filters', 'list.display', 'edit.display');
   $groupedColumns = $this->getColumnsGrouped($for, false);
 
-  $pk = clone($groupedColumns['pk']); //OBSOLETE copy by value, you don't want to add $pk->key to groupedColumns['pk']
-  $pk->key = strtolower($pk->getName()); // $pk->getTableName().'/'.
+  $pk = clone($groupedColumns['pk']);
+  $pk->key = strtolower($pk->getName());
 
   $columns = array();
   $columns[] = $pk; // add primary key
   // add primary keys of related classes
   foreach ($groupedColumns['related'] as $foreignKey => $relatedGroupedColumns)
   {
-    $pkr = clone($relatedGroupedColumns['pk']); //copy by value, you don't want to add $pk->key to groupedColumns['pk']
-    $pkr->key = strtolower($pkr->getTableName().'/'.$pkr->getName()); // $pk->getTableName().'/'.
+    $pkr = clone($relatedGroupedColumns['pk']);
+    $pkr->key = strtolower($pkr->getTableName().'/'.$pkr->getName());
 
     $columns[] = $pkr; // add related primary key
   }
@@ -854,7 +815,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 <?php $type = $column->getCreoleType() ?>
 <?php
   $peerClassName = $this->getPeerClassName();
-  if ((false !== strpos($column->key, '/')) ) //&& (!$column->isPartial())) //get peerclass name if different way (from line 505 or something...)
+  if ((false !== strpos($column->key, '/')) )
   {
     //TODO get TablePhpName with help of groupedColumns hierarchy and part of $column->key till last /
     $peerClassName = sfInflector::camelize($column->getTable()->getPhpName()).'Peer';
@@ -885,16 +846,16 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   $for = array('list.filters', 'list.display', 'edit.display');
   $groupedColumns = $this->getColumnsGrouped($for, false);
 
-  $pk = clone($groupedColumns['pk']); //OBSOLETE copy by value, you don't want to add $pk->key to groupedColumns['pk']
-  $pk->key = strtolower($pk->getName()); // $pk->getTableName().'/'.
+  $pk = clone($groupedColumns['pk']);
+  $pk->key = strtolower($pk->getName());
 
   $columns = array();
   $columns[] = $pk; // add primary key
   // add primary keys of related classes
   foreach ($groupedColumns['related'] as $foreignKey => $relatedGroupedColumns)
   {
-    $pkr = clone($relatedGroupedColumns['pk']); //copy by value, you don't want to add $pk->key to groupedColumns['pk']
-    $pkr->key = strtolower($pkr->getTableName().'/'.$pkr->getName()); // $pk->getTableName().'/'.
+    $pkr = clone($relatedGroupedColumns['pk']);
+    $pkr->key = strtolower($pkr->getTableName().'/'.$pkr->getName());
 
     $columns[] = $pkr; // add related primary key
   }
@@ -912,7 +873,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 <?php $type = $column->getCreoleType() ?>
 <?php
   $peerClassName = $this->getPeerClassName();
-  if ((false !== strpos($column->key, '/')) ) //&& (!$column->isPartial())) //get peerclass name if different way (from line 505 or something...)
+  if ((false !== strpos($column->key, '/')) )
   {
     //TODO get TablePhpName with help of groupedColumns hierarchy and part of $column->key till last /
     $peerClassName = sfInflector::camelize($column->getTable()->getPhpName()).'Peer';
@@ -926,16 +887,6 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 
 ?>
 <?php if (($column->isPartial() || $column->isComponent()) && $this->getParameterValue('list.fields.'.$column->getName().'.filter_criteria_disabled')) continue; ?>
-<?php if (!$column->isPrimaryKey()&& $type != CreoleTypes::BOOLEAN): ?>
-//we don't do any is_empty filters
-//    if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>_is_empty']))
-//    {
-//      $criterion = $c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, '');
-//      $criterion->addOr($c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, null, Criteria::ISNULL));
-//      $c->add($criterion);
-//    }
-//    else
-<?php endif; ?>
 <?php if ($type == CreoleTypes::DATE || $type == CreoleTypes::TIMESTAMP): ?>
     if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']) && $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>'] !== '')
     {
@@ -1018,12 +969,6 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
           }
         }
 
-// not throwing error anymore, since you want to be able to sort on custom columns, with $criteria->addAsColumn()
-//        if (!$found)
-//        {
-//          throw new Exception('Sort column "'.$sort_column.'" not found');
-//        }
-
         try
         {
           if ($found)
@@ -1040,7 +985,6 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
         }
         catch (Exception $e)
         {
-          // removed strtoupper
           // sort column does not exist, throw error
           throw new sfException(sprintf('Cannot sort on column "%s", the column does not exist. Clearing your cookies (to remove the session-key) will (temporarily) fix this error. If this happens often and you can reproduce, please inform me at the forum!', $sortColumn));
         }
