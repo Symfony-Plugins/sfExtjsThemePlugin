@@ -10,31 +10,12 @@
   text-transform: uppercase;
 }
 
-.x-plain-header {
-  margin: 10px 0px 5px 0px;
-}
-
-.x-plain-header-text {
-  font-weight: bold !important;
-  font-size: 125%;
-  margin-left: 10px;
-}
-
 .x-form-combo-label {
   width: 'auto' !important;
   float: none !important;
   clear: none !important;
   display: inline !important;
   margin-left: 25px;
-}
-
-.x-grid3-row-alt {
-  background-color: #F4F2EC;
-}
-
-.x-grid3-row-over {
-  background-color: #D0DEF0;
-  background-image: none;
 }
 
 .x-grid-group-body-hide {
@@ -49,25 +30,16 @@
   height: 45px;
 }
 
-.x-form-item label {
-  font-size: 11px;
-}
-
-.x-form-text,.x-form-field {
-  font-size: 11px;
-}
-
-.x-menu {
-  text-align: left;
-}
-
-/* X-Checkbox left-align  */
-.x-checkbox, .x-radio {   height: 13px;   width: 13px;  margin-top: 2px; } .x-checkbox {  background: url('checkbox.gif') no-repeat 0 0; }
-
-/* remove the button-look for the refresh-button in a grid-pager */
-.x-tbar-loading{background-image:url(../../sfExtjs2Plugin/extjs/resources/images/default/grid/done.gif)!important;}
-
+/* start formatLongstring */
 /* whitespace normal for grids using formatLongstring renderer */
 .x-grid3-cell-wrap .x-grid3-cell-inner {
   white-space: normal;
 }
+/* end formatLongstring */
+
+/* start checkboxfix */
+/* css fix to make IE and Firefox checkbox's look the same */
+.x-form-check-wrap, .x-form-radio-wrap {
+  padding: 1px;
+}
+/* end checkboxfix */
