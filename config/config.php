@@ -30,7 +30,7 @@ $default_javascripts = array(
   '/sfExtjsThemePlugin/js/Ext.layout.FormLayout.override.js', // fixes for form labels
   '/sfExtjsThemePlugin/js/Ext.form.RadioGroup.override.js', // adds getValue and setValue to radiogroups
   '/sfExtjsThemePlugin/js/Ext.BoxComponent.override.js',  //allows button to inherit from BoxComponent
-  '/sfExtjsThemePlugin/js/Ext.Checkbox.override.js',  //fixes for checkbox alignment issues in IE
+  '/sfExtjsThemePlugin/js/Ext.form.Checkbox.override.js',  //fixes for checkbox alignment issues in IE
 
   '/sfExtjsThemePlugin/Ext.ux.NoteWindow/Ext.ux.NoteWindow.js',  // note window extension
   '/sfExtjsThemePlugin/Ext.ux.IconMgr/Ext.ux.IconMgr.js',  // icon manager extension
