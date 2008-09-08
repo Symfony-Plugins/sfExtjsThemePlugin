@@ -142,11 +142,13 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
 
       switch ($actionName)
       {
+        case 'text':
+          $text   = isset($params['name']) ? $params['name'] : $default_name;
+          return "'xtype'      => 'tb".$actionName."', 'text' => '".$text."'";
         case 'separator':
         case 'spacer':
         case 'fill':
           return "'xtype'      => 'tb".$actionName."'";
-          break;
         case 'delete':
           $default_icon = 'page_white_delete';
           $default_handler_function = "
