@@ -69,10 +69,13 @@
     'method' => 'POST'
   );
 
-  $options = array(
-    //'proxy' => $httpProxy,
-    //'reader' => $jsonReader
-  );
+  $options = array();
+
+  if($this->getParameterValue('datastore.baseparams'))
+  {
+    $baseParams = (is_array($this->getParameterValue('datastore.baseparams')))? $this->getParameterValue('datastore.baseparams') : array($this->getParameterValue('datastore.baseparams'));
+    if(count($baseParams!=0)) $options['baseParams'] = $baseParams;
+  }
 
   //set default sort, can be overruled by groupfield
   if ($sort_field)
