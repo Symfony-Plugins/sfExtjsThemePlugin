@@ -1236,6 +1236,19 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
             $definition['disabledDaysText'] = isset($params['date_disabled_days_text']) ? $params['date_disabled_days_text'] : 'This days are not avaible';
           }
           break;
+        case 'boolean':
+          //listener to filter when checkbox is checked or unchecked
+          $definition['listeners'] = array(
+            'check' => "function(){this.ownerCt.buttons[0].handler();}"
+          );
+          break;
+        case 'string':
+          //listener to filter when enter is pressed
+          $definition['listeners'] = array(
+            'specialkey' => "function(f,e){console.log(e.getKey());console.log(f.getValue());if(f.getValue() != '' && e.getKey() ==13)this.ownerCt.buttons[0].handler();}"
+          );
+          break;
+
       }
 
       // if combo set in the generator create a combo that gets unique values for the local column
