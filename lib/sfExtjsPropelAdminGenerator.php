@@ -1245,7 +1245,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
         case 'string':
           //listener to filter when enter is pressed
           $definition['listeners'] = array(
-            'specialkey' => "function(f,e){console.log(e.getKey());console.log(f.getValue());if(f.getValue() != '' && e.getKey() ==13)this.ownerCt.buttons[0].handler();}"
+            'specialkey' => "function(f,e){if(f.getValue() != '' && e.getKey() ==13)this.ownerCt.buttons[0].handler();}"
           );
           break;
 
