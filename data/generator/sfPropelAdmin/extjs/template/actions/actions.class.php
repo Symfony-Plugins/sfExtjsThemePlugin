@@ -36,13 +36,13 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     $this->groupby = array($this->getRequestParameter('group')=>true);
     $this->forwardIf(!$this->groupby,'<?php echo $this->getModuleName() ?>','ajaxFailed');
 
-    $this->processFilters();
-    $this->filters = $this->getUser()->getAttributeHolder()->getAll('sf_admin/<?php echo $this->getSingularName() ?>/filters');
+    $namespace = "autocomplete";
+    $this->processFilters($namespace);
+    $this->filters = $this->getUser()->getAttributeHolder()->getAll("sf_admin/$namespace/filters");
 
     $c = new Criteria();
     $this->addGroupCriteria($c);
-    $this->addSortCriteria($c);
-    $this->addFiltersCriteria($c);
+    $this->addFiltersCriteria($c,$namespace);
     $rs = <?php echo $this->getClassName() ?>Peer::doSelectRS($c);
     $rs->setFetchmode(ResultSet::FETCHMODE_ASSOC);
     while($rs->next())

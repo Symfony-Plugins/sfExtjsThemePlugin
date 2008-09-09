@@ -1244,12 +1244,13 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       if( isset($params['filter_field']) && $params['filter_field'] == 'combo')
       {
         $params['xtype'] = 'comboboxautoload';
-        $definition['url'] = $this->controller->genUrl($this->getModuleName().'/jsonCombo?group='.$column->key);
+        $definition['url'] = $this->controller->genUrl($this->getModuleName().'/jsonCombo');
         $definition['valueField'] = $column->key;
         $definition['hiddenName'] = $column->key;
         $definition['displayField'] = $column->key;
         $definition['typeAhead'] = false;
         $definition['sortField'] = $column->key;
+        $definition['groupField'] = $column->key;
         $definition['pageSize'] = 0;
         $definition['filter'] = true;
         // TODO: chained support is in comboboxautoload and on the server but it needs some work to allow.

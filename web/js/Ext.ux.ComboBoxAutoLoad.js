@@ -59,6 +59,8 @@ Ext.ux.ComboBoxAutoLoad = function(config)
     });
   }
 
+  if('undefined' != typeof this.groupField) this.store.baseParams.group = this.groupField;
+
   Ext.ux.ComboBoxAutoLoad.superclass.constructor.call(this);
 
 };
