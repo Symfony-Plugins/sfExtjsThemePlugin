@@ -66,11 +66,12 @@ Ext.extend(Ext.ux.grid.RowExpander, Ext.util.Observable, {
   },
 
   getBodyContent : function(record, index) {
-    // convert keys (replace minus (-) by two underscores (__))
+    //OBSOLETE: no longer needed //convert keys (replace minus (-) by two underscores (__))
     var data = Array();
     for (var key in record.data) {
-      var new_key = key.replace(/-/g, '__');
-      data[new_key] = record.data[key];
+      //OBSOLETE //var new_key = key.replace(/-/g, '__');
+      //OBSOLETE //data[new_key] = record.data[key];
+      data[key] = record.data[key];
     }
 
     if (!this.enableCaching) {

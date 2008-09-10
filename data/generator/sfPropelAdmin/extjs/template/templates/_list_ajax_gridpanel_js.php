@@ -171,7 +171,7 @@ if (isset($expander['fields']))
   $template = '';
   foreach($expander['fields'] as $field)
   {
-    $template .= "<tr><td><p>{".$field."}</p></td></tr>";
+    $template .= "<tr><td><p>{".str_replace('/','-',$field)."}</p></td></tr>";
   }
 }
 ?>
