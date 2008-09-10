@@ -1211,11 +1211,40 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     $user_params = $this->getParameterValue('list.fields.'.$column->key.'.params');
     $params = is_array($user_params) ? $user_params : sfToolkit::stringToArray($user_params);
 
-    // columns with related data except date columns
-    if (strpos($column->key, '/') !== false && $this->getFieldType($column) != 'date')
-    {
-      $definition = array_merge($definition, $this->getRelatedColumnAjaxFilterDefinition($column, $groupedColumns));
+    // if combo set in the generator create a combo that gets unique values for the local column
+    // TODO: figure out a good way to do chained combos
+    // TODO: add in support for Ext.state.Manager to save the filter state via cookie
+
+    //foreign keys that are not dates and with filter_field that is not filterfield and local columns with filter_filed that is combo
+    $combo = ($this->getFieldType($column) != 'date' && strpos($column->key, '/') !== false)?true:false;
+    $combo = (isset($params['filter_field']) && $params['filter_field'] == 'textfield')?false:$combo;
+    $combo = (isset($params['filter_field']) && $params['filter_field'] == 'combo')?true:$combo;
+    if($combo){
+      $key = (strpos($column->key, '/')) ? str_replace('/','-',$column->key) : $column->key ;
+      $params['xtype'] = 'comboboxautoload';
+      $definition['url'] = $this->controller->genUrl($this->getModuleName().'/jsonCombo');
+      $definition['valueField'] = $key;
+      $definition['hiddenName'] = $key;
+      $definition['displayField'] = $key;
+      $definition['typeAhead'] = false;
+      $definition['sortField'] = $key;
+      $definition['groupField'] = $key;
+      $definition['pageSize'] = 0;
+      $definition['filter'] = true;
+      $definition['minListWidth'] = 150;
+      // TODO: chained support is in comboboxautoload and on the server but it needs some work to allow.
+      // my idea is to add a second trigger to the field when the combo is in a filtered state that will
+      // change the baseParams on the combo store to send filter: 0 and reset the filters on the server.
+      // clearing one chained filter will need to remove the extra trigger from all chained combos in the
+      // filter panel as the filter state is kept server side and resetting one resets all.
+      //$definition['chained'] = 1;
     }
+    //OBSOLETE: jsonAutocomplete too heavy for filters, we just want a list of unique values for that field, not all values
+    // columns with related data except date columns
+//    elseif (strpos($column->key, '/') !== false && $this->getFieldType($column) != 'date')
+//    {
+//      $definition = array_merge($definition, $this->getRelatedColumnAjaxFilterDefinition($column, $groupedColumns));
+//    }
     else
     {
       // set CSS id in the first column
@@ -1249,29 +1278,6 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
           );
           break;
 
-      }
-
-      // if combo set in the generator create a combo that gets unique values for the local column
-      // TODO: figure out a good way to do chained combos
-      // TODO: add in support for Ext.state.Manager to save the filter state via cookie
-      if( isset($params['filter_field']) && $params['filter_field'] == 'combo')
-      {
-        $params['xtype'] = 'comboboxautoload';
-        $definition['url'] = $this->controller->genUrl($this->getModuleName().'/jsonCombo');
-        $definition['valueField'] = $column->key;
-        $definition['hiddenName'] = $column->key;
-        $definition['displayField'] = $column->key;
-        $definition['typeAhead'] = false;
-        $definition['sortField'] = $column->key;
-        $definition['groupField'] = $column->key;
-        $definition['pageSize'] = 0;
-        $definition['filter'] = true;
-        // TODO: chained support is in comboboxautoload and on the server but it needs some work to allow.
-        // my idea is to add a second trigger to the field when the combo is in a filtered state that will
-        // change the baseParams on the combo store to send filter: 0 and reset the filters on the server.
-        // clearing one chained filter will need to remove the extra trigger from all chained combos in the
-        // filter panel as the filter state is kept server side and resetting one resets all.
-        //$definition['chained'] = 1;
       }
     } // end local field setup
 
@@ -1474,56 +1480,57 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     }
   }
 
-  function getRelatedColumnAjaxFilterDefinition($column, $groupedColumns)
-  {
-    if (strpos($column->key, '/') !== false)
-    {
-      $fields = explode('/', $column->key);
-
-      $last                 = strrpos($column->key, '/');
-      $columnname           = substr($column->key, $last + 1);
-      $relatedTableFKs      = substr($column->key, 0, $last);
-      $relatedTableGrouped  = $this->getSubGroupedColumns($relatedTableFKs, $groupedColumns);
-      $relatedTablePK       = $relatedTableGrouped['pk'];
-      $relatedTableName     = $relatedTablePK->getTableName();
-      $relatedModuleName    = $this->getParameterValue('related_tables.'.$relatedTableName.'.module_name') ? $this->getParameterValue('related_tables.'.$relatedTableName.'.module_name') : $relatedTableName;
-      $relatedFKColumn      = $this->getColumnForFieldName($fields[0]);
-
-      $tableName = $this->getTableName();
-      $fieldName = str_replace('/', $this->tableDelimiter, $column->key);
-
-      $ffcolumn['xtype'] = 'comboboxautoload';
-      $ffcolumn['url'] = $this->controller->genUrl($this->getModuleName().'/jsonAutocomplete?class='.$relatedTableName);
-      $ffcolumn['valueField']   = $this->getRelatedFieldName($column);
-      $ffcolumn['displayField'] = $this->getRelatedFieldName($column);
-      $ffcolumn['dataIndex']    = str_replace('/', $this->tableDelimiter, $relatedTableFKs);
-      $ffcolumn['preloadedField'] = strtolower($tableName).'['.$fieldName.']';
-      $ffcolumn['relatedTableName'] = $relatedTableName;
-      $ffcolumn['relatedModuleName'] = $relatedModuleName;
-      $ffcolumn['relatedFieldName'] = $columnname;
-      $ffcolumn['queryParam'] = 'filters['.str_replace('/', $this->tableDelimiter, $column->key).']';
-      $ffcolumn['sortField'] = str_replace('/', $this->tableDelimiter, $column->key);
-      $ffcolumn['pageSize'] = 0;
-      $ffcolumn['filter'] = true;
-
-      //make sure our columnConfig in the generator.yml overrides the generated values
-      $fieldConfig = $this->getParameterValue('list.fields.'.$column->key.'.params.combo');
-      if($fieldConfig) $ffcolumn = array_merge($ffcolumn,$fieldConfig);
-
-      if(isset($ffcolumn['store']))
-      {
-        $ffcolumn['editable'] = false;
-        $ffcolumn['mode'] = 'local';
-        $ffcolumn['pageSize'] = 0;
-      }
-
-      //make sure our comboConfig in the generator.yml overrides the generated values
-      $comboConfig = $this->getParameterValue('list.fields.'.$column->key.'.params.combo.comboConfig');
-      if($comboConfig) $ffcolumn = array_merge($ffcolumn['comboConfig'], $comboConfig);
-
-      return $ffcolumn;
-    }
-  }
+//OBSOLETE
+//  function getRelatedColumnAjaxFilterDefinition($column, $groupedColumns)
+//  {
+//    if (strpos($column->key, '/') !== false)
+//    {
+//      $fields = explode('/', $column->key);
+//
+//      $last                 = strrpos($column->key, '/');
+//      $columnname           = substr($column->key, $last + 1);
+//      $relatedTableFKs      = substr($column->key, 0, $last);
+//      $relatedTableGrouped  = $this->getSubGroupedColumns($relatedTableFKs, $groupedColumns);
+//      $relatedTablePK       = $relatedTableGrouped['pk'];
+//      $relatedTableName     = $relatedTablePK->getTableName();
+//      $relatedModuleName    = $this->getParameterValue('related_tables.'.$relatedTableName.'.module_name') ? $this->getParameterValue('related_tables.'.$relatedTableName.'.module_name') : $relatedTableName;
+//      $relatedFKColumn      = $this->getColumnForFieldName($fields[0]);
+//
+//      $tableName = $this->getTableName();
+//      $fieldName = str_replace('/', $this->tableDelimiter, $column->key);
+//
+//      $ffcolumn['xtype'] = 'comboboxautoload';
+//      $ffcolumn['url'] = $this->controller->genUrl($this->getModuleName().'/jsonAutocomplete?class='.$relatedTableName);
+//      $ffcolumn['valueField']   = $this->getRelatedFieldName($column);
+//      $ffcolumn['displayField'] = $this->getRelatedFieldName($column);
+//      $ffcolumn['dataIndex']    = str_replace('/', $this->tableDelimiter, $relatedTableFKs);
+//      $ffcolumn['preloadedField'] = strtolower($tableName).'['.$fieldName.']';
+//      $ffcolumn['relatedTableName'] = $relatedTableName;
+//      $ffcolumn['relatedModuleName'] = $relatedModuleName;
+//      $ffcolumn['relatedFieldName'] = $columnname;
+//      $ffcolumn['queryParam'] = 'filters['.str_replace('/', $this->tableDelimiter, $column->key).']';
+//      $ffcolumn['sortField'] = str_replace('/', $this->tableDelimiter, $column->key);
+//      $ffcolumn['pageSize'] = 0;
+//      $ffcolumn['filter'] = true;
+//
+//      //make sure our columnConfig in the generator.yml overrides the generated values
+//      $fieldConfig = $this->getParameterValue('list.fields.'.$column->key.'.params.combo');
+//      if($fieldConfig) $ffcolumn = array_merge($ffcolumn,$fieldConfig);
+//
+//      if(isset($ffcolumn['store']))
+//      {
+//        $ffcolumn['editable'] = false;
+//        $ffcolumn['mode'] = 'local';
+//        $ffcolumn['pageSize'] = 0;
+//      }
+//
+//      //make sure our comboConfig in the generator.yml overrides the generated values
+//      $comboConfig = $this->getParameterValue('list.fields.'.$column->key.'.params.combo.comboConfig');
+//      if($comboConfig) $ffcolumn = array_merge($ffcolumn['comboConfig'], $comboConfig);
+//
+//      return $ffcolumn;
+//    }
+//  }
 
   /**
    * returns Ext-dataType
