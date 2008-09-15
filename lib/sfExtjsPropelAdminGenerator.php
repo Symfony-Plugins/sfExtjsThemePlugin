@@ -253,18 +253,19 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
           break;
       }
     }
-    else
-    {
-      $default_name   = strtr($actionName, '_', ' ');
-      $default_action = 'List'.sfInflector::camelize($actionName);
-
-      // set name up here...
-      $name   = isset($params['name']) ? $params['name'] : $default_name;
-      $handler_url   = isset($params['handler_url']) ? $params['handler_url'] : '';
-
-      if ($gridListCreateLink = sfConfig::get('app_sf_extjs_theme_plugin_list_action_handler', null))
-      $handler_function = $gridListCreateLink."('$handler_url', '".$default_name."', '".$name."');";
-    }
+//OBSOLETE
+//    else
+//    {
+//      $default_name   = strtr($actionName, '_', ' ');
+//      $default_action = 'List'.sfInflector::camelize($actionName);
+//
+//      // set name up here...
+//      $name   = isset($params['name']) ? $params['name'] : $default_name;
+//      $handler_url   = isset($params['handler_url']) ? $params['handler_url'] : '';
+//
+//      if ($gridListCreateLink = sfConfig::get('app_sf_extjs_theme_plugin_list_action_handler', null))
+//      $handler_function = $gridListCreateLink."('$handler_url', '".$default_name."', '".$name."');";
+//    }
 
     $name   = isset($params['name']) ? $params['name'] : $default_name;
     $icon   = isset($params['icon']) ? sfToolkit::replaceConstants($params['icon']) : $default_icon;
