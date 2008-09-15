@@ -14,6 +14,7 @@ if (null === $listActions)
 $credArr = array();
 $i=0;?>
 [?php
+$config_items['items'] = array();
 <?php foreach ((array) $listActions as $actionName => $params):
 //handle credentials for displaying the button
   $buttoncreds = (isset($params['credentials']))?$params['credentials']:false;
