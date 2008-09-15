@@ -1,60 +1,75 @@
 [?php /* * Created on 20-nov-2007 * * by Leon van der Ree */ ?]
 <?php
-$listActions = $this->getParameterValue('list.actions');
-if (null === $listActions)
-{
-  $listActions = array(
-    '_create' => array(),
-    '_refresh' => array()
-  );
-}
 
-if (is_array($listActions)): ?>
-<?php
+
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
-
   $toolbarName = "List".$moduleName."ToolbarTop";
+  $toolbarName_xtype = "list".$this->getModuleName()."toptoolbar";
 ?>
 [?php
-  //setup the configuration
+$toolbar_top = new stdClass();
+$toolbar_top->attributes = array();
+
+/* top toolbar Configuration */
   $config_items = array(
     'autoWidth' => false,
     'height' => 26,
     'items' => array()
   );
 
-<?php foreach ((array) $listActions as $actionName => $params): ?>
-  <?php // TODO: this is broken // echo $this->addCredentialCondition("\$config_items['items'][] = \$sfExtjs2Plugin->asAnonymousClass(array(".$this->getAjaxButtonToToolbarAction($actionName, $params, false)."));\n\n", $params) ?>
-  $config_items['items'][] = array(<?php echo $this->getAjaxButtonToToolbarAction($actionName, $params, false) ?>);
-<?php endforeach ?>
+// ttbConfig Var
+include_partial('list_ajax_toolbar_top_variable_ttbConfig_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'toolbar_top' => $toolbar_top));
 
-  // constructor
-  $sfExtjs2_<?php echo $toolbarName ?>_constructor = "
-    // combine <?php echo $toolbarName ?>Config with arguments
-    Ext.app.sx.<?php echo $toolbarName ?>.superclass.constructor.call(this, Ext.apply(".$sfExtjs2Plugin->asAnonymousClass($config_items).", c));
-  ";
+// constructor
+include_partial('list_ajax_toolbar_top_method_constructor_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'toolbar_top' => $toolbar_top));
 
-  // initComponent
-  $sfExtjs2_<?php echo $toolbarName ?>_initComponent = "
-    //call parent
-    Ext.app.sx.<?php echo $toolbarName ?>.superclass.initComponent.apply(this, arguments);
-  ";
+// initComponent
+include_partial('list_ajax_toolbar_top_method_initComponent_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'toolbar_top' => $toolbar_top));
 
+<?php
+$methods =  $this->getParameterValue('toolbar_top.method');
+if(isset($methods['partials'])):
+if (!is_array($methods['partials']))
+{
+  $methods['partials'] = array($methods['partials']);
+}
+?>
+// generator method partials
+<?php
+  foreach($methods['partials'] as $method):
+?>
+include_partial('<?php echo substr($method,1) ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'toolbar_top' => $toolbar_top));
+<?php
+    $this->createPartialFile($method,'<?php // @object $sfExtjs2Plugin and @object $toolbar_top provided ?>');
+  endforeach;
+endif;
 
-  // app.sx from Symfony eXtended (instead of ux: user eXtention)
-  $sfExtjs2Plugin->beginClass(
-    'Ext.app.sx',
-    '<?php echo $toolbarName ?>',
-    'Ext.Toolbar',
-    array (
-      'constructor'   => $sfExtjs2Plugin->asMethod(array(
-        'parameters' => 'c',
-        'source'     => $sfExtjs2_<?php echo $toolbarName ?>_constructor
-      )),
-      'initComponent' => $sfExtjs2Plugin->asMethod($sfExtjs2_<?php echo $toolbarName ?>_initComponent),
-    )
-  );
-  $sfExtjs2Plugin->endClass();
+$variables =  $this->getParameterValue('toolbar_top.variable');
+if (isset($variables['partials'])):
+if (!is_array($variables['partials']))
+{
+  $variables['partials'] = array($variables['partials']);
+}
+?>
+// generator variable partials
+<?php
+  foreach($variables['partials'] as $variable):
+?>
+include_partial('<?php echo substr($variable,1) ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'toolbar_top' => $toolbar_top));
+<?php
+  $this->createPartialFile($variable,'<?php // @object $sfExtjs2Plugin and @object $toolbar_top provided ?>');
+  endforeach;
+endif;
+?>
 
+// app.sx from Symfony eXtended (instead of ux: user eXtention)
+$sfExtjs2Plugin->beginClass(
+  'Ext.app.sx',
+  '<?php echo $toolbarName ?>',
+  'Ext.Toolbar',
+  $toolbar_top->attributes
+);
+$sfExtjs2Plugin->endClass();
 ?]
-<?php endif; ?>
+// register xtype
+Ext.reg('<?php echo $toolbarName_xtype ?>', Ext.app.sx.<?php echo $toolbarName ?>);

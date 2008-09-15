@@ -4,7 +4,7 @@
 ?>
 
 [?php
-// constructor
+// init component
 $configArr['source'] = "Ext.app.sx.<?php echo $panelName ?>.superclass.initComponent.apply(this, arguments);";
 $tabpanel->attributes['initComponent'] = $sfExtjs2Plugin->asMethod($configArr);
 ?]
