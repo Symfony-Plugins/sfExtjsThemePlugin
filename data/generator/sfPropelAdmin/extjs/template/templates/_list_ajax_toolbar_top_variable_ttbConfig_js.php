@@ -21,7 +21,7 @@ $config_items['items'] = array();
   if ($buttoncreds)
   {
     $buttoncreds = str_replace("\n", ' ', var_export($buttoncreds, true));
-    //if the user doesn't have the right permissions remove the columnconfig
+    //if the user doesn't have the right permissions remove the button config
     $credArr[] = 'if(!$sf_user->hasCredential('.$buttoncreds.')) unset($toolbar_top->config_array[\'items\']['.$i.']);';
   }
 ?>

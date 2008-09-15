@@ -132,6 +132,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     //general default values
     //$default_handler_function = "Ext.Msg.alert('Error','handler_function is not defined!<br><br>Copy the template \'_list_ajax_action_".$actionName.".php\' from cache to your application/modules/".strtolower($this->getModuleName())."/templates folder and alter it or define the \'handler_function\' in your generator.yml file.');";
     $default_handler_function = 'this.'.$actionName;
+    $handler_function = false;
     $default_icon = 'page_white';
 
     // default values
@@ -154,7 +155,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
           return "'xtype'      => 'tb".$actionName."'";
         case 'delete':
           $default_icon = 'page_white_delete';
-          $default_handler_function = "
+          $handler_function = "
         var selections = ".$list_ns.".getGridPanel().getSelections();
         if(selections){
           Ext.Msg.confirm('Confirm','Are you sure you want to delete '+selections.length+' record(s)?',function(btn,text){
@@ -186,25 +187,25 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
         case 'create':
           $default_icon = 'page_white_add';
           $default_name = isset($params['name']) ? $params['name'] : 'Add '.$this->getParameterValue('object_name', $this->getModuleName());
-          $default_handler_function = "window.location = '".$this->controller->genUrl($this->getModuleName().'/create')."'";
+          $handler_function = "window.location = \"".$this->controller->genUrl($this->getModuleName().'/create')."\"";
 
           if ($openPanelFunction = sfConfig::get('app_sf_extjs_theme_plugin_open_panel', null))
           {
-            $default_handler_function = $openPanelFunction."('".strtolower($this->getModuleName())."')";
+            $handler_function = $openPanelFunction."('".strtolower($this->getModuleName())."')";
           }
 
           if ($gridListCreateLink = sfConfig::get('app_sf_extjs_theme_plugin_list_action_handler', null))
           {
-            $default_handler_function = $gridListCreateLink."('".$this->controller->genUrl($this->getModuleName().'/create')."', null,  '".$default_name."')";
+            $handler_function = $gridListCreateLink."('".$this->controller->genUrl($this->getModuleName().'/create')."', null,  '".$default_name."')";
           }
           break;
         case 'refresh':
           $default_icon = 'table_refresh';
-          $default_handler_function = "this.store.reload();";
+          $handler_function = "this.store.reload();";
           break;
         case 'print':
           $default_icon = 'printer';
-          $default_handler_function = "window.open('".$this->controller->genUrl($this->getModuleName().'/listPrint')."')";
+          $handler_function = "window.open('".$this->controller->genUrl($this->getModuleName().'/listPrint')."')";
           break;
         case 'pdf':
           //          $default_handler_function = "todo";
@@ -212,7 +213,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
           break;
         case 'upload':
           $default_icon = 'page_white_get';
-          $default_handler_function ="
+          $handler_function ="
             var panel = Ext.get('upload_panel');
             if(!panel){
               panel = Ext.get(document.body).createChild('<div id=\'upload_panel\'></div>');
@@ -225,7 +226,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
           break;
         case 'insert':
           $default_icon = 'page_white_add';
-          $default_handler_function = "
+          $handler_function = "
           Ext.Ajax.request({
             url: '".$this->controller->genUrl($this->getModuleName().'/ajaxEdit')."',
             method: 'POST',
@@ -262,14 +263,17 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       $handler_url   = isset($params['handler_url']) ? $params['handler_url'] : '';
 
       if ($gridListCreateLink = sfConfig::get('app_sf_extjs_theme_plugin_list_action_handler', null))
-      $default_handler_function = $gridListCreateLink."('$handler_url', '".$default_name."', '".$name."');";
+      $handler_function = $gridListCreateLink."('$handler_url', '".$default_name."', '".$name."');";
     }
 
     $name   = isset($params['name']) ? $params['name'] : $default_name;
     $icon   = isset($params['icon']) ? sfToolkit::replaceConstants($params['icon']) : $default_icon;
     $action = isset($params['action']) ? $params['action'] : $default_action;
     $url_params = $pk_link ? '?'.$this->getPrimaryKeyUrlParams() : '\'';
-    $handler_function = isset($params['handler_function']) ? '$sfExtjs2Plugin->asMethod("'.$params['handler_function'].'")' : "\$sfExtjs2Plugin->asVar('".$default_handler_function."')";
+    $handler_function = (!$handler_function)?"\$sfExtjs2Plugin->asVar('".$default_handler_function."')":"\$sfExtjs2Plugin->asMethod('".$handler_function."')";
+    $handler_function = isset($params['handler_function'])
+    ? '$sfExtjs2Plugin->asMethod("'.$params['handler_function'].'")'
+    : $handler_function;
 
     //    if (!isset($options['class']))
     //    {
