@@ -127,8 +127,11 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     $params   = (array) $params;
     $options  = isset($params['params']) ? sfToolkit::stringToArray($params['params']) : array();
 
+    sfLoader::loadHelpers('Partial');
+
     //general default values
-    $default_handler_function = "Ext.Msg.alert('Error','handler_function is not defined!<br><br>Copy the template \'_list_ajax_action_".$actionName.".php\' from cache to your application/modules/".strtolower($this->getModuleName())."/templates folder and alter it or define the \'handler_function\' in your generator.yml file.');";
+    //$default_handler_function = "Ext.Msg.alert('Error','handler_function is not defined!<br><br>Copy the template \'_list_ajax_action_".$actionName.".php\' from cache to your application/modules/".strtolower($this->getModuleName())."/templates folder and alter it or define the \'handler_function\' in your generator.yml file.');";
+    $default_handler_function = 'this.'.$actionName;
     $default_icon = 'page_white';
 
     // default values
@@ -266,7 +269,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     $icon   = isset($params['icon']) ? sfToolkit::replaceConstants($params['icon']) : $default_icon;
     $action = isset($params['action']) ? $params['action'] : $default_action;
     $url_params = $pk_link ? '?'.$this->getPrimaryKeyUrlParams() : '\'';
-    $handler_function = isset($params['handler_function']) ? $params['handler_function'] : $default_handler_function;
+    $handler_function = isset($params['handler_function']) ? '$sfExtjs2Plugin->asMethod("'.$params['handler_function'].'")' : "\$sfExtjs2Plugin->asVar('".$default_handler_function."')";
 
     //    if (!isset($options['class']))
     //    {
@@ -295,7 +298,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
                   'disabled'   => false,
                   'scope'      => \$sfExtjs2Plugin->asVar(\"this\"),
                   'store'      => 'c.store',
-                  'handler'    => \$sfExtjs2Plugin->asMethod(\"".$handler_function."\")
+                  'handler'    => $handler_function
                  ";
 
     return $jsOptions;
@@ -1207,6 +1210,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     }
     $definition['fieldLabel'] = str_replace("'", "\\'", $this->getParameterValue('edit.fields.'.$column->key.'.name')).':';
     $definition['labelSeparator'] = '';
+    $definition['filter'] = true;
 
     $user_params = $this->getParameterValue('list.fields.'.$column->key.'.params');
     $params = is_array($user_params) ? $user_params : sfToolkit::stringToArray($user_params);
@@ -1230,8 +1234,12 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       $definition['sortField'] = $key;
       $definition['groupField'] = $key;
       $definition['pageSize'] = 0;
-      $definition['filter'] = true;
       $definition['minListWidth'] = 150;
+
+      //make sure our comboConfig in the generator.yml overrides the generated values
+      //$comboConfig = $this->getParameterValue('list.fields.'.$column->key.'.params.combo.combo_config');
+      //if($comboConfig) $definition['comboConfig'] = $comboConfig;
+
       // TODO: chained support is in comboboxautoload and on the server but it needs some work to allow.
       // my idea is to add a second trigger to the field when the combo is in a filtered state that will
       // change the baseParams on the combo store to send filter: 0 and reset the filters on the server.
