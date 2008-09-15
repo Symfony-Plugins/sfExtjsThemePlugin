@@ -187,7 +187,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
         case 'create':
           $default_icon = 'page_white_add';
           $default_name = isset($params['name']) ? $params['name'] : 'Add '.$this->getParameterValue('object_name', $this->getModuleName());
-          $handler_function = "window.location = \"".$this->controller->genUrl($this->getModuleName().'/create')."\"";
+          $handler_function = "window.location = '".$this->controller->genUrl($this->getModuleName().'/create')."'";
 
           if ($openPanelFunction = sfConfig::get('app_sf_extjs_theme_plugin_open_panel', null))
           {
@@ -271,7 +271,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     $icon   = isset($params['icon']) ? sfToolkit::replaceConstants($params['icon']) : $default_icon;
     $action = isset($params['action']) ? $params['action'] : $default_action;
     $url_params = $pk_link ? '?'.$this->getPrimaryKeyUrlParams() : '\'';
-    $handler_function = (!$handler_function)?"\$sfExtjs2Plugin->asVar('".$default_handler_function."')":"\$sfExtjs2Plugin->asMethod('".$handler_function."')";
+    $handler_function = (!$handler_function)?"\$sfExtjs2Plugin->asVar('".$default_handler_function."')":'$sfExtjs2Plugin->asMethod("'.$handler_function.'")';
     $handler_function = isset($params['handler_function'])
     ? '$sfExtjs2Plugin->asMethod("'.$params['handler_function'].'")'
     : $handler_function;
