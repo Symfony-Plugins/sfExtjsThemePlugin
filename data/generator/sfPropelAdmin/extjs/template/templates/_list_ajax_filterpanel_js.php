@@ -87,6 +87,12 @@ $filterpanel->config_array = array(
 /* handle user credentials */
 <?php echo implode("\n", $credArr) ?>
 
+<?php
+  $user_params = $this->getParameterValue('filterpanel.params', array());
+  if (is_array($user_params)):
+?>
+$filterpanel->config_array = array_merge($filterpanel->config_array, <?php var_export($user_params) ?>);
+<?php endif; ?>
 
 /* FilterPanel methods and variables */
 

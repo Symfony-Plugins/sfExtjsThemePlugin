@@ -31,4 +31,12 @@ $config_items['items'] = array();
   $toolbar_top->config_array = $config_items;
 /* handle user credentials */
 <?php echo implode("\n", $credArr) ?>
+
+<?php
+  $user_params = $this->getParameterValue('toolbar_top.params', array());
+  if (is_array($user_params)):
+?>
+$toolbar_top->config_array = array_merge($toolbar_top->config_array, <?php var_export($user_params) ?>);
+<?php endif; ?>
+
 ?]

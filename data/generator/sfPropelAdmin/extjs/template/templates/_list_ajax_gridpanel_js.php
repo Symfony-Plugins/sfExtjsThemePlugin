@@ -45,7 +45,7 @@ $gridpanel->attributes = array();
 $sfExtjs2_gridpanel_view = 'new Ext.grid.<?php echo (($group_field)?'Grouping':'Grid') ?>View(<?php echo json_encode($grid_view) ?>)';
 <?php if (isset($expander['renderer_partial'])): ?>
 // initialise the row expander plugin
-$gridpanel->rowExpander = 'this.getRowExpander()';
+$gridpanel->rowExpander = 'this.getRowExpander();';
 <?php endif; ?>
 $gridpanel->column_model = 'new Ext.app.sx.<?php echo 'List'.$moduleName.'ColumnModel' ?>()';
 
@@ -63,6 +63,7 @@ $gridpanel->config_array = array(
   'clicksToEdit'        => <?php var_export(sfConfig::get('app_sf_extjs_theme_plugin_list_clicksToEdit', 1)) ?>,
   'trackMouseOver'      => <?php var_export(sfConfig::get('app_sf_extjs_theme_plugin_list_trackMouseOver', false)) ?>, //this will cause the firefox permission denied errors if true
   'loadMask'            => <?php var_export(sfConfig::get('app_sf_extjs_theme_plugin_list_loadMask', false)) ?>,
+  'stripeRows'          => <?php var_export(sfConfig::get('app_sf_extjs_theme_plugin_list_stripeRows', true)) ?>,
 );
 
 <?php if (sfConfig::get('app_sf_extjs_theme_plugin_list_tabbed')): ?>
@@ -74,12 +75,8 @@ $gridpanel->config_array['header'] = false;
 $gridpanel->config_array['plugins'] = <?php echo var_export($pluginArr); ?>;
 <?php endif; ?>
 
-// get autoExpandColumn from generator
-<?php if($this->getParameterValue('list.auto_expand_column')): ?>
-$gridpanel->config_array['autoExpandColumn'] = '<?php echo $this->getParameterValue('list.auto_expand_column') ?>';
-<?php endif; ?>
 <?php
-  $user_params = $this->getParameterValue('list.params', array());
+  $user_params = $this->getParameterValue('gridpanel.params', array());
 
   if (isset($user_params['bbar'])) unset($user_params['bbar']);
   if (isset($user_params['tbar'])) unset($user_params['tbar']);

@@ -3,11 +3,7 @@
 
   // TODO: parts of this should be moved to the actions.class one day
   // iterate through all (related) columns of all classes
-  if($this->getParameterValue('list.expand_column'))
-  {
-    //$list = $this->getParameterValue('list.display');
-    //$this->setParameterValue('list.display') = array_push($list,'+'.$this->getParameterValue('list.expand_column'));
-  }
+
   $for = 'list.display';
   $groupedColumns = $this->getColumnsGrouped($for);
   $columns = $this->getListUniqueColumns($groupedColumns, true);
@@ -71,12 +67,6 @@
 
   $options = array();
 
-  if($this->getParameterValue('datastore.baseparams'))
-  {
-    $baseParams = (is_array($this->getParameterValue('datastore.baseparams')))? $this->getParameterValue('datastore.baseparams') : array($this->getParameterValue('datastore.baseparams'));
-    if(count($baseParams!=0)) $options['baseParams'] = $baseParams;
-  }
-
   //set default sort, can be overruled by groupfield
   if ($sort_field)
   {
@@ -113,9 +103,15 @@ $reader = <?php var_export($jsonReader) ?>;
 /* handle user credentials */
 <?php echo implode("\n", $credArr) ?>
 
-
 $store->config_array['reader'] = $sfExtjs2Plugin->JsonReader($reader);
 $panelName = '<?php echo $panelName ?>';
+
+<?php
+  $user_params = $this->getParameterValue('datastore.params', array());
+  if (is_array($user_params)):
+?>
+$store->config_array = array_merge($store->config_array, <?php var_export($user_params) ?>);
+<?php endif; ?>
 
 /* Datastore methods and variables */
 

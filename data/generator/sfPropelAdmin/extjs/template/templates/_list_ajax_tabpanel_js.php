@@ -22,6 +22,13 @@ $tabpanel->config_array['plugins'] = array('new Ext.ux.TabCloseMenu()'<?php if($
 // check if activeTab is defined in the generator or use 0 as default
 $tabpanel->config_array['activeTab'] = '<?php echo $this->getParameterValue('tabpanel.activeTab', 0) ?>';
 
+<?php
+  $user_params = $this->getParameterValue('tabpanel.params', array());
+  if (is_array($user_params)):
+?>
+$tabpanel->config_array = array_merge($tabpanel->config_array, <?php var_export($user_params) ?>);
+<?php endif; ?>
+
 /* tabPanel methods and variables */
 
 // constructor

@@ -92,10 +92,19 @@ foreach ($columns as $column)
 }
 ?>
 
-[?php $columnmodel->config_array =
-<?php echo preg_replace("/'(get_partial\([^\)]*\))',/", '\1,', var_export($cmItems, true)) ?>
-; $columnmodel->plugins =
-<?php var_export($plugins) ?>
-; /* handle user credentials */
+[?php
+
+$columnmodel->config_array = <?php echo preg_replace("/'(get_partial\([^\)]*\))',/", '\1,', var_export($cmItems, true)) ?>;
+
+$columnmodel->plugins = <?php var_export($plugins) ?>;
+
+/* handle user credentials */
 <?php echo implode("\n", $credArr) ?>
+
+<?php
+  $user_params = $this->getParameterValue('columnmodel.params', array());
+  if (is_array($user_params)):
+?>
+$columnmodel->config_array = array_merge($columnmodel->config_array, <?php var_export($user_params) ?>);
+<?php endif; ?>
 ?]
