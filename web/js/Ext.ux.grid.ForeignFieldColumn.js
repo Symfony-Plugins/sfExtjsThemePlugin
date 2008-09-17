@@ -87,6 +87,22 @@ Ext.ux.grid.ForeignFieldColumn = function(config)
 
 Ext.extend(Ext.ux.grid.ForeignFieldColumn, Ext.form.ComboBox, {
 
+  initEvents : function()
+  {
+    Ext.ux.grid.ForeignFieldColumn.superclass.initEvents.call(this);
+
+    if (this.filter)
+    {
+      this.on('select', function()
+      {
+        if (this.value)
+        {
+          this.ownerCt.buttons[0].handler()
+        }
+      }, this);
+    }
+  },
+
   reset : function()
   {
     return this.clearValue();
