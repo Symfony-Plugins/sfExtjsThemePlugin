@@ -99,71 +99,8 @@ Ext.ux.form.FilterTwinComboBox = Ext.extend(Ext.form.ComboBox, {
   onRender : function(ct, position)
   {
     Ext.ux.form.FilterTwinComboBox.superclass.onRender.call(this, ct, position);
-
-//    this.filterpanel = this.findParentBy(function(p)
-//    {
-//      return p.title == 'Filters'
-//    });
-
     if(this.getValue())this.triggers[0].show();
   },
-
-  /**
-   * Sets the specified value into the field. If the value finds a match, the
-   * corresponding record text will be displayed in the field. If the value does
-   * not match the data value of an existing item, and the valueNotFoundText
-   * config option is defined, it will be displayed as the default field text.
-   * Otherwise the field will be blank (although the value will still be set).
-   *
-   * @param {String}
-   *          value The value to match
-   */
-//  setValue : function(v)
-//  {
-//    var text = v;
-//    if (this.valueField)
-//    {
-//      var r = this.findRecord(this.valueField, v);
-//      if (r)
-//      {
-//        text = r.data[this.displayField];
-//      }
-//      else if (this.valueNotFoundText !== undefined)
-//      {
-//        text = this.valueNotFoundText;
-//      }
-//    }
-//
-//    this.lastSelectionText = text;
-//    if (this.hiddenField)
-//    {
-//      this.hiddenField.value = v;
-//    }
-//
-//    // combo super, not this super
-//    Ext.form.ComboBox.superclass.setValue.call(this, text);
-//    this.value = v;
-//  },
-
-//  preload : function(i, value)
-//  {
-//    if ((this.store !== null) && (i != ""))
-//    {
-//      // test if value can be found in combostore, if not add preloaded value
-//      // from grid/form store.
-//      if (this.store.find(this.valueField, i) == -1)
-//      {
-//        // add preloaded value to combo-datastore
-//        var o = new Array();
-//        o.data = new Array();
-//        o.data[0] = new Array();
-//        o.data[0][this.valueField] = i;
-//        o.data[0][this.displayField] = value;
-//        this.store.loadData(o, true);
-//        return true;
-//      };
-//    }
-//  },
 
   reset : Ext.form.Field.prototype.reset.createSequence(function()
   {

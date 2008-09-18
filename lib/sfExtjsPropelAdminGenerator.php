@@ -1243,7 +1243,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       $definition['minListWidth'] = 150;
       $definition['chained'] = $this->getParameterValue('filterpanel.params.chained') ? 'query' : null;
       $definition['stateful'] = $this->getParameterValue('filterpanel.params.saveState') ? true: null;
-      $definition['stateEvents'] = $this->getParameterValue('filterpanel.params.saveState') ? array('select'): null;
+      $definition['stateEvents'] = $this->getParameterValue('filterpanel.params.saveState') ? array('select','clear'): null;
     }
     else
     {
