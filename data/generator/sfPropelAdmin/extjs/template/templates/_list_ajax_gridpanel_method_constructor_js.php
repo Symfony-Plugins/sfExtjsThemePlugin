@@ -21,7 +21,7 @@ $source .= "
     this.panelType = 'list';
 
     if ((typeof c != 'undefined') && (typeof c.filter != 'undefined')) {
-      var baseParams = {'filter': query};
+      var baseParams = {filter: 'query'};
       c.filter_key = (typeof c.filter_key != 'undefined') ? c.filter_key : -1;
       baseParams['filters['+c.filter+']'] = c.filter_key;
 
