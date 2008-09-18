@@ -41,6 +41,9 @@
     $i++;
   }
 ?>
+<?php if($this->getParameterValue('filterpanel.params.saveState')): ?>
+<?php echo 'Ext.state.Manager.setProvider(new Ext.state.CookieProvider());'?>
+<?php endif; ?>
 [?php
 $filterpanel = new stdClass();
 $filterpanel->attributes = array();

@@ -36,21 +36,29 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     $this->groupby = array($this->getRequestParameter('group')=>true);
     $this->forwardIf(!$this->groupby,'<?php echo $this->getModuleName() ?>','ajaxFailed');
 
-    $namespace = "autocomplete";
-    $this->processFilters($namespace);
-    $this->filters = $this->getUser()->getAttributeHolder()->getAll("sf_admin/$namespace/filters");
+    if($this->getRequest()->hasParameter('filter'))
+    {
+      $filters = $this->getRequestParameter('filters');
+      $this->getUser()->getAttributeHolder()->add($filters, 'sf_admin/opnet_issue/filters');
+    }
+    else
+    {
+      $this->getUser()->getAttributeHolder()->removeNamespace('sf_admin/opnet_issue/filters');
+    }
+    $this->filters = $this->getUser()->getAttributeHolder()->getAll('sf_admin/opnet_issue/filters');
 
     $c = new Criteria();
     $this->addGroupCriteria($c);
-    $this->addFiltersCriteria($c,$namespace);
+    $this->addFiltersCriteria($c);
     $rs = <?php echo $this->getClassName() ?>Peer::doSelectRS($c);
     $rs->setFetchmode(ResultSet::FETCHMODE_ASSOC);
+    $jsonArr = array();
     while($rs->next())
     {
       $resultRow = $rs->getRow();
       foreach( $resultRow as $key => $value)
       {
-        $jsonArr[][$this->getRequestParameter('group')] = $value;
+        if(!is_null($value))$jsonArr[][$this->getRequestParameter('group')] = $value;
       }
     }
 

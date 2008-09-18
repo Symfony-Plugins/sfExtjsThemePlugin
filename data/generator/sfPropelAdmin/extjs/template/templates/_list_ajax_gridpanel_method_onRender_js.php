@@ -9,7 +9,9 @@ $configArr = array(
   'parameters' => 'ct, position',
   'source' => "
     Ext.app.sx.<?php echo $panelName ?>.superclass.onRender.apply(this, arguments);
+<?php if(!$this->getParameterValue('filterpanel.params.saveState')): ?>
     if(this.autoLoadStore) this.store.load();
+<?php endif; ?>
   "
 );
 

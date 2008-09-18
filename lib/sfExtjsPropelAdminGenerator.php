@@ -1221,18 +1221,17 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
 
     $user_params = $this->getParameterValue('list.fields.'.$column->key.'.params');
     $params = is_array($user_params) ? $user_params : sfToolkit::stringToArray($user_params);
+    $user_params = $this->getParameterValue('list.fields.'.$column->key.'.params');
 
     // if combo set in the generator create a combo that gets unique values for the local column
-    // TODO: figure out a good way to do chained combos
-    // TODO: add in support for Ext.state.Manager to save the filter state via cookie
 
+    $key = (strpos($column->key, '/')) ? str_replace('/','-',$column->key) : $column->key ;
     //foreign keys that are not dates and with filter_field that is not filterfield and local columns with filter_filed that is combo
     $combo = ($this->getFieldType($column) != 'date' && strpos($column->key, '/') !== false)?true:false;
     $combo = (isset($params['filter_field']) && $params['filter_field'] == 'textfield')?false:$combo;
     $combo = (isset($params['filter_field']) && $params['filter_field'] == 'combo')?true:$combo;
     if($combo){
-      $key = (strpos($column->key, '/')) ? str_replace('/','-',$column->key) : $column->key ;
-      $params['xtype'] = 'comboboxautoload';
+      $params['xtype'] = 'filtertwincombobox';
       $definition['url'] = $this->controller->genUrl($this->getModuleName().'/jsonCombo');
       $definition['valueField'] = $key;
       $definition['hiddenName'] = $key;
@@ -1242,24 +1241,10 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       $definition['groupField'] = $key;
       $definition['pageSize'] = 0;
       $definition['minListWidth'] = 150;
-
-      //make sure our comboConfig in the generator.yml overrides the generated values
-      //$comboConfig = $this->getParameterValue('list.fields.'.$column->key.'.params.combo.combo_config');
-      //if($comboConfig) $definition['comboConfig'] = $comboConfig;
-
-      // TODO: chained support is in comboboxautoload and on the server but it needs some work to allow.
-      // my idea is to add a second trigger to the field when the combo is in a filtered state that will
-      // change the baseParams on the combo store to send filter: 0 and reset the filters on the server.
-      // clearing one chained filter will need to remove the extra trigger from all chained combos in the
-      // filter panel as the filter state is kept server side and resetting one resets all.
-      //$definition['chained'] = 1;
+      $definition['chained'] = $this->getParameterValue('filterpanel.params.chained') ? 'query' : null;
+      $definition['stateful'] = $this->getParameterValue('filterpanel.params.saveState') ? true: null;
+      $definition['stateEvents'] = $this->getParameterValue('filterpanel.params.saveState') ? array('select'): null;
     }
-    //OBSOLETE: jsonAutocomplete too heavy for filters, we just want a list of unique values for that field, not all values
-    // columns with related data except date columns
-//    elseif (strpos($column->key, '/') !== false && $this->getFieldType($column) != 'date')
-//    {
-//      $definition = array_merge($definition, $this->getRelatedColumnAjaxFilterDefinition($column, $groupedColumns));
-//    }
     else
     {
       // set CSS id in the first column
@@ -1282,9 +1267,20 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
           break;
         case 'boolean':
           //listener to filter when checkbox is checked or unchecked
-          $definition['listeners'] = array(
-            'check' => "function(){this.ownerCt.buttons[0].handler();}"
-          );
+          if($this->getParameterValue('filterpanel.params.saveState'))
+          {
+            $definition['listeners'] = array(
+              'check' => "function(){Ext.state.Manager.set(this.name, this.checked);this.ownerCt.buttons[0].handler();}"
+            );
+            $definition['checked'] = "Ext.state.Manager.get('".$definition['name']."', '')";
+          }
+          else
+          {
+            $definition['listeners'] = array(
+              'check' => "function(){this.ownerCt.buttons[0].handler();}"
+            );
+          }
+          $definition['listeners']['reset'] = "function(){this.setValue(false);}";
           break;
         case 'string':
           //listener to filter when enter is pressed

@@ -7,6 +7,7 @@
 $filterpanel->attributes['initEvents'] = $sfExtjs2Plugin->asMethod("
   Ext.app.sx.<?php echo $panelName ?>.superclass.initEvents.apply(this, arguments);
 
+
   this.addEvents(
     /**
      * @event filter_set
@@ -23,5 +24,15 @@ $filterpanel->attributes['initEvents'] = $sfExtjs2Plugin->asMethod("
     'filter_reset'
   );
 
+<?php if($this->getParameterValue('filterpanel.params.saveState')): ?>
+  this.on({
+    'afterlayout' : {
+      fn:     function(){
+        this.buttons[0].handler()
+      },
+      scope:  this
+    }
+  });
+<?php endif; ?>
 ");
 ?]
