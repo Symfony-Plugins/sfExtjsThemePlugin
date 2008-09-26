@@ -11,7 +11,8 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
   protected
   $tableDelimiter,
   $controller,
-  $sfExtjs2Plugin;
+  $sfExtjs2Plugin,
+  $fieldType;
 
 
   /**
@@ -171,7 +172,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
                 success:  function(response){
                   try { var json_response = Ext.util.JSON.decode(response.responseText); } catch (e) {};
                   Ext.Msg.alert('Delete Status', json_response.message);
-                  this.store.reload();
+                  this.ownerCt.store.reload();
                 },
                 failure: function(response){
                   try { var json_response = Ext.util.JSON.decode(response.responseText); } catch (e) {};
@@ -179,7 +180,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
                 }
               });
             }
-          });
+          }, this);
         }
      ";
 
@@ -1223,6 +1224,9 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     $params = is_array($user_params) ? $user_params : sfToolkit::stringToArray($user_params);
     $user_params = $this->getParameterValue('list.fields.'.$column->key.'.params');
 
+    //add ability to set field_type in field config params
+    $this->fieldType = (isset($params['field_type'])&&$params['field_type'])?$params['field_type']:$this->getFieldType($column);
+
     // if combo set in the generator create a combo that gets unique values for the local column
 
     $key = (strpos($column->key, '/')) ? str_replace('/','-',$column->key) : $column->key ;
@@ -1231,7 +1235,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     $combo = (isset($params['filter_field']) && $params['filter_field'] == 'textfield')?false:$combo;
     $combo = (isset($params['filter_field']) && $params['filter_field'] == 'combo')?true:$combo;
     if($combo){
-      $params['xtype'] = 'filtertwincombobox';
+      $definition['xtype'] = 'filtertwincombobox';
       $definition['url'] = $this->controller->genUrl($this->getModuleName().'/jsonCombo');
       $definition['valueField'] = $key;
       $definition['hiddenName'] = $key;
@@ -1253,7 +1257,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       //default
       $definition['xtype'] = $this->getXtypeForColumn($column);
 
-      switch($this->getFieldType($column))
+      switch($this->fieldType)
       {
         case 'date':
           $defaultFormat = sfConfig::get('app_sf_extjs_theme_plugin_format_date', 'm/d/Y'); // TODO set default format from symfony user culture (and replace "-" by "/")
@@ -1301,7 +1305,9 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
   {
     $xtype = 'textfield';
 
-    switch($this->getFieldType($column))
+    $fieldType = ($this->fieldType)?$this->fieldType:$this->getFieldType($column);
+
+    switch($fieldType)
     {
       case 'date':
         $xtype = 'datefield';

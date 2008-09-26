@@ -10,7 +10,7 @@ var UploadDialogController = function()
   {
     if (!dialog) {
       dialog = new Ext.ux.UploadDialog.Dialog({
-        url: '<?php echo $this->controller->genUrl($this->getModuleName().'/ajaxUploadReceive') ?>',
+        url: '<?php echo $this->controller->genUrl($this->getModuleName()."/ajaxUploadReceive") ?>',
         reset_on_hide: false,
         allow_close_on_upload: true,
         upload_autostart: true
@@ -30,7 +30,6 @@ var UploadDialogController = function()
   return {
     init : function()
     {
-      Ext.QuickTips.init();
       showDialog(Ext.get('btn_upload'));
     }
   }
