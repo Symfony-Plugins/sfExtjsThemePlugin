@@ -5,9 +5,8 @@ Ext.ux.grid.NoteColumn = function(config)
   if (!this.id)
   {
     this.id = Ext.id();
-    this.width = 80;
-    this.sortable = false;
   }
+  this.sortable = false;
   this.renderer = this.renderer.createDelegate(this);
 };
 
@@ -19,7 +18,9 @@ Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
     {
       var view = this.grid.getView();
       view.mainBody.on('dblclick', this.onDblClick, this);
-    }, this);
+    }, this, {
+      single : true
+    });
   },
 
   onDblClick : function(e, t)
@@ -34,22 +35,21 @@ Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
         Ext.app.note = new Ext.ux.NoteWindow({
           notesUrl : this.notesUrl,
           notesUpdateUrl : this.notesUpdateUrl,
-          relatedStore : this.grid.store,
-          id : record.data.id
+          relatedStore : this.grid.store
         });
       }
-      else
-      {
-        Ext.app.note.noteStore.load({
-          params : {
-            id : record.data.id
-          }
-        });
-        Ext.app.note.editFormPanel.form.baseParams = {
+
+      Ext.app.note.editFormPanel.form.baseParams = {
+        id : record.data.id
+      };
+
+      Ext.app.note.noteStore.load({
+        params : {
           id : record.data.id
-        };
-      }
-      Ext.app.note.show(t.parentNode.parentNode);
+        }
+      });
+
+      Ext.app.note.show(document.body);
     }
   },
 
@@ -58,7 +58,7 @@ Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
     if (Ext.util.CSS.getRule('.note-l') == null)
     {
       var styleBody =
-        '.note-l {background: transparent url(/sfExtjsThemePlugin/Ext.ux.NoteWindow/images/comment.gif) no-repeat left;}'
+        '.note-l {background: transparent url(/sfExtjsThemePlugin/Ext.ux.NoteWindow/images/comment.gif) no-repeat left;padding-left:17px;}'
           + '.note-r {text-align: right;line-height: 16px !important;}';
 
       var styleSheet =
@@ -71,7 +71,7 @@ Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
     c.css = c.css + "note-r";
     return String
         .format('<p ext:qtitle="{3}<br />{0} Wrote:" ext:qtip="{1}" class="note-l  x-grid3-nc-{2}">{0}</p></div>', v,
-                r.data['last_comment'], this.id, r.data['last_comment_time']);
+                r.data['last_comment'].replace(/"/g, "'"), this.id, r.data['last_comment_time']);
   }
 });
 

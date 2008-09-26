@@ -49,10 +49,10 @@ Ext.ux.form.FilterTwinComboBox = Ext.extend(Ext.form.ComboBox, {
         },
         remoteSort : true
       });
-    }
 
-    if ('undefined' != typeof this.groupField)
-      this.store.baseParams.group = this.groupField;
+      if ('undefined' != typeof this.groupField)
+        this.store.baseParams.group = this.groupField;
+    }
 
     // config.comboConfig should override anything set in this
     Ext.apply(this, this.comboConfig);
@@ -81,13 +81,13 @@ Ext.ux.form.FilterTwinComboBox = Ext.extend(Ext.form.ComboBox, {
       if (this.value)
         this.ownerCt.buttons[0].handler();
     }, this);
-    if (this.chained == 'query')
-    {
-      this.on('blur', function()
-      {
-        this.lastQuery = null;
-      }, this);
-    }
+//    if (this.chained == 'query')
+//    {
+//      this.on('blur', function()
+//      {
+//        this.lastQuery = null;
+//      }, this);
+//    }
   },
 
   initComponent : Ext.form.TwinTriggerField.prototype.initComponent,
@@ -99,7 +99,8 @@ Ext.ux.form.FilterTwinComboBox = Ext.extend(Ext.form.ComboBox, {
   onRender : function(ct, position)
   {
     Ext.ux.form.FilterTwinComboBox.superclass.onRender.call(this, ct, position);
-    if(this.getValue())this.triggers[0].show();
+    if (this.getValue())
+      this.triggers[0].show();
   },
 
   reset : Ext.form.Field.prototype.reset.createSequence(function()
