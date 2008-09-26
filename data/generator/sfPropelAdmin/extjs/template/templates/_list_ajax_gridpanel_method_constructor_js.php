@@ -20,12 +20,11 @@ $source .= "
     this.modulename = '<?php echo $this->getModuleName() ?>';
     this.panelType = 'list';
 
+    // TODO: needs testing
     if ((typeof c != 'undefined') && (typeof c.filter != 'undefined')) {
-      var baseParams = {filter: 'query'};
+      this.store.baseParams.filter = 'query';
       c.filter_key = (typeof c.filter_key != 'undefined') ? c.filter_key : -1;
-      baseParams['filters['+c.filter+']'] = c.filter_key;
-
-      this.store.baseParams = baseParams;
+      this.store.baseParams['filters['+c.filter+']'] = c.filter_key;
     }
   ";
 $configArr = Array(

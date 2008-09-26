@@ -110,7 +110,7 @@ include_partial('list_ajax_gridpanel_method_updateDB_js', array('sfExtjs2Plugin'
 $gridpanel->attributes['setFilter'] = $sfExtjs2Plugin->asMethod(array(
   'parameters' => 'params',
   'source' => "
-    this.store.baseParams.filter = 1;
+    this.store.baseParams.filter = 'query';
     this.store.load({params:params});
 "));
 
