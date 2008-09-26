@@ -39,13 +39,13 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     if($this->getRequest()->hasParameter('filter'))
     {
       $filters = $this->getRequestParameter('filters');
-      $this->getUser()->getAttributeHolder()->add($filters, 'sf_admin/opnet_issue/filters');
+      $this->getUser()->getAttributeHolder()->add($filters, 'sf_admin/<?php echo $this->getSingularName() ?>/filters');
     }
     else
     {
-      $this->getUser()->getAttributeHolder()->removeNamespace('sf_admin/opnet_issue/filters');
+      $this->getUser()->getAttributeHolder()->removeNamespace('sf_admin/<?php echo $this->getSingularName() ?>/filters');
     }
-    $this->filters = $this->getUser()->getAttributeHolder()->getAll('sf_admin/opnet_issue/filters');
+    $this->filters = $this->getUser()->getAttributeHolder()->getAll('sf_admin/<?php echo $this->getSingularName() ?>/filters');
 
     $c = new Criteria();
     $this->addGroupCriteria($c);
@@ -127,16 +127,17 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
   {
     $limit = $this->getRequestParameter('limit', <?php echo $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20)) ?>);
     $page = floor($this->getRequestParameter('start', 0) / $limit)+1;
+    $namespace = $this->getRequestParameter('namespace', '<?php echo $this->getSingularName() ?>');
 
-    $this->processSort(strtolower($this->getRequestParameter('dir')));
-    $this->processFilters();
-    $this->filters = $this->getUser()->getAttributeHolder()->getAll('sf_admin/<?php echo $this->getSingularName() ?>/filters');
+    $this->processSort(strtolower($this->getRequestParameter('dir')),$namespace);
+    $this->processFilters($namespace);
+    $this->filters = $this->getUser()->getAttributeHolder()->getAll('sf_admin/'.$namespace.'/filters');
 
     // pager
     $this->pager = new sfPropelPager('<?php echo $this->getClassName() ?>', $limit);
     $c = new Criteria();
-    $this->addSortCriteria($c);
-    $this->addFiltersCriteria($c);
+    $this->addSortCriteria($c,$namespace);
+    $this->addFiltersCriteria($c,$namespace);
     $this->pager->setCriteria($c);
     $this->pager->setPage($page);
 <?php $peerMethod = $this->getParameterValue('list.peer_method') ? $this->getParameterValue('list.peer_method') : $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : 'doSelectJoinAll';
