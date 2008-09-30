@@ -62,14 +62,13 @@ Ext.ux.form.FilterTwinComboBox = Ext.extend(Ext.form.ComboBox, {
 
   applyState : function(state)
   {
+    this.lastSelectionText = state.lastSelectionText;
     this.setValue(state.selectedIndex);
   },
 
   getState : function()
   {
-    return {
-      selectedIndex : this.getValue()
-    };
+    return{selectedIndex: this.getValue(), lastSelectionText: this.lastSelectionText};
   },
 
   initEvents : function()
@@ -101,6 +100,33 @@ Ext.ux.form.FilterTwinComboBox = Ext.extend(Ext.form.ComboBox, {
     Ext.ux.form.FilterTwinComboBox.superclass.onRender.call(this, ct, position);
     if (this.getValue())
       this.triggers[0].show();
+  },
+
+  setValue : function(v)
+  {
+    var text = v;
+    if (this.valueField)
+    {
+      var r = this.findRecord(this.valueField, v);
+      if (r)
+      {
+        text = r.data[this.displayField];
+      }
+      else if (this.lastSelectionText !== undefined)
+      {
+        text = this.lastSelectionText;
+      }
+    }
+
+    this.lastSelectionText = text;
+    if (this.hiddenField)
+    {
+      this.hiddenField.value = v;
+    }
+
+    // combo super, not this super
+    Ext.form.ComboBox.superclass.setValue.call(this, text);
+    this.value = v;
   },
 
   reset : Ext.form.Field.prototype.reset.createSequence(function()
