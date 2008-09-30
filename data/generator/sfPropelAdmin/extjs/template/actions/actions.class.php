@@ -298,6 +298,43 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     return $this->sendAjaxResponse();
   }
 
+  public function executeAjaxMultiEdit()
+  {
+    $ids = json_decode($this->getRequestParameter('ids'));
+
+    if(!is_array($ids))
+    {
+      $ids = array($ids);
+    }
+
+    foreach($ids as $id)
+    {
+      $this->getRequest()->setParameter('id', $id);
+      $this-><?php echo $this->getSingularName() ?> = $this->get<?php echo $this->getClassName() ?>OrCreate();
+
+      if ($fieldName = $this->getRequestParameter('field'))
+      {
+        $value = $this->getRequestParameter('value');
+
+        $this->update<?php echo $this->getClassName() ?>ListFromRequest($fieldName, $value);
+      }
+      else
+      {
+        $this->update<?php echo $this->getClassName() ?>FromRequest();
+      }
+
+      $this->save<?php echo $this->getClassName() ?>($this-><?php echo $this->getSingularName() ?>);
+    }
+
+    $<?php echo $this->getSingularName() ?> = $this-><?php echo $this->getSingularName() ?>;
+
+    // this lets us set success to false somewhere else if needed
+    $this->success = (isset($this->success))?$this->success:true;
+    $this->id = $this->getRequestParameter('ids');
+    $this->title = count($ids)." issue(s) marked $value";
+    return $this->sendAjaxResponse();
+  }
+
   public function executeEdit()
   {
     $this-><?php echo $this->getSingularName() ?> = $this->get<?php echo $this->getClassName() ?>OrCreate();
