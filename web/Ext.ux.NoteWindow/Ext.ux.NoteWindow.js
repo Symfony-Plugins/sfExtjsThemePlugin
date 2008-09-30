@@ -6,7 +6,7 @@ Ext.ux.NoteWindow = Ext.extend(Ext.Window, {
       success : function()
       {
         this.hide();
-        this.relatedStore.load();
+        this.relatedStore.load(this.relatedStoreParams);
       },
       scope : this
     });
@@ -67,8 +67,9 @@ Ext.ux.NoteWindow = Ext.extend(Ext.Window, {
       }]
     });
 
+
     Ext.ux.NoteWindow.superclass.constructor.call(this, Ext.applyIf(c || {}, {
-      title : 'Turnover Notes',
+      title : c.notesTitle,
       buttonAlign : 'center',
       closable : true,
       width : 420,

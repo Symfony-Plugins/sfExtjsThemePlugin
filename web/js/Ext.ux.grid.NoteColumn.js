@@ -35,7 +35,7 @@ Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
         Ext.app.note = new Ext.ux.NoteWindow({
           notesUrl : this.notesUrl,
           notesUpdateUrl : this.notesUpdateUrl,
-          relatedStore : this.grid.store
+          notesTitle: this.notesTitle
         });
       }
 
@@ -48,6 +48,10 @@ Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
           id : record.data.id
         }
       });
+
+      Ext.app.note.relatedStore = this.grid.store;
+      Ext.app.note.relatedStoreParams = this.grid.store.lastOptions;
+
 
       Ext.app.note.show(document.body);
     }
