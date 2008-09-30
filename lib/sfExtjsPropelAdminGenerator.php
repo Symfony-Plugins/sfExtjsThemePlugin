@@ -1248,6 +1248,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       $definition['chained'] = $this->getParameterValue('filterpanel.params.chained') ? 'query' : null;
       $definition['stateful'] = $this->getParameterValue('filterpanel.params.saveState') ? true: null;
       $definition['stateEvents'] = $this->getParameterValue('filterpanel.params.saveState') ? array('select','clear'): null;
+      $definition['stateId'] = $this->getParameterValue('filterpanel.params.saveState') ? $this->getModuleName().'-'.$key: null;
     }
     else
     {
@@ -1496,58 +1497,6 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       return $ffcolumn;
     }
   }
-
-//OBSOLETE
-//  function getRelatedColumnAjaxFilterDefinition($column, $groupedColumns)
-//  {
-//    if (strpos($column->key, '/') !== false)
-//    {
-//      $fields = explode('/', $column->key);
-//
-//      $last                 = strrpos($column->key, '/');
-//      $columnname           = substr($column->key, $last + 1);
-//      $relatedTableFKs      = substr($column->key, 0, $last);
-//      $relatedTableGrouped  = $this->getSubGroupedColumns($relatedTableFKs, $groupedColumns);
-//      $relatedTablePK       = $relatedTableGrouped['pk'];
-//      $relatedTableName     = $relatedTablePK->getTableName();
-//      $relatedModuleName    = $this->getParameterValue('related_tables.'.$relatedTableName.'.module_name') ? $this->getParameterValue('related_tables.'.$relatedTableName.'.module_name') : $relatedTableName;
-//      $relatedFKColumn      = $this->getColumnForFieldName($fields[0]);
-//
-//      $tableName = $this->getTableName();
-//      $fieldName = str_replace('/', $this->tableDelimiter, $column->key);
-//
-//      $ffcolumn['xtype'] = 'comboboxautoload';
-//      $ffcolumn['url'] = $this->controller->genUrl($this->getModuleName().'/jsonAutocomplete?class='.$relatedTableName);
-//      $ffcolumn['valueField']   = $this->getRelatedFieldName($column);
-//      $ffcolumn['displayField'] = $this->getRelatedFieldName($column);
-//      $ffcolumn['dataIndex']    = str_replace('/', $this->tableDelimiter, $relatedTableFKs);
-//      $ffcolumn['preloadedField'] = strtolower($tableName).'['.$fieldName.']';
-//      $ffcolumn['relatedTableName'] = $relatedTableName;
-//      $ffcolumn['relatedModuleName'] = $relatedModuleName;
-//      $ffcolumn['relatedFieldName'] = $columnname;
-//      $ffcolumn['queryParam'] = 'filters['.str_replace('/', $this->tableDelimiter, $column->key).']';
-//      $ffcolumn['sortField'] = str_replace('/', $this->tableDelimiter, $column->key);
-//      $ffcolumn['pageSize'] = 0;
-//      $ffcolumn['filter'] = true;
-//
-//      //make sure our columnConfig in the generator.yml overrides the generated values
-//      $fieldConfig = $this->getParameterValue('list.fields.'.$column->key.'.params.combo');
-//      if($fieldConfig) $ffcolumn = array_merge($ffcolumn,$fieldConfig);
-//
-//      if(isset($ffcolumn['store']))
-//      {
-//        $ffcolumn['editable'] = false;
-//        $ffcolumn['mode'] = 'local';
-//        $ffcolumn['pageSize'] = 0;
-//      }
-//
-//      //make sure our comboConfig in the generator.yml overrides the generated values
-//      $comboConfig = $this->getParameterValue('list.fields.'.$column->key.'.params.combo.comboConfig');
-//      if($comboConfig) $ffcolumn = array_merge($ffcolumn['comboConfig'], $comboConfig);
-//
-//      return $ffcolumn;
-//    }
-//  }
 
   /**
    * returns Ext-dataType
