@@ -6,7 +6,8 @@
   $group_field = $this->getParameterValue('list.grouping.field', null);
 
   $grid_view['forceFit'] = true;
-  $grid_view['autoFill'] = true;
+  //autofill not needed with forceFit
+  //$grid_view['autoFill'] = true;
   if($this->getParameterValue('list.grouping.text_tpl',false)) $grid_view['groupTextTpl'] = $this->getParameterValue('list.grouping.text_tpl');
 
   $listDisplay = $this->getParameterValue('list.display', null);

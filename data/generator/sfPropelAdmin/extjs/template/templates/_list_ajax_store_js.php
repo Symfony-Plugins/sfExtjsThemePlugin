@@ -77,7 +77,7 @@
   }
   if ($group_field)
   {
-    $options['groupField'] = $group_field;
+    $options['groupField'] = ($this->getParameterValue('list.grouping.start_grouped', true)) ? $group_field : null;
     $options['remoteGroup'] = 'true';
     $options['sortInfo'] = array(
       'field' => $group_field,
