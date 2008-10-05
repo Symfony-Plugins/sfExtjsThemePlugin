@@ -1382,7 +1382,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       $ffcolumn['url'] = $this->controller->genUrl($this->getModuleName().'/jsonAutocomplete?class='.$relatedTableName);
       $ffcolumn['valueField']   = $this->getRelatedFieldName($relatedTablePK);
       $ffcolumn['displayField'] = $this->getRelatedFieldName($column);
-      $ffcolumn['dataIndex']    = str_replace('/', $this->tableDelimiter, $relatedTableFKs);
+      $ffcolumn['dataIndex']    = str_replace('/', $this->tableDelimiter, $column->key); //TODO: this was $relatedTableFKs, but was probably wrong. If nothing is broken and you see this line tgus comment can be removed
       $ffcolumn['preloadedField'] = str_replace('/', $this->tableDelimiter, $column->key);
       $ffcolumn['relatedTableName'] = $relatedTableName;
       $ffcolumn['relatedModuleName'] = $relatedModuleName;
