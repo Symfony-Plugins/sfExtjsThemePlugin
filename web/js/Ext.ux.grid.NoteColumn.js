@@ -51,31 +51,29 @@ Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
 
       Ext.app.note.relatedStore = this.grid.store;
       Ext.app.note.relatedStoreParams = this.grid.store.lastOptions;
-
-
       Ext.app.note.show(document.body);
     }
   },
 
   renderer : function(v, c, r)
   {
-    if (Ext.util.CSS.getRule('.note-l') == null)
+    if (Ext.util.CSS.getRule('.notecol-l') == null)
     {
       var styleBody =
-        '.note-l {background: transparent url(/sfExtjsThemePlugin/Ext.ux.NoteWindow/images/comment.gif) no-repeat left;padding-left:17px;}'
-          + '.note-r {text-align: right;line-height: 16px !important;}';
+        '.notecol-l {background: transparent url(/sfExtjsThemePlugin/Ext.ux.NoteWindow/images/comment.gif) no-repeat left;padding-left:19px;}'
+          + '.notecol-r {text-align: left;line-height: 16px !important;}';
 
       var styleSheet =
         Ext.util.CSS.createStyleSheet('/* Ext.ux.form.NoteColumn stylesheet */\n' + styleBody, 'NoteColumn');
       Ext.util.CSS.refreshCache();
     }
 
-    if (!v)
-      return '<p class="x-grid3-note-col x-grid3-nc-' + this.id + '">None</div>';
-    c.css = c.css + "note-r";
-    return String
-        .format('<p ext:qtitle="{3}<br />{0} Wrote:" ext:qtip="{1}" class="note-l  x-grid3-nc-{2}">{0}</p></div>', v,
-                r.data['last_comment'].replace(/"/g, "'"), this.id, r.data['last_comment_time']);
+    if (!v) return '<p class="x-grid3-note-col x-grid3-nc-' + this.id + '">None</div>';
+    c.css = c.css + "notecol-r";
+    return String.format(
+      '<p ext:qtitle="{3}<br />{0} Wrote:" ext:qtip="{1}" class="notecol-l  x-grid3-nc-{2}">{0}</p></div>',
+      v, r.data['last_comment'].replace(/"/g, "'"), this.id, r.data['last_comment_time']
+    );
   }
 });
 

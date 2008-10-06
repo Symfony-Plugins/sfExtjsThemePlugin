@@ -26,10 +26,10 @@ $default_javascripts = array(
 
   '/sfExtjsThemePlugin/js/Ext.form.BasicForm.override.js',    // allow preloading combo-items
   '/sfExtjsThemePlugin/js/Ext.grid.ColumnModel.override.js',  // adds construction from xtype (for columns and their editors) and sets event-handlers
+  '/sfExtjsThemePlugin/js/Ext.grid.GridPanel.override.js',  // adds support for autoExpandColumn and forceFit to be used at the same time
   '/sfExtjsThemePlugin/js/Ext.grid.EditorGridPanel.override.js',  // grid.editor and form.field changes to detect leaving field and throw extra events
   '/sfExtjsThemePlugin/js/Ext.menu.Menu.override.js',         // adds possibility to remove items from menu
   '/sfExtjsThemePlugin/js/Ext.TabPanel.override.js',          // added functionality to set activeTab to none (item=-1)
-  '/sfExtjsThemePlugin/js/Ext.grid.GridView.override.js',     // fixes to have no trigger when enableHdMenu: false
   '/sfExtjsThemePlugin/js/Ext.layout.FormLayout.override.js', // fixes for form labels
   '/sfExtjsThemePlugin/js/Ext.form.RadioGroup.override.js', // adds getValue and setValue to radiogroups
   '/sfExtjsThemePlugin/js/Ext.BoxComponent.override.js',  //allows button to inherit from BoxComponent
