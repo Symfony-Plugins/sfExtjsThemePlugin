@@ -29,6 +29,11 @@ class BasesfExtjsThemePluginXtypeManagerActions extends sfActions
           $module = substr($xtype,4,-8);
           $action = 'listAjaxTabPanelJs';
         }
+        else if (substr($xtype,-10) == 'rowactions')
+        {
+          $module = substr($xtype,4,-10);
+          $action = 'listAjaxRowActionsJs';
+        }
 
         if ($module) $url = 'js/'.$module.'/'.$action.'.pjs';
         break;

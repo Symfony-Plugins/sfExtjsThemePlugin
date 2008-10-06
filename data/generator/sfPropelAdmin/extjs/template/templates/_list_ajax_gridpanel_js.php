@@ -32,8 +32,10 @@
     foreach($this->getParameterValue('list.display') as $col)
     {
       if($this->getParameterValue('list.fields.'.$col.'.plugin')) $pluginArr[] = 'this.cm.'.$col.'_'.$this->getParameterValue('list.fields.'.$col.'.plugin');
+      if($col == '^rowactions') $pluginArr[] = 'this.cm.'.strtolower($moduleName).'_rowactions';
     }
   }
+
 ?>
 [?php
 $gridpanel = new stdClass();

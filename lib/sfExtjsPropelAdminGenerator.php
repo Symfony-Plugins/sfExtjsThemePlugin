@@ -114,6 +114,43 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     return $withEcho ? '[?php echo '.$i18n.' ?]' : $i18n;
   }
 
+  function getAjaxRowAction($actionName, $params)
+  {
+    $params   = (array) $params;
+    $options  = isset($params['params']) ? sfToolkit::stringToArray($params['params']) : array();
+    sfLoader::loadHelpers('Partial');
+    $default_callback = 'this.'.$actionName;
+    $callback = false;
+    $default_icon = 'page_white';
+    $default_qtip = $actionName;
+    // default values
+    if ($actionName[0] == '_')
+    {
+      $actionName     = substr($actionName, 1);
+      $default_name   = ucfirst(strtr($actionName, '_', ' '));
+      $default_action = $actionName;
+      switch ($actionName)
+      {
+        case 'delete':
+          $default_icon = 'cross';
+          $callback = "console.log(this)";
+          $default_qtip = ucfirst($actionName);
+          break;
+      }
+    }
+    $icon   = isset($params['icon']) ? sfToolkit::replaceConstants($params['icon']) : $default_icon;
+    $qtip = isset($params['qtip']) ? $params['qtip'] : $default_qtip;
+    $callback = (!$callback)?"\$sfExtjs2Plugin->asVar('".$default_callback."')":'$sfExtjs2Plugin->asMethod("'.$callback.'")';
+    $callback = isset($params['callback']) ? '$sfExtjs2Plugin->asMethod("'.$params['callback'].'")' : $callback;
+    $jsOptions = "
+      'qtip' => '$qtip',
+      'iconCls'    => \$sfExtjs2Plugin->asVar(\"Ext.ux.IconMgr.getIcon('".$icon."')\"),
+      'cb' => $callback
+    ";
+
+    return $jsOptions;
+
+  }
   /**
    * Returns javascript code for an action button in the toolbar new (config)style (with sfExtjs2Plugin usage).
    *

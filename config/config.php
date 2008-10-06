@@ -50,6 +50,7 @@ $default_javascripts = array(
   '/sfExtjsThemePlugin/js/Ext.ux.form.FilterTwinComboBox.js',
   '/sfExtjsThemePlugin/js/Ext.ux.BoxButton.js',               // changes button to extend BoxComponent so that it can properly be used in forms
   '/sfExtjsThemePlugin/js/Ext.ux.ValidationStatus.js',
+  '/sfExtjsThemePlugin/js/Ext.ux.grid.RowActions.js',
 
   '/sfExtjsThemePlugin/js/Ext.ux.grid.ForeignFieldColumn.js', // grid-column which knows how to handle data from related- les (sets renderers, and combos)
 

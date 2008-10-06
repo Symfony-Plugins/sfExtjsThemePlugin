@@ -31,10 +31,23 @@ foreach ($columns as $column)
     $credArr[] = 'if(!$sf_user->hasCredential('.$listcreds.')) unset($columnmodel->config_array['.$i.']);';
   }
 
-  //captures the * in the list.display and sets the rowexpander at that position
-  if ($column->key == '*')
+  //captures the *expander in the list.display and sets the rowexpander at that position
+  //new syntax is *expander, need to obsolete plain *
+  if ($column->key == '*'||$column->key == '^expander')
   {
     $cmItems[] = "{xtype: 'rowexpander'}";
+    $i++;
+    continue;
+  }
+
+  //captures the *expander in the list.display and sets the rowexpander at that position
+  //new syntax is *expander, need to obsolete plain *
+  if ($column->key == '^rowactions')
+  {
+    $pluginArrName = strtolower($moduleName).'_rowactions';
+    $plugins[$pluginArrName] = array('xtype' => 'list'.strtolower($moduleName).'rowactions');
+    //set the column item to our generated plugin
+    $cmItems[] = 'this.'.$pluginArrName;
     $i++;
     continue;
   }
@@ -66,8 +79,7 @@ foreach ($columns as $column)
       $credArr[] = "if(!\$sf_user->hasCredential($editcreds)&& is_array(\$columnmodel->plugins['$pluginArrName'])) \$columnmodel->plugins['$pluginArrName']['editable'] = false;";
     }
     //set the column item to our generated plugin
-    $cmItems[] = 'this.'.$pluginArrName
-    ;
+    $cmItems[] = 'this.'.$pluginArrName;
     $i++;
     continue;
   }

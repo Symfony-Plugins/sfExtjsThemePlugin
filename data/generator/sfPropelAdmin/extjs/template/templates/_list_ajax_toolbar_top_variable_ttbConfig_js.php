@@ -1,7 +1,4 @@
 <?php
-$moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
-$toolbarName = "List".$moduleName."ToolbarTop";
-
 $listActions = $this->getParameterValue('list.actions');
 if (null === $listActions)
 {

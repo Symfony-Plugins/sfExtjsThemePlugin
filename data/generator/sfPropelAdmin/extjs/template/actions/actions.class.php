@@ -857,7 +857,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     if ($last>0) $cname = substr($cname, $last + 1);
 ?>
 <?php $columnName = strtoupper($cname); ?>
-<?php if (($column->key == '*') || ($cname=='')) continue ?>
+<?php if (($column->key == '*') || ($column->key == '^expander') || ($column->key == '^rowactions') || ($cname=='')) continue ?>
 <?php $type = $column->getCreoleType() ?>
 <?php
   $peerClassName = $this->getPeerClassName();
@@ -915,7 +915,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     if ($last>0) $cname = substr($cname, $last + 1);
 ?>
 <?php $columnName = strtoupper($cname); ?>
-<?php if (($column->key == '*') || ($cname=='')) continue ?>
+<?php if (($column->key == '*') || ($column->key == '^expander') || ($column->key == '^rowactions') ||($cname=='')) continue ?>
 <?php $type = $column->getCreoleType() ?>
 <?php
   $peerClassName = $this->getPeerClassName();
@@ -1114,6 +1114,10 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 
   }
 
+  public function executeListAjaxRowActionsJs()
+  {
+
+  }
 
   public function executeRelatedAjaxEditors()
   {
@@ -1244,7 +1248,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     $columns = $this->getListUniqueColumns($groupedColumns, true);
 
     foreach ($columns as $columnName => $column) :
-      if ($column->key == '*') continue;
+      if ($column->key == '*' || $column->key == '^expander' || $column->key == '^rowactions') continue;
       if (in_array($column->key, $hs)) continue;
       if ($column->isPartial()) continue; //partials will not end up in json-data
 
