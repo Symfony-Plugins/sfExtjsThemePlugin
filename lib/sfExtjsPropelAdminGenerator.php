@@ -56,7 +56,11 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
         file_put_contents($partial,$contents);
         chmod($partial,0666);
       }
+
     }
+    $partial = sfConfig::get('sf_module_cache_dir').DIRECTORY_SEPARATOR.'auto'.ucfirst($this->getModuleName()).DIRECTORY_SEPARATOR.sfConfig::get('sf_app_template_dir_name').DIRECTORY_SEPARATOR.$partialName.'.php';
+    file_put_contents($partial,$contents);
+    chmod($partial,0666);
   }
 
   /**
