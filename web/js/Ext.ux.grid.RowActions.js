@@ -264,17 +264,6 @@ Ext.extend(Ext.ux.grid.RowActions, Ext.util.Observable, {
       }
     });
 
-    // // setup renderer
-    // if (!this.renderer)
-    // {
-    // this.renderer = function(value, cell, record, row, col, store)
-    // {
-    // cell.css += (cell.css ? ' ' : '') + 'ux-row-action-cell';
-    // return this.tpl.apply(this.getData(value, cell, record, row, col,
-    // store));
-    // }.createDelegate(this);
-    // }
-
     // actions in grouping grids support
     if (view.groupTextTpl && this.groupActions)
     {
@@ -288,6 +277,26 @@ Ext.extend(Ext.ux.grid.RowActions, Ext.util.Observable, {
       view.groupTextTpl =
         '<div class="ux-grow-action-text">' + view.groupTextTpl + '</div>'
           + this.processActions(this.groupActions, this.tplGroup).apply();
+    }
+
+    //do our CSS here so we don't have to include it
+    if (Ext.util.CSS.getRule('.ux-row-action-cell') == null)
+    {
+      var styleBody =
+        '.ux-row-action-cell .x-grid3-cell-inner {padding: 1px 0 0 0;}'
+        + '.ux-row-action-item {float: left;min-width: 16px;height: 16px;background-repeat: no-repeat;margin: 0 5px 0 0;cursor: pointer;overflow: hidden;}'
+        + '.ext-ie .ux-row-action-item {width: 16px;}'
+        + '.ext-ie .ux-row-action-text {width: auto;}'
+        + '.ux-row-action-item span {vertical-align:middle; padding: 0 0 0 20px;  line-height: 18px;}'
+        + '.ext-ie .ux-row-action-item span {width: auto;}'
+        + '.x-grid-group-hd div {position: relative;height: 16px;}'
+        + '.ux-grow-action-item {min-width: 16px;height: 16px;background-repeat: no-repeat;background-position: 0 50% ! important;margin: 0 0 0 4px;padding: 0 ! important;cursor: pointer;float: left;}'
+        + '.ext-ie .ux-grow-action-item {width: 16px;}'
+        + '.ux-action-right {float: right;margin: 0 3px 0 2px;padding: 0 ! important;}'
+        + '.ux-grow-action-text {padding: 0 ! important;margin: 0 ! important;background: transparent none ! important;float: left;}'
+
+      var styleSheet = Ext.util.CSS.createStyleSheet('/* Ext.ux.grid.RowActions stylesheet */\n' + styleBody, 'RowActions');
+      Ext.util.CSS.refreshCache();
     }
 
   },

@@ -93,6 +93,16 @@ Ext.extend(Ext.ux.grid.RowAction, Ext.util.Observable, {
         }
       }
     });
+
+    //do our CSS here so we don't have to include it
+    if (Ext.util.CSS.getRule('.ux-grid3-row-action-cell') == null)
+    {
+      var styleBody =
+        '.ux-grid3-row-action-cell .x-grid3-cell-inner {padding: 1px 0 0 0;}'
+        +'.ux-grid3-row-action-cell .x-grid3-cell-inner div {background-repeat:no-repeat;width:16px;height:16px;cursor:pointer;}'
+      var styleSheet = Ext.util.CSS.createStyleSheet('/* Ext.ux.grid.RowAction stylesheet */\n' + styleBody, 'RowAction');
+      Ext.util.CSS.refreshCache();
+    }
   },
 
   // override for custom processing
