@@ -58,6 +58,7 @@ $listActions = $this->getParameterValue('list.actions');
   foreach ((array) $listActions as $actionName => $params):
     if($actionName[0] == '_' || isset($params['handler_function'])) continue;
     $this->createPartialFile('_list_ajax_rowaction_'.$actionName,'<?php // @object $sfExtjs2Plugin and @object $rowactions provided
+  $configArr["parameters"] = "grid, record, action, row, col";
   $configArr["source"] = "Ext.Msg.alert(\'Error\',\'callback is not defined!<br><br>Copy the template file from cache \"_list_ajax_action_'.$actionName.'.php\" to your application/modules/'.strtolower($this->getModuleName()).'/templates folder and alter it or define the \"callback\" in your generator.yml file\');";
   $rowactions->attributes["'.$actionName.'"] = $sfExtjs2Plugin->asMethod($configArr);
 ?>');
