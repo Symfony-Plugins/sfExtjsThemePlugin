@@ -93,5 +93,9 @@ Ext.grid.ColumnModel.override({
     {
       this.fireEvent('configchange', this);
     }
+  },
+
+  getSortField : function(col){
+    return (this.config[col].sortField)?this.config[col].sortField:this.config[col].dataIndex;
   }
 });

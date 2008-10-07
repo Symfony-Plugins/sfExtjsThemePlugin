@@ -88,5 +88,43 @@ Ext.override(Ext.grid.GridView, {
     }
 
     return true;
+  },
+
+  // private
+  onHeaderClick : function(g, index){
+      if(this.headersDisabled || !this.cm.isSortable(index)){
+          return;
+      }
+      g.stopEditing(true);
+      g.store.sort(this.getSortField(index));
+  },
+
+  // private
+  handleHdMenuClick : function(item){
+      var index = this.hdCtxIndex;
+      var cm = this.cm, ds = this.ds;
+      switch(item.id){
+          case "asc":
+              ds.sort(this.getSortField(index), "ASC");
+              break;
+          case "desc":
+              ds.sort(this.getSortField(index), "DESC");
+              break;
+          default:
+              index = cm.getIndexById(item.id.substr(4));
+              if(index != -1){
+                  if(item.checked && cm.getColumnsBy(this.isHideableColumn, this).length <= 1){
+                      this.onDenyColumnHide();
+                      return false;
+                  }
+                  cm.setHidden(index, item.checked);
+              }
+      }
+      return true;
+  },
+
+  getSortField : function(index){
+    return this.cm.getSortField(index);
   }
+
 });
