@@ -57,12 +57,12 @@ $listActions = $this->getParameterValue('list.actions');
 <?php
   foreach ((array) $listActions as $actionName => $params):
     if($actionName[0] == '_' || isset($params['handler_function'])) continue;
-    $this->createPartialFile('_list_ajax_action_'.$actionName,'<?php // @object $sfExtjs2Plugin and @object $rowactions provided
-  $configArr["source"] = "Ext.Msg.alert(\'Error\',\'handler_function is not defined!<br><br>Edit the template \"_list_ajax_action_'.$actionName.'.php\" in your application/modules/'.strtolower($this->getModuleName()).'/templates folder and alter it or define the \"handler_function\" in your generator.yml file\');";
+    $this->createPartialFile('_list_ajax_rowaction_'.$actionName,'<?php // @object $sfExtjs2Plugin and @object $rowactions provided
+  $configArr["source"] = "Ext.Msg.alert(\'Error\',\'callback is not defined!<br><br>Copy the template file from cache \"_list_ajax_action_'.$actionName.'.php\" to your application/modules/'.strtolower($this->getModuleName()).'/templates folder and alter it or define the \"callback\" in your generator.yml file\');";
   $rowactions->attributes["'.$actionName.'"] = $sfExtjs2Plugin->asMethod($configArr);
 ?>');
 ?>
-include_partial('<?php echo 'list_ajax_action_'.$actionName ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'rowactions' => $rowactions));
+include_partial('<?php echo 'list_ajax_rowaction_'.$actionName ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'rowactions' => $rowactions));
 <?php endforeach;?>
 
 // app.sx from Symfony eXtended (instead of ux: user eXtention)
