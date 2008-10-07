@@ -38,6 +38,21 @@ Ext.ns('Ext.ux.grid');
  */
 Ext.ux.grid.RowActions = function(config)
 {
+  /**
+   * @cfg {Boolean} autoWidth true to calculate field width for iconic actions
+   *      only.
+   */
+  this.autoWidth = true,
+  /**
+   * @private {Number} widthIntercept constant used for auto-width calculation
+   */
+  this.widthIntercept = 4;
+
+  /**
+   * @private {Number} widthSlope constant used for auto-width calculation
+   */
+  this.widthSlope = 21;
+
   Ext.apply(this, config);
 
   this.addEvents(
@@ -110,6 +125,13 @@ Ext.ux.grid.RowActions = function(config)
     this.renderer = this.renderer.createDelegate(this);
   }
 
+  // calculate width
+  if (this.autoWidth && !config.width)
+  {
+    this.width = this.widthSlope * this.actions.length + this.widthIntercept;
+    this.fixed = true;
+  }
+
   // call parent
   Ext.ux.grid.RowActions.superclass.constructor.call(this);
 };
@@ -163,10 +185,10 @@ Ext.extend(Ext.ux.grid.RowActions, Ext.util.Observable, {
   actionEvent : 'click',
 
   /**
-   * @cfg {Boolean} autoWidth true to calculate field width for iconic actions
-   *      only.
+   * @cfg {String} dataIndex - Do not touch!
+   * @private
    */
-  autoWidth : true,
+  dataIndex : '',
 
   /**
    * @cfg {Array} groupActions Array of action to use for group headers of
@@ -216,14 +238,11 @@ Ext.extend(Ext.ux.grid.RowActions, Ext.util.Observable, {
     + '<tpl if="text"><span qtip="{qtip}">{text}</span></tpl></div>' + '</tpl>' + '</div>',
 
   /**
-   * @private {Number} widthIntercept constant used for auto-width calculation
+   * @cfg {String} hideMode How to hide hidden icons. Valid values are:
+   *      visibility and display (defaluts to visibility).
    */
-  widthIntercept : 4,
+  hideMode : 'visiblity',
 
-  /**
-   * @private {Number} widthSlope constant used for auto-width calculation
-   */
-  widthSlope : 21,
   /**
    * Init function
    *
@@ -238,14 +257,6 @@ Ext.extend(Ext.ux.grid.RowActions, Ext.util.Observable, {
     if (!this.tpl)
     {
       this.tpl = this.processActions(this.actions);
-
-    }
-
-    // calculate width
-    if (this.autoWidth)
-    {
-      this.width = this.widthSlope * this.actions.length + this.widthIntercept;
-      this.fixed = true;
     }
 
     // body click handler
@@ -254,15 +265,10 @@ Ext.extend(Ext.ux.grid.RowActions, Ext.util.Observable, {
       scope : this
     };
     cfg[this.actionEvent] = this.onClick;
-    grid.on({
-      render : {
-        scope : this,
-        fn : function()
-        {
-          view.mainBody.on(cfg);
-        }
-      }
-    });
+    grid.afterRender = grid.afterRender.createSequence(function()
+    {
+      view.mainBody.on(cfg);
+    }, this);
 
     // actions in grouping grids support
     if (view.groupTextTpl && this.groupActions)
@@ -279,23 +285,24 @@ Ext.extend(Ext.ux.grid.RowActions, Ext.util.Observable, {
           + this.processActions(this.groupActions, this.tplGroup).apply();
     }
 
-    //do our CSS here so we don't have to include it
+    // do our CSS here so we don't have to include it
     if (Ext.util.CSS.getRule('.ux-row-action-cell') == null)
     {
       var styleBody =
         '.ux-row-action-cell .x-grid3-cell-inner {padding: 1px 0 0 0;}'
-        + '.ux-row-action-item {float: left;min-width: 16px;height: 16px;background-repeat: no-repeat;margin: 0 5px 0 0;cursor: pointer;overflow: hidden;}'
-        + '.ext-ie .ux-row-action-item {width: 16px;}'
-        + '.ext-ie .ux-row-action-text {width: auto;}'
-        + '.ux-row-action-item span {vertical-align:middle; padding: 0 0 0 20px;  line-height: 18px;}'
-        + '.ext-ie .ux-row-action-item span {width: auto;}'
-        + '.x-grid-group-hd div {position: relative;height: 16px;}'
-        + '.ux-grow-action-item {min-width: 16px;height: 16px;background-repeat: no-repeat;background-position: 0 50% ! important;margin: 0 0 0 4px;padding: 0 ! important;cursor: pointer;float: left;}'
-        + '.ext-ie .ux-grow-action-item {width: 16px;}'
-        + '.ux-action-right {float: right;margin: 0 3px 0 2px;padding: 0 ! important;}'
-        + '.ux-grow-action-text {padding: 0 ! important;margin: 0 ! important;background: transparent none ! important;float: left;}'
+          + '.ux-row-action-item {float: left;min-width: 16px;height: 16px;background-repeat: no-repeat;margin: 0 5px 0 0;cursor: pointer;overflow: hidden;}'
+          + '.ext-ie .ux-row-action-item {width: 16px;}'
+          + '.ext-ie .ux-row-action-text {width: auto;}'
+          + '.ux-row-action-item span {vertical-align:middle; padding: 0 0 0 20px;  line-height: 18px;}'
+          + '.ext-ie .ux-row-action-item span {width: auto;}'
+          + '.x-grid-group-hd div {position: relative;height: 16px;}'
+          + '.ux-grow-action-item {min-width: 16px;height: 16px;background-repeat: no-repeat;background-position: 0 50% ! important;margin: 0 0 0 4px;padding: 0 ! important;cursor: pointer;float: left;}'
+          + '.ext-ie .ux-grow-action-item {width: 16px;}'
+          + '.ux-action-right {float: right;margin: 0 3px 0 2px;padding: 0 ! important;}'
+          + '.ux-grow-action-text {padding: 0 ! important;margin: 0 ! important;background: transparent none ! important;float: left;}'
 
-      var styleSheet = Ext.util.CSS.createStyleSheet('/* Ext.ux.grid.RowActions stylesheet */\n' + styleBody, 'RowActions');
+      var styleSheet =
+        Ext.util.CSS.createStyleSheet('/* Ext.ux.grid.RowActions stylesheet */\n' + styleBody, 'RowActions');
       Ext.util.CSS.refreshCache();
     }
 
@@ -358,8 +365,9 @@ Ext.extend(Ext.ux.grid.RowActions, Ext.util.Observable, {
         cls : a.iconIndex ? '{' + a.iconIndex + '}' : (a.iconCls ? a.iconCls : ''),
         qtip : a.qtipIndex ? '{' + a.qtipIndex + '}' : (a.tooltip || a.qtip ? a.tooltip || a.qtip : ''),
         text : a.textIndex ? '{' + a.textIndex + '}' : (a.text ? a.text : ''),
-        hide : a.hideIndex ? '<tpl if="' + a.hideIndex + '">visibility:hidden;</tpl>' : (a.hide
-            ? 'visibility:hidden;'
+        hide : a.hideIndex ? '<tpl if="' + a.hideIndex + '">'
+          + ('display' === this.hideMode ? 'display:none' : 'visibility:hidden') + ';</tpl>' : (a.hide
+            ? ('display' === this.hideMode ? 'display:none' : 'visibility:hidden;')
             : ''),
         align : a.align || 'right',
         style : a.style ? a.style : ''
@@ -433,7 +441,7 @@ Ext.extend(Ext.ux.grid.RowActions, Ext.util.Observable, {
       var records;
       if (groupId)
       {
-        var re = new RegExp(groupId);
+        var re = new RegExp(RegExp.escape(groupId));
         records = this.grid.store.queryBy(function(r)
         {
           return r._groupId.match(re);
