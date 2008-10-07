@@ -91,6 +91,27 @@ Ext.override(Ext.grid.GridView, {
   },
 
   // private
+  updateHeaderSortState : function()
+  {
+    var state = this.ds.getSortState();
+    if (!state)
+    {
+      return;
+    }
+    if (!this.sortState || (this.sortState.field != state.field || this.sortState.direction != state.direction))
+    {
+      this.grid.fireEvent('sortchange', this.grid, state);
+    }
+    this.sortState = state;
+    var sortColumn = this.cm.findSortIndex(state.field);
+    if (sortColumn != -1)
+    {
+      var sortDir = state.direction;
+      this.updateSortIcon(sortColumn, sortDir);
+    }
+  },
+
+  // private
   onHeaderClick : function(g, index)
   {
     if (this.headersDisabled || !this.cm.isSortable(index))

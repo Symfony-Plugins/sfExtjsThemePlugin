@@ -2,7 +2,8 @@
 
 Ext.grid.ColumnModel.override({
 
-  //adds in proper disabling of the header menu when enableHdMenu is set to false
+  // adds in proper disabling of the header menu when enableHdMenu is set to
+  // false
   isMenuDisabled : function(col)
   {
     return ('undefined' != typeof this.grid) ? !this.grid.enableHdMenu : true || !!this.config[col].menuDisabled;
@@ -59,13 +60,13 @@ Ext.grid.ColumnModel.override({
           if (!c.editor.isFormField)
           {
             c.editor = Ext.ComponentMgr.create(c.editor, 'textfield'); // get
-                                                                        // instance
-                                                                        // from
-                                                                        // xtype
-                                                                        // config,
-                                                                        // default
-                                                                        // to
-                                                                        // textfield
+            // instance
+            // from
+            // xtype
+            // config,
+            // default
+            // to
+            // textfield
           }
           // create gridEditor
           c.editor = new Ext.grid.GridEditor(c.editor);
@@ -95,7 +96,30 @@ Ext.grid.ColumnModel.override({
     }
   },
 
-  getSortField : function(col){
-    return (this.config[col].sortField)?this.config[col].sortField:this.config[col].dataIndex;
+  getSortField : function(col)
+  {
+    return (this.config[col].sortField) ? this.config[col].sortField : this.config[col].dataIndex;
+  },
+
+  /**
+   * Finds the index of the first matching column for the given dataIndex.
+   *
+   * @param {String}
+   *          col The dataIndex to find
+   * @return {Number} The column index, or -1 if no match was found
+   */
+  findSortIndex : function(dataIndex)
+  {
+    var c = this.config;
+
+    for (var i = 0, len = c.length; i < len; i++)
+    {
+      var index = (c[i].sortField) ? c[i].sortField : c[i].dataIndex;
+      if (index == dataIndex)
+      {
+        return i;
+      }
+    }
+    return -1;
   }
 });
