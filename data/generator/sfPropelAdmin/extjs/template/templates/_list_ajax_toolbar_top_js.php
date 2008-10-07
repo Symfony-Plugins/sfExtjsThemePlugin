@@ -68,7 +68,7 @@ $listActions = $this->getParameterValue('list.actions');
   foreach ((array) $listActions as $actionName => $params):
     if($actionName[0] == '_' || isset($params['handler_function'])) continue;
     $this->createPartialFile('_list_ajax_action_'.$actionName,'<?php // @object $sfExtjs2Plugin and @object $toolbar_top provided
-  $configArr["source"] = "Ext.Msg.alert(\'Error\',\'handler_function is not defined!<br><br>Edit the template \"_list_ajax_action_'.$actionName.'.php\" in your application/modules/'.strtolower($this->getModuleName()).'/templates folder and alter it or define the \"handler_function\" in your generator.yml file\');";
+  $configArr["source"] = "Ext.Msg.alert(\'Error\',\'handler_function is not defined!<br><br>Copy the template \"_list_ajax_action_'.$actionName.'.php\" from cache to your application/modules/'.strtolower($this->getModuleName()).'/templates folder and alter it or define the \"handler_function\" in your generator.yml file\');";
   $toolbar_top->attributes["'.$actionName.'"] = $sfExtjs2Plugin->asMethod($configArr);
 ?>');
 ?>
