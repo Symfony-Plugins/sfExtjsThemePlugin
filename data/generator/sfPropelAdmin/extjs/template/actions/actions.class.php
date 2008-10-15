@@ -1129,16 +1129,6 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 
   }
 
-  public function executeAjaxUploadJs()
-  {
-
-  }
-
-  public function executeAjaxUpload()
-  {
-
-  }
-
   public function executeAjaxUploadReceive()
   {
     if ($this->getRequest()->hasFiles())

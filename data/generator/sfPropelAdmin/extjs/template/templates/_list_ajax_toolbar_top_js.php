@@ -66,14 +66,15 @@ $listActions = $this->getParameterValue('list.actions');
 // generate toolbar action handler partials
 <?php
   foreach ((array) $listActions as $actionName => $params):
-    if($actionName[0] == '_' || isset($params['handler_function'])) continue;
+    if(in_array($actionName,array('_separator','_fill','_text','_spacer')) || isset($params['handler_function'])) continue;?>
+include_partial('<?php echo 'list_ajax_action_'.$actionName ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'toolbar_top' => $toolbar_top));
+<?php
+    if($actionName[0] == '_') continue;
     $this->createPartialFile('_list_ajax_action_'.$actionName,'<?php // @object $sfExtjs2Plugin and @object $toolbar_top provided
   $configArr["source"] = "Ext.Msg.alert(\'Error\',\'handler_function is not defined!<br><br>Copy the template \"_list_ajax_action_'.$actionName.'.php\" from cache to your application/modules/'.strtolower($this->getModuleName()).'/templates folder and alter it or define the \"handler_function\" in your generator.yml file\');";
   $toolbar_top->attributes["'.$actionName.'"] = $sfExtjs2Plugin->asMethod($configArr);
 ?>');
-?>
-include_partial('<?php echo 'list_ajax_action_'.$actionName ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'toolbar_top' => $toolbar_top));
-<?php endforeach;?>
+endforeach;?>
 
 // app.sx from Symfony eXtended (instead of ux: user eXtention)
 $sfExtjs2Plugin->beginClass(
