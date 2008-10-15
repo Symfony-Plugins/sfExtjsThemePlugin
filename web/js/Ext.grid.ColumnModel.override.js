@@ -1,6 +1,51 @@
 // adding posibility to accept both columns and editors with/from xtype
 
 Ext.grid.ColumnModel.override({
+  /**
+   * Default editable of columns which do not have the "editable" config
+   * specified (defaults to false)
+   *
+   * @cfg {Boolean/Function} defaultEditable true if the column is editable, or
+   *      a function which returns true/false when passed the arguments: grid,
+   *      row index, column index (defaults to false). If set to true, a custom
+   *      {@link #getCellEditor} method (which returns a default Editor instance
+   *      for columns without Editors) must be specified.
+   */
+  defaultEditable : false,
+
+  /**
+   * Returns true if the cell is editable.
+   *
+   * @param {Number}
+   *          colIndex The column index
+   * @param {Number}
+   *          rowIndex The row index
+   * @param {Ext.grid.GridPanel}
+   *          The {@link Ext.grid.GridPanel} which owns this ColumnModel
+   * @return {Boolean}
+   */
+  isCellEditable : function(colIndex, rowIndex)
+  {
+    var col = this.config[colIndex], ok =
+      col.editable != undefined ? col.editable : col.editor != undefined ? true : this.defaultEditable;
+
+    return ok === true || (typeof ok == 'function' && ok(this.grid, rowIndex, colIndex));
+  },
+
+  /**
+   * Sets if a column is editable.
+   *
+   * @param {Number}
+   *          col The column index
+   * @param {Boolean/Function}
+   *          editable true if the column is editable, or a function which
+   *          returns true/false when passed the arguments: grid, row index,
+   *          column index.
+   */
+  setEditable : function(col, editable)
+  {
+    this.config[col].editable = editable;
+  },
 
   // adds in proper disabling of the header menu when enableHdMenu is set to
   // false

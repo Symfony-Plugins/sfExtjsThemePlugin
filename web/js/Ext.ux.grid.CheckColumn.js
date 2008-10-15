@@ -1,12 +1,14 @@
 Ext.namespace('Ext.ux.grid');
 Ext.ux.grid.CheckColumn = function(config) {
+
+
   Ext.apply(this, config);
   if (!this.id) {
     this.id = Ext.id();
   }
-  this.renderer = this.renderer.createDelegate(this);
   //default to editable false
-  this.editable = (typeof this.editable != 'undefined')?this.editable:'true';
+  this.editable = (typeof this.editable != 'undefined') ? this.editable : 'true' ;
+  this.renderer = (typeof this.renderer != 'undefined') ? this.renderer.createDelegate(this) : this.checkboxRenderer.createDelegate(this);
 };
 
 Ext.extend(Ext.ux.grid.CheckColumn, Ext.util.Observable, {
@@ -15,7 +17,7 @@ Ext.extend(Ext.ux.grid.CheckColumn, Ext.util.Observable, {
     this.grid.on('render', function() {
       var view = this.grid.getView();
       view.mainBody.on('mousedown', this.onMouseDown, this);
-    }, this);
+    }, this, {single: true});
   },
 
   onMouseDown : function(e, t) {
@@ -36,7 +38,7 @@ Ext.extend(Ext.ux.grid.CheckColumn, Ext.util.Observable, {
     }
   },
 
-  renderer : function(v, p, record) {
+  checkboxRenderer : function(v, p, record) {
     p.css += ' x-grid3-check-col-td';
     return '<div class="x-grid3-check-col' + (v ? '-on' : '') + ' x-grid3-cc-' + this.id + '">&#160;</div>';
   }
