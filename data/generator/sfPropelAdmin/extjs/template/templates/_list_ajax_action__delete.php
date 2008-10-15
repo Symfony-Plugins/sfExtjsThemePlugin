@@ -25,12 +25,15 @@
                 success:  function(response){
                   Ext.MessageBox.hide();
                   var json_response = Ext.util.JSON.decode(response.responseText);
-                  Ext.Msg.alert('Delete Status', json_response.message);
-                  this.ownerCt.store.reload();
-                },
-                failure: function(response){
-                  Ext.MessageBox.hide();
-                  Ext.Msg.alert('Error while deleting', 'Error while deleting');
+                  if(json_response.success)
+                  {
+                    Ext.Msg.alert('Delete Status', json_response.message);
+                    this.ownerCt.store.reload();
+                  }
+                  else
+                  {
+                    Ext.Msg.alert('Error while deleting', 'Error while deleting');
+                  }
                 },
                 scope: this
               });
