@@ -30,7 +30,7 @@ Ext.ux.IconMgr = function(iconName)
   return {
     getIcon : function(icon)
     {
-      var cls = 'iconmgr_' + Ext.id();
+      var cls = String('iconmgr_' + Ext.id()).replace('-', '_');
       var extension = (icon.substring(icon.length-4,icon.length-3)!='.') ? this.imgExtension :'';
       var iconImgPath = this.iconPath + '/icons/' + icon + extension;
       var styleBody = String.format(ruleBodyTpl, cls, iconImgPath);

@@ -127,6 +127,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     $callback = false;
     $default_icon = 'page_white';
     $default_qtip = $actionName;
+    $default_hidden = false;
     // default values
     if ($actionName[0] == '_')
     {
@@ -139,16 +140,24 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
           $default_icon = 'cross';
           $default_qtip = ucfirst($actionName);
           break;
+
+        case 'progress':
+          $default_icon = 'loading.gif';
+          $default_qtip = 'Working';
+          $default_hidden = true;
+          break;
       }
     }
     $icon   = isset($params['icon']) ? sfToolkit::replaceConstants($params['icon']) : $default_icon;
     $qtip = isset($params['qtip']) ? $params['qtip'] : $default_qtip;
     $callback = (!$callback)?"\$sfExtjs2Plugin->asVar('".$default_callback."')":'$sfExtjs2Plugin->asMethod("'.$callback.'")';
     $callback = isset($params['callback']) ? '$sfExtjs2Plugin->asMethod("'.$params['callback'].'")' : $callback;
+    $hidden = ($default_hidden) ? 'true' : 'false';
     $jsOptions = "
       'qtip' => '$qtip',
       'iconCls'    => \$sfExtjs2Plugin->asVar(\"Ext.ux.IconMgr.getIcon('".$icon."')\"),
-      'cb' => $callback
+      'cb' => $callback,
+      'hide' => $hidden
     ";
 
     return $jsOptions;

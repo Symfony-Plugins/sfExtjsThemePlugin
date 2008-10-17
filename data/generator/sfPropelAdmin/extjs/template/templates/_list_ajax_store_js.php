@@ -35,6 +35,7 @@
   foreach ($columns as $column)
   {
     if ($column->key == '*') continue;  //expander column not in json-data
+    if ($column->key == '^rowactions') continue;  //rowactions column not in json-data
     if ($column->isPartial()) continue; //partials will not end up in json-data
 
     $columnName = $column->key;

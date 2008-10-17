@@ -128,7 +128,14 @@ Ext.ux.grid.RowActions = function(config)
   // calculate width
   if (this.autoWidth && !config.width)
   {
-    this.width = this.widthSlope * this.actions.length + this.widthIntercept;
+    var actionLen = this.actions.length;
+    if(this.hideMode == 'display')
+    {
+      Ext.each(this.actions, function(a){
+        if(a.hide) actionLen = actionLen - 1;
+      });
+    }
+    this.width = this.widthSlope * actionLen + this.widthIntercept;
     this.fixed = true;
   }
 
@@ -310,6 +317,7 @@ Ext.extend(Ext.ux.grid.RowActions, Ext.util.Observable, {
 
   renderer : function(value, cell, record, row, col, store)
   {
+    if(!this.col) this.col = col;
     cell.css += (cell.css ? ' ' : '') + 'ux-row-action-cell';
     return this.tpl.apply(this.getData(value, cell, record, row, col, store));
   },

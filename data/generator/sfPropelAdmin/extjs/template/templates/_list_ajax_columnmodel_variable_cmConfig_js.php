@@ -45,7 +45,10 @@ foreach ($columns as $column)
   if ($column->key == '^rowactions')
   {
     $pluginArrName = strtolower($moduleName).'_rowactions';
-    $plugins[$pluginArrName] = array('xtype' => 'list'.strtolower($moduleName).'rowactions');
+    //here are the defaults if nothing is set in the fields config
+    $plugins[$pluginArrName] = array('xtype' => 'list'.strtolower($moduleName).'rowactions', 'header' => '&nbsp;');
+    //merge in the fields config if it's there
+    if($this->getParameterValue('fields.'.$column->key,false)||$this->getParameterValue('list.fields.'.$column->key,false))$plugins[$pluginArrName] = array_merge($plugins[$pluginArrName], $this->getColumnAjaxListDefinition($column, $groupedColumns));
     //set the column item to our generated plugin
     $cmItems[] = 'this.'.$pluginArrName;
     $i++;

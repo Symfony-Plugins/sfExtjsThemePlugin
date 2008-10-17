@@ -56,7 +56,7 @@ $listActions = $this->getParameterValue('list.rowactions');
 // generate rowactions action handler partials
 <?php
   foreach ((array) $listActions as $actionName => $params):
-    if(isset($params['handler_function'])) continue;?>
+    if($actionName == '_progress' || isset($params['handler_function'])) continue;?>
 include_partial('<?php echo 'list_ajax_rowaction_'.$actionName ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'rowactions' => $rowactions));
 <?php
     if($actionName[0] == '_') continue;
