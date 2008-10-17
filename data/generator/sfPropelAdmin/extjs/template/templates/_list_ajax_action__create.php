@@ -11,6 +11,6 @@
     $handler_function = $gridListCreateLink."('".$this->controller->genUrl($this->getModuleName().'/create')."', null,  '".$default_name."')";
   }
 ?>
-  $configArr["source"] = <?php echo  $handler_function ?>
+  $configArr["source"] = "<?php echo  $handler_function ?>";
   $toolbar_top->attributes["_delete"] = $sfExtjs2Plugin->asMethod($configArr);
 ?]
