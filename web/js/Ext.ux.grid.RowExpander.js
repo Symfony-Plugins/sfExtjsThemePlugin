@@ -6,7 +6,8 @@
 
 Ext.namespace("Ext.ux.grid");
 
-Ext.ux.grid.RowExpander = function(config) {
+Ext.ux.grid.RowExpander = function(config)
+{
   Ext.apply(this, config);
 
   this.addEvents({
@@ -18,8 +19,10 @@ Ext.ux.grid.RowExpander = function(config) {
 
   Ext.ux.grid.RowExpander.superclass.constructor.call(this);
 
-  if (this.tpl) {
-    if (typeof this.tpl == 'string') {
+  if (this.tpl)
+  {
+    if (typeof this.tpl == 'string')
+    {
       this.tpl = new Ext.Template(this.tpl);
     }
     this.tpl.compile();
@@ -40,102 +43,131 @@ Ext.extend(Ext.ux.grid.RowExpander, Ext.util.Observable, {
   lazyRender : true,
   enableCaching : true,
 
-  getRowClass : function(record, rowIndex, p, ds) {
+  getRowClass : function(record, rowIndex, p, ds)
+  {
     p.cols = p.cols - 1;
     var content = this.bodyContent[record.id];
-    if (!content && !this.lazyRender) {
+    if (!content && !this.lazyRender)
+    {
       content = this.getBodyContent(record, rowIndex);
     }
-    if (content) {
+    if (content)
+    {
       p.body = content;
     }
-    return this.state[record.id] ? 'x-grid3-row-expanded' : 'x-grid3-row-collapsed';
+    //this makes it so rowExpander doesn't overwrite the original gridView getRowClass
+    var view = this.oldGetRowClass.apply(this, arguments);
+    var expandClass = this.state[record.id] ? 'x-grid3-row-expanded' : 'x-grid3-row-collapsed';
+    return view + ' ' + expandClass;
   },
 
-  init : function(grid) {
+  init : function(grid)
+  {
     this.grid = grid;
 
     var view = grid.getView();
+
+    // save the original grid getRowClass
+    this.oldGetRowClass = view.getRowClass;
+
     view.getRowClass = this.getRowClass.createDelegate(this);
 
     view.enableRowBody = true;
 
-    grid.on('render', function() {
+    grid.on('render', function()
+    {
       view.mainBody.on('mousedown', this.onMouseDown, this);
     }, this);
   },
 
-  getBodyContent : function(record, index) {
-    //OBSOLETE: no longer needed //convert keys (replace minus (-) by two underscores (__))
+  getBodyContent : function(record, index)
+  {
     var data = Array();
-    for (var key in record.data) {
-      //OBSOLETE //var new_key = key.replace(/-/g, '__');
-      //OBSOLETE //data[new_key] = record.data[key];
+    for (var key in record.data)
+    {
       data[key] = record.data[key];
     }
 
-    if (!this.enableCaching) {
+    if (!this.enableCaching)
+    {
       return this.tpl.apply(data);
     }
     var content = this.bodyContent[record.id];
-    if (!content) {
+    if (!content)
+    {
       content = this.tpl.apply(data);
       this.bodyContent[record.id] = content;
     }
     return content;
   },
 
-  onMouseDown : function(e, t) {
-    if (t.className == 'x-grid3-row-expander') {
+  onMouseDown : function(e, t)
+  {
+    if (t.className == 'x-grid3-row-expander')
+    {
       e.stopEvent();
       var row = e.getTarget('.x-grid3-row');
       this.toggleRow(row);
     }
   },
 
-  renderer : function(v, p, record) {
+  renderer : function(v, p, record)
+  {
     p.cellAttr = 'rowspan="2"';
     return '<div class="x-grid3-row-expander">&#160;</div>';
   },
 
-  beforeExpand : function(record, body, rowIndex) {
-    if (this.fireEvent('beforeexpand', this, record, body, rowIndex) !== false) {
-      if (this.tpl && this.lazyRender) {
+  beforeExpand : function(record, body, rowIndex)
+  {
+    if (this.fireEvent('beforeexpand', this, record, body, rowIndex) !== false)
+    {
+      if (this.tpl && this.lazyRender)
+      {
         body.innerHTML = this.getBodyContent(record, rowIndex);
       }
       return true;
-    } else {
+    }
+    else
+    {
       return false;
     }
   },
 
-  toggleRow : function(row) {
-    if (typeof row == 'number') {
+  toggleRow : function(row)
+  {
+    if (typeof row == 'number')
+    {
       row = this.grid.view.getRow(row);
     }
     this[Ext.fly(row).hasClass('x-grid3-row-collapsed') ? 'expandRow' : 'collapseRow'](row);
   },
 
-  expandRow : function(row) {
-    if (typeof row == 'number') {
+  expandRow : function(row)
+  {
+    if (typeof row == 'number')
+    {
       row = this.grid.view.getRow(row);
     }
     var record = this.grid.store.getAt(row.rowIndex);
     var body = Ext.DomQuery.selectNode('tr:nth(2) div.x-grid3-row-body', row);
-    if (this.beforeExpand(record, body, row.rowIndex)) {
+    if (this.beforeExpand(record, body, row.rowIndex))
+    {
       this.state[record.id] = true;
       Ext.fly(row).replaceClass('x-grid3-row-collapsed', 'x-grid3-row-expanded');
       this.fireEvent('expand', this, record, body, row.rowIndex);
     }
   },
 
-  collapseRow : function(row) {
-    if (typeof row == 'number') {
+  collapseRow : function(row)
+  {
+    if (typeof row == 'number')
+    {
       row = this.grid.view.getRow(row);
     }
     var record = this.grid.store.getAt(row.rowIndex);
     var body = Ext.fly(row).child('tr:nth(1) div.x-grid3-row-body', true);
-    if (this.fireEvent('beforcollapse', this, record, body, row.rowIndex) !== false) {
+    if (this.fireEvent('beforcollapse', this, record, body, row.rowIndex) !== false)
+    {
       this.state[record.id] = false;
       Ext.fly(row).replaceClass('x-grid3-row-expanded', 'x-grid3-row-collapsed');
       this.fireEvent('collapse', this, record, body, row.rowIndex);
