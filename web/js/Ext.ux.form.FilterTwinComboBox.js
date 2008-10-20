@@ -13,6 +13,8 @@ Ext.ux.form.FilterTwinComboBox = Ext.extend(Ext.form.ComboBox, {
     this.minChars = 2;
     this.pageSize = 20;
     this.queryParam = config.name;
+    this.defaultText = '';
+    this.defaultIndex = '';
 
     Ext.apply(this, config);
 
@@ -62,8 +64,9 @@ Ext.ux.form.FilterTwinComboBox = Ext.extend(Ext.form.ComboBox, {
 
   applyState : function(state)
   {
-    this.lastSelectionText = state.lastSelectionText;
-    this.setValue(state.selectedIndex);
+    this.lastSelectionText = state.lastSelectionText ? state.lastSelectionText : this.defaultText;
+    var selectedIndex = state.selectedIndex ? state.selectedIndex : this.defaultIndex;
+    this.setValue(selectedIndex);
   },
 
   getState : function()
