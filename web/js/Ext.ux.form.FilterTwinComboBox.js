@@ -100,13 +100,14 @@ Ext.ux.form.FilterTwinComboBox = Ext.extend(Ext.form.ComboBox, {
       }
     });
 
-    // if (this.chained == 'query')
-    // {
-    // this.on('blur', function()
-    // {
-    // this.lastQuery = null;
-    // }, this);
-    // }
+    //this is so we always re-query the server for chained combos
+    if (this.chained == 'query')
+    {
+      this.on('blur', function()
+      {
+        this.lastQuery = null;
+      }, this);
+    }
   },
 
   initComponent : function()
@@ -121,12 +122,13 @@ Ext.ux.form.FilterTwinComboBox = Ext.extend(Ext.form.ComboBox, {
   trigger1Class : 'x-form-clear-trigger',
   hideTrigger1 : true,
 
-//  onRender : function(ct, position)
-//  {
-//    Ext.ux.form.FilterTwinComboBox.superclass.onRender.call(this, ct, position);
-//    if (this.getValue())
-//      this.triggers[0].show();
-//  },
+  // onRender : function(ct, position)
+  // {
+  // Ext.ux.form.FilterTwinComboBox.superclass.onRender.call(this, ct,
+  // position);
+  // if (this.getValue())
+  // this.triggers[0].show();
+  // },
 
   setValue : function(v)
   {
