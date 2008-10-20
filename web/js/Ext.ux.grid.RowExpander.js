@@ -68,7 +68,7 @@ Ext.extend(Ext.ux.grid.RowExpander, Ext.util.Observable, {
     var view = grid.getView();
 
     // save the original grid getRowClass
-    this.oldGetRowClass = view.getRowClass;
+    this.oldGetRowClass = 'function' === typeof view.getRowClass ? view.getRowClass : function(){return '';};
 
     view.getRowClass = this.getRowClass.createDelegate(this);
 
