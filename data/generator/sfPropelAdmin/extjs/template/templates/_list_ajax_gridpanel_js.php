@@ -5,9 +5,6 @@
 
   $group_field = $this->getParameterValue('list.grouping.field', null);
 
-  $grid_view['forceFit'] = true;
-  //autofill not needed with forceFit
-  //$grid_view['autoFill'] = true;
   if($this->getParameterValue('list.grouping.text_tpl',false)) $grid_view['groupTextTpl'] = $this->getParameterValue('list.grouping.text_tpl');
 
   $listDisplay = $this->getParameterValue('list.display', null);
@@ -45,7 +42,8 @@ $gridpanel->attributes = array();
 
 <?php $objectName = $this->getParameterValue('object_name', $this->getModuleName()) ?>
 
-$sfExtjs2_gridpanel_view = 'new Ext.grid.<?php echo (($group_field)?'Grouping':'Grid') ?>View(<?php echo json_encode($grid_view) ?>)';
+$sfExtjs2_gridpanel_view = 'new Ext.grid.<?php echo (($group_field)?'Grouping':'Grid') ?>View()';
+
 <?php if (isset($expander['renderer_partial'])): ?>
 // initialise the row expander plugin
 $gridpanel->rowExpander = 'this.getRowExpander();';
@@ -67,6 +65,7 @@ $gridpanel->config_array = array(
   'trackMouseOver'      => <?php var_export(sfConfig::get('app_sf_extjs_theme_plugin_list_trackMouseOver', false)) ?>, //this will cause the firefox permission denied errors if true
   'loadMask'            => <?php var_export(sfConfig::get('app_sf_extjs_theme_plugin_list_loadMask', false)) ?>,
   'stripeRows'          => <?php var_export(sfConfig::get('app_sf_extjs_theme_plugin_list_stripeRows', true)) ?>,
+  'viewConfig'          => $sfExtjs2Plugin->asAnonymousClass(array('forceFit'=>true)),
 );
 
 <?php if (sfConfig::get('app_sf_extjs_theme_plugin_list_tabbed')): ?>
