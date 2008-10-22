@@ -14,6 +14,19 @@
 ?>
 class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
 {
+  public function executeJsonResponse()
+  {
+    $json = $this->getRequestParameter('json');
+    $this->forward404Unless($json);
+    sfConfig::set('sf_web_debug', false);
+    return $this->renderText($json);
+  }
+
+  protected function setRequestParameter($name, $value, $ns=null)
+  {
+    return $this->getRequest()->setParameter($name, $value, $ns=null);
+  }
+
   public function sendAjaxResponse()
   {
     $data = array(
