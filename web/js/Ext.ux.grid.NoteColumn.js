@@ -7,7 +7,7 @@ Ext.ux.grid.NoteColumn = function(config)
     this.id = Ext.id();
   }
   this.sortable = false;
-  this.renderer = this.renderer.createDelegate(this);
+  this.renderer = (typeof this.renderer != 'undefined') ? this.renderer.createDelegate(this) : this.notecolumnRenderer.createDelegate(this);
 };
 
 Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
@@ -55,7 +55,7 @@ Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
     }
   },
 
-  renderer : function(v, c, r)
+  notecolumnRenderer : function(v, c, r)
   {
     if (Ext.util.CSS.getRule('.notecol-l') == null)
     {

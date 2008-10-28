@@ -4,7 +4,7 @@ Ext.ComponentMgr.create = Ext.ComponentMgr.create.createInterceptor(function(con
 
     Ext.app.CodeLoader.load(
       Ext.MessageBox.wait("Loading Panel", "Please Wait..."),
-      {async:false, method:'GET', cacheResponses:true},
+      {async:false, method:'POST', cacheResponses:true},
       '/js/getXtype/' + xtype
     );
 

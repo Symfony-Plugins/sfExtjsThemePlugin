@@ -7,7 +7,7 @@ Ext.ux.grid.CheckColumn = function(config) {
     this.id = Ext.id();
   }
   //default to editable false
-  this.editable = (typeof this.editable != 'undefined') ? this.editable : 'true' ;
+  this.editable = (typeof this.editable != 'undefined') ? this.editable : 'false' ;
   this.renderer = (typeof this.renderer != 'undefined') ? this.renderer.createDelegate(this) : this.checkboxRenderer.createDelegate(this);
 };
 
