@@ -12,7 +12,7 @@ $config_items['actions'] = array();
   {
     $actioncreds = str_replace("\n", ' ', var_export($actioncreds, true));
     //if the user doesn't have the right permissions remove the button config
-    $credArr[] = 'if(!$sf_user->hasCredential('.$actioncreds.')) unset($rowactions->config_array[\'items\']['.$i.']);';
+    $credArr[] = 'if(!$sf_user->hasCredential('.$actioncreds.')) unset($rowactions->config_array[\'actions\']['.$i.']);';
   }
 ?>
   $config_items['actions'][] = array(<?php echo $this->getAjaxRowAction($actionName, $params) ?>);

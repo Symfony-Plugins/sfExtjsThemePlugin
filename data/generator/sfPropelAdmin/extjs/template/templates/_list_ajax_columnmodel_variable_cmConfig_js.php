@@ -44,6 +44,19 @@ foreach ($columns as $column)
   //new syntax is *expander, need to obsolete plain *
   if ($column->key == '^rowactions')
   {
+    //handle credentials for displaying the rowaction column
+    $listRowactions = $this->getParameterValue('list.rowactions');
+    foreach ((array) $listRowactions as $actionName => $params)
+    {
+      $actioncreds = (isset($params['credentials']))?$params['credentials']:false;
+      if ($actioncreds)
+      {
+        $actioncreds = str_replace("\n", ' ', var_export($actioncreds, true));
+        //if the user doesn't have the right permissions remove the button config
+        $credArr[] = 'if(!$sf_user->hasCredential('.$actioncreds.')) unset($columnmodel->config_array['.($i-1).']);';
+      }
+    }
+
     $pluginArrName = strtolower($moduleName).'_rowactions';
     //here are the defaults if nothing is set in the fields config
     $plugins[$pluginArrName] = array('xtype' => 'list'.strtolower($moduleName).'rowactions', 'header' => '&nbsp;');
