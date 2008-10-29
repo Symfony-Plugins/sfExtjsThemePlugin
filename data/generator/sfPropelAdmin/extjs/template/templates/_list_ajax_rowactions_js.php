@@ -79,4 +79,4 @@ $sfExtjs2Plugin->beginClass(
 $sfExtjs2Plugin->endClass();
 ?]
 // register xtype
-Ext.reg('listopnetrowactions', Ext.app.sx.<?php echo $rowactionsName ?>);
+Ext.reg('<?php echo $rowactionsName_xtype ?>', Ext.app.sx.<?php echo $rowactionsName ?>);
