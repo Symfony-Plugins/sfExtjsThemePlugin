@@ -53,7 +53,7 @@ foreach ($columns as $column)
       {
         $actioncreds = str_replace("\n", ' ', var_export($actioncreds, true));
         //if the user doesn't have the right permissions remove the button config
-        $credArr[] = 'if(!$sf_user->hasCredential('.$actioncreds.')) unset($columnmodel->config_array['.($i-1).']);';
+        $credArr[] = 'if(!$sf_user->hasCredential('.$actioncreds.')) unset($columnmodel->config_array['.$i.']);';
       }
     }
 
@@ -71,14 +71,12 @@ foreach ($columns as $column)
   //don't create column config for invisible columns
   if (($column->isInvisible()))
   {
-    $i++;
     continue;
   }
 
   //TODO: figure out what we're actually supposed to do with list.hide columns, skipping for now
   if (in_array($column->key, $hs))
   {
-    $i++;
     continue;
   }
 
