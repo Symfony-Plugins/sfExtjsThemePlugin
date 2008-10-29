@@ -87,7 +87,7 @@ $renderer->attributes = array();
 
 
 <?php
-$methods =  $this->getParameterValue('renderer.method');
+$methods =  $this->getParameterValue('renderers.method');
 if (isset($methods['partials'])):
 if (!is_array($methods['partials']))
 {
@@ -100,24 +100,11 @@ if (!is_array($methods['partials']))
 ?>
 include_partial('<?php echo substr($method,1) ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'renderer' => $renderer));
 <?php
-    $this->createPartialFile($method,'<?php // @object $sfExtjs2Plugin and @object $renderer provided ?>');
-  endforeach;
-endif;
-
-$variables =  $this->getParameterValue('renderer.variable');
-if (isset($variables['partials'])):
-if (!is_array($variables['partials']))
-{
-  $variables['partials'] = array($variables['partials']);
-}
-?>
-// generator variable partials
-<?php
-  foreach($variables['partials'] as $variable):
-?>
-include_partial('<?php echo substr($variable,1) ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'renderer' => $renderer));
-<?php
-  $this->createPartialFile($variable,'<?php // @object $sfExtjs2Plugin and @object $renderer provided ?>');
+    $this->createPartialFile($method,'<?php // @object $sfExtjs2Plugin and @object $renderer provided
+  $configArr["parameters"] = "value, metadata, record, rowIndex, colIndex, store";
+  $configArr["source"] = "Ext.Msg.alert(\'Error\',\'callback is not defined!<br><br>Copy the template file from cache \"_'.$method.'.php\" to your application/modules/'.strtolower($this->getModuleName()).'/templates folder and alter it or define the \"callback\" in your generator.yml file\');";
+  $renderer->attributes["'.$method.'"] = $sfExtjs2Plugin->asMethod($configArr);
+?>');
   endforeach;
 endif;
 ?>
