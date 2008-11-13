@@ -17,22 +17,22 @@ class BasesfExtjsThemePluginXtypeManagerActions extends sfActions
         if (substr($xtype,-9) == 'gridpanel')
         {
           $module = substr($xtype,4,-9);
-          $action = 'listAjaxGridPanelJs';
+          $action = 'listGridPanelJs';
         }
         else if (substr($xtype,-11) == 'filterpanel')
         {
           $module = substr($xtype,4,-11);
-          $action = 'listAjaxFilterPanelJs';
+          $action = 'listFilterPanelJs';
         }
         else if (substr($xtype,-8) == 'tabpanel')
         {
           $module = substr($xtype,4,-8);
-          $action = 'listAjaxTabPanelJs';
+          $action = 'listTabPanelJs';
         }
         else if (substr($xtype,-10) == 'rowactions')
         {
           $module = substr($xtype,4,-10);
-          $action = 'listAjaxRowActionsJs';
+          $action = 'listRowActionsJs';
         }
 
         if ($module) $url = 'js/'.$module.'/'.$action.'.pjs';
@@ -42,15 +42,15 @@ class BasesfExtjsThemePluginXtypeManagerActions extends sfActions
         if (substr($xtype,-9) == 'formpanel')
         {
           $module = substr($xtype,4,-9);
-          $action = 'editAjaxJs';
+          $action = 'editJs';
         }
         elseif (substr($xtype,-5) == 'panel')
         {
           $module = substr($xtype,4,-5);
-          $action = 'editAjaxJs';
+          $action = 'editJs';
         }
 
-        if ($module) $url = 'js/'.$module.'/editAjaxJs.pjs';
+        if ($module) $url = 'js/'.$module.'/editJs.pjs';
         break;
     }
 

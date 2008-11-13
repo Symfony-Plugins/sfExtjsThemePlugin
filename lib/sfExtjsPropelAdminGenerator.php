@@ -557,7 +557,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
           }
           $colArr = $this->editColumns;
           break;
-        case 'filter':
+        case 'filters':
           if(!$this->filterColumns)
           {
             $this->filterColumns = $this->getColumnsForDisplay($this->colArr[2]);
@@ -627,14 +627,34 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
 
         if (!is_array($fields))
         {
-          $this->fieldList[$fields][] = $param;
-          continue;
+          //$fields = array('NONE' => $fields);
+          //$this->fieldList[$fields][] = $param;
+          //continue;
+          $fields = array($fields);
         }
 
-        foreach($fields as $field)
+        // categories?
+        if (isset($fields[0]))
+        {
+          // simulate a default one
+          $fields = array('NONE' => $fields);
+        }
+
+        // add group-name to field-name
+        $fieldsWithGroup = array();
+        foreach ($fields as $group => $fieldNames)
+        {
+          foreach ($fieldNames as $fieldName)
+          {
+            $fieldsWithGroup[] = $group.'\\'.$fieldName;
+          }
+        }
+
+        foreach($fieldsWithGroup as $field)
         {
           $this->fieldList[$field][] = $param;
         }
+
       }
     }
     return $this->fieldList;
@@ -1088,6 +1108,13 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
       {
         list($foreignKey,   $relatedColumnName) = explode('/', $columnName, 2);
 
+        //rebuild flags, so they can be propogated to end-field
+        $flagPrefix = '';
+        foreach ($flags as $flag)
+        {
+          $flagPrefix .= $flag;
+        }
+
         // Add invisible foreign-key
         $fkColumn = $this->getAdminColumnForField($foreignKey, array(), $peerName); //flags are useless, it a foreign-key!
 
@@ -1100,7 +1127,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
         $fkColumn->visible = false;
         $fkColumn->key = $foreignKey;
         $fkColumn->index = $i; //foreign key have the same index!
-        $fkColumn->displayArr = $fieldsArr[$columnName];
+        $fkColumn->displayArr = $fieldsArr[implode('\\',array($group,$flagPrefix.$columnName))];
         $groupedColumns['columns'][$group][] = $fkColumn; // Add foreign-key-Column to columns //TODO: maybe add them under their own key (fks or something, which would also remove the need for the property (in)visible)
 
         // check if related groupedColumn hierarchy is already defined, if not define it.
@@ -1108,13 +1135,6 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
         if (isset($groupedColumns['related'][$foreignKey]))
         {
           $related = $groupedColumns['related'][$foreignKey];
-        }
-
-        //rebuild flags, so they can be propogated to end-field
-        $flagPrefix = '';
-        foreach ($flags as $flag)
-        {
-          $flagPrefix .= $flag;
         }
 
         /*
@@ -1201,7 +1221,6 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
           //remove processed page
           array_shift($pages_level);
         }
-
       }
     }
 
