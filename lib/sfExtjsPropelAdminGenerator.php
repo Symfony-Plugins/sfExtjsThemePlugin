@@ -600,6 +600,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
 
     foreach($columns['related'] as $key => $col)
     {
+      $columnArr['related'][$key] = array('pk' => $col['pk'], 'columns' => array(), 'related'=> $col['related']);
       foreach($col['columns']['NONE'] as $column)
       {
         if($column->displayArr && in_array($display,$column->displayArr))
