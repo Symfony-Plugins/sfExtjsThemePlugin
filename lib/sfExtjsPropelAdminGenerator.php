@@ -531,6 +531,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
 
   public function getConfigColumns($displays=array('display'))
   {
+    $this->colArr = array('list.display','list.edit','list.filters','list.expand_columns.fields','list.grouping.field');
     if(!is_array($displays))
     {
       $displays = array($displays);
@@ -586,17 +587,29 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
 
   protected function getColumnsForDisplay($display)
   {
-    //TODO:figure out how to do this properly and return only the array of objects for the display config
-//    $columnArr = array();
-//    $columns = $this->getListColumns($this->getColumnObjects());
-//    foreach($columns as $column)
-//    {
-//      if($column->displayArr && in_array($display,$column->displayArr))
-//      {
-//        $columnArr[$column];
-//      }
-//    }
-    return $this->getColumnObjects();
+    $columns = $this->getColumnObjects();
+    $columnArr = array('pk'=> $columns['pk'], 'columns' => array(), 'related' => array());
+
+    foreach($columns['columns']['NONE'] as $column)
+    {
+      if($column->displayArr && in_array($display,$column->displayArr))
+      {
+        $columnArr['columns']['NONE'][] = $column;
+      }
+    }
+
+    foreach($columns['related'] as $key => $col)
+    {
+      foreach($col['columns']['NONE'] as $column)
+      {
+        if($column->displayArr && in_array($display,$column->displayArr))
+        {
+          $columnArr['related'][$key]['columns']['NONE'][] = $column;
+        }
+      }
+    }
+    return $columnArr;
+    //return $this->getColumnObjects();
   }
 
   /**
@@ -609,7 +622,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
     if(!$this->fieldList)
     {
       $this->columnList = array();
-      $this->colArr = array('list.display','list.edit','list.filters','list.expand_columns.fields','list.grouping.field');
+
 
       foreach ($this->colArr as $param)
       {
