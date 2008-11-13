@@ -1116,17 +1116,17 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
       //get flags (should make no difference if you placed flags in front, or in between (for foreign-fields)
       list($columnName, $flags) = $this->splitFlag($columnName);
 
+      //rebuild flags, so they can be propogated to end-field
+      $flagPrefix = '';
+      foreach ($flags as $flag)
+      {
+        $flagPrefix .= $flag;
+      }
+
       // if column is foreign
       if (false !== strpos($columnName, '/'))
       {
         list($foreignKey,   $relatedColumnName) = explode('/', $columnName, 2);
-
-        //rebuild flags, so they can be propogated to end-field
-        $flagPrefix = '';
-        foreach ($flags as $flag)
-        {
-          $flagPrefix .= $flag;
-        }
 
         // Add invisible foreign-key
         $fkColumn = $this->getAdminColumnForField($foreignKey, array(), $peerName); //flags are useless, it a foreign-key!
@@ -1140,7 +1140,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
         $fkColumn->visible = false;
         $fkColumn->key = $foreignKey;
         $fkColumn->index = $i; //foreign key have the same index!
-        $fkColumn->displayArr = $fieldsArr[implode('\\',array($group,$flagPrefix.$columnName))];
+        //$fkColumn->displayArr = $fieldsArr[implode('\\',array($group,$flagPrefix.$columnName))];
         $groupedColumns['columns'][$group][] = $fkColumn; // Add foreign-key-Column to columns //TODO: maybe add them under their own key (fks or something, which would also remove the need for the property (in)visible)
 
         // check if related groupedColumn hierarchy is already defined, if not define it.
@@ -1178,7 +1178,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
         // columns can be added multiple times to the hierarchy
         // filtering double fields should be done elsewhere (probably during json-encoding and columnmodel creation) or
         // else you cannot see a column multiple times in your grid (if someone happened to want that)
-        $column->displayArr = (isset($fieldsArr[$columnName]))?$fieldsArr[$columnName]:null;
+        $column->displayArr = (isset($fieldsArr[implode('\\',array($group,$flagPrefix.$columnName))]))?$fieldsArr[implode('\\',array($group,$flagPrefix.$columnName))]:null;
         $groupedColumns['columns'][$group][] = $column;
       }
 
