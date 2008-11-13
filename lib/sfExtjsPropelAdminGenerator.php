@@ -8,12 +8,18 @@
  */
 class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
 {
-  protected
-  $tableDelimiter,
-  $controller,
-  $sfExtjs2Plugin,
-  $fieldType;
-
+  protected $tableDelimiter,
+            $controller,
+            $fieldType,
+            $fieldList,
+            $colArr,
+            $columnObjects,
+            $displayColumns,
+            $editColumns,
+            $filterColumns,
+            $expandColumns,
+            $groupColumns,
+            $listDisplayColumnsConfig;
 
   /**
    * Initializes the current sfGenerator instance.
@@ -27,14 +33,11 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     // get the controller, used for URL creation
     $this->controller = sfContext::getInstance()->getController();
 
-    // get a instance of the sfExtjs2Plugin
-    $this->sfExtjs2Plugin = new sfExtjs2Plugin();
-
     $this->tableDelimiter = sfConfig::get('app_sf_extjs_theme_plugin_table_delimiter', '-');
 
   }
 
-  /*
+  /**
    * Creates a partial file if it does not exist
    *
    * @param string The partial filename
@@ -42,25 +45,599 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
    *
    * @return null
    */
-  public function createPartialFile($partialName,$contents='')
+  public function getCustomPartials($objName,$type='method')
   {
-    $partial = sfConfig::get('sf_app_module_dir').DIRECTORY_SEPARATOR.
-    $this->getModuleName().DIRECTORY_SEPARATOR.
-    sfConfig::get('sf_app_template_dir_name').DIRECTORY_SEPARATOR.
-    $partialName.'.php';
-    if (!file_exists($partial))
+    $partialStr ='';
+    $customs =  $this->getParameterValue("$objName.$type");
+    if(isset($customs['partials']))
     {
-      if(!file_exists(dirname($partial))) mkdir(dirname($partial), 0777);
-      if(is_writable(dirname($partial)))
+      if (!is_array($customs['partials']))
       {
-        file_put_contents($partial,$contents);
-        chmod($partial,0666);
+        $customs['partials'] = array($customs['partials']);
       }
 
+      $partialStr .= "\n// generator $type partials\n";
+
+      foreach($customs['partials'] as $custom)
+      {
+        $partialStr .= "include_partial('".substr($custom,1)."', array('sfExtjs2Plugin' => \$sfExtjs2Plugin, '$objName' => \$$objName));\n";
+        $this->createPartialFile($custom,'<?php // @object $sfExtjs2Plugin and @object $'.$objName.' provided ?>');
+      }
     }
-    $partial = sfConfig::get('sf_module_cache_dir').DIRECTORY_SEPARATOR.'auto'.ucfirst($this->getModuleName()).DIRECTORY_SEPARATOR.sfConfig::get('sf_app_template_dir_name').DIRECTORY_SEPARATOR.$partialName.'.php';
-    file_put_contents($partial,$contents);
-    chmod($partial,0666);
+    return $partialStr;
+  }
+
+  /**
+   * Creates a partial file if it does not exist
+   *
+   * @param string The partial filename
+   * @param string The contents of the partial file
+   *
+   * @return null
+   */
+  public function createPartialFile($partialName,$contents='',$inModuleDir=true)
+  {
+    if($inModuleDir)
+    {
+      $file = sfConfig::get('sf_app_module_dir').DIRECTORY_SEPARATOR.
+        $this->getModuleName().DIRECTORY_SEPARATOR.
+        sfConfig::get('sf_app_template_dir_name').DIRECTORY_SEPARATOR.
+        "$partialName.php";
+
+      if (!file_exists($file))
+      {
+        if(!file_exists(dirname($file))) mkdir(dirname($file), 0777);
+        if(is_writable(dirname($file)))
+        {
+          file_put_contents($file,$contents);
+          chmod($file,0666);
+        }
+      }
+    }
+
+    //put it in the cache folder too in case we can't write to application/modules/templates
+    $cacheFile = sfConfig::get('sf_module_cache_dir').DIRECTORY_SEPARATOR.
+      'auto'.ucfirst($this->getModuleName()).DIRECTORY_SEPARATOR.
+      sfConfig::get('sf_app_template_dir_name').DIRECTORY_SEPARATOR.
+      "$partialName.php";
+
+    file_put_contents($cacheFile,$contents);
+    chmod($cacheFile,0666);
+  }
+
+  public function getStandardPartials($objName,$partialsArr=array('constructor','initComponent','initEvents'))
+  {
+    $partialStr = "\n/* %1\$s methods and variables */\n";
+    foreach($partialsArr as $partials)
+    {
+      switch($partials)
+      {
+        case 'constructor':
+          $this->createPartialFile('_list_'.$objName.'_method_constructor_js',$this->createStandardConstructorPartial($objName),false);
+          $partialStr .= "// constructor\n".'include_partial("list_%1$s_method_constructor_js", array("sfExtjs2Plugin" => $sfExtjs2Plugin, "%1$s" => $%1$s, "className" => $className));'."\n";
+          break;
+        case 'initComponent':
+          $this->createPartialFile('_list_'.$objName.'_method_initComponent_js',$this->createStandardInitComponentPartial($objName),false);
+          $partialStr .= "// initComponent\n".'include_partial("list_%1$s_method_initComponent_js", array("sfExtjs2Plugin" => $sfExtjs2Plugin, "%1$s" => $%1$s, "className" => $className));'."\n";
+          break;
+        case 'initEvents':
+          $this->createPartialFile('_list_'.$objName.'_method_initEvents_js',$this->createStandardInitEventsPartial($objName),false);
+          $partialStr .= "// initEvents\n".'include_partial("list_%1$s_method_initEvents_js", array("sfExtjs2Plugin" => $sfExtjs2Plugin, "%1$s" => $%1$s, "className" => $className));'."\n";
+          break;
+      }
+    }
+    return sprintf($partialStr,$objName);
+  }
+
+  protected function createStandardConstructorPartial($objName)
+  {
+    return sprintf('<?php
+// constructor
+$configArr["parameters"] = "c";
+$configArr["source"] = "
+// %1$s config
+this.%1$s_config = ".(isset($%1$s->config_array) ? $sfExtjs2Plugin->asAnonymousClass($%1$s->config_array) : \'{}\').";
+
+// combine %1$s config with arguments
+Ext.app.sx.$className.superclass.constructor.call(this, Ext.apply(this.%1$s_config, c));
+";
+$%1$s->attributes["constructor"] = $sfExtjs2Plugin->asMethod($configArr);',
+    $objName);
+  }
+
+  protected function createStandardInitComponentPartial($objName)
+  {
+    return sprintf('<?php
+// initComponent
+$configArr["source"] = "Ext.app.sx.$className.superclass.initComponent.apply(this, arguments);";
+$%1$s->attributes["initComponent"] = $sfExtjs2Plugin->asMethod($configArr);',
+    $objName);
+  }
+
+  protected function createStandardInitEventsPartial($objName)
+  {
+    return sprintf('<?php
+// initEvents
+$configArr["source"] = "Ext.app.sx.$className.superclass.initEvents.apply(this);";
+$%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
+    $objName);
+  }
+
+  public function getDataStoreConfig()
+  {
+    $sort_field = $this->getParameterValue('list.sort', null);
+    $sort_dir = 'asc';
+    if (is_array($sort_field))
+    {
+      $sort_dir   = $sort_field[1];
+      $sort_field = $sort_field[0];
+    }
+
+    $group_field = $this->getParameterValue('list.grouping.field', null);
+
+    $displayColumnsConfig = $this->getListDisplayColumnsConfig();
+    $groupedColumns = $this->getConfigColumns();
+
+    $jsonReader = array(
+      'id'            => $groupedColumns['pk']->getName(),
+      'root'          => 'data',
+      'totalProperty' => 'totalCount',
+      'fields'        => $displayColumnsConfig['listDisplay']
+    );
+
+    $httpProxy = array(
+      'url' => $this->controller->genUrl($this->getModuleName().'/list'),
+      'method' => 'POST'
+    );
+
+    $options = array();
+
+    //set default sort, can be overruled by groupfield
+    if ($sort_field)
+    {
+      $options['sortInfo'] = array(
+        'field'     => str_replace('/', $this->tableDelimiter, $sort_field),
+        'direction' => $sort_dir
+      );
+    }
+    if ($group_field)
+    {
+      $options['groupField'] = ($this->getParameterValue('list.grouping.start_grouped', true)) ? $group_field : null;
+      $options['remoteGroup'] = 'true';
+      $options['sortInfo'] = array(
+        'field' => $group_field,
+        'direction' => 'asc'
+      );
+    }
+    $options['remoteSort'] = 'true';
+    $options['baseParams'] = array(
+      'json' => true
+    );
+
+    return array('options' => $options, 'reader' => $jsonReader, 'proxy' => $httpProxy, 'cred_arr' =>$displayColumnsConfig['credArr']);
+  }
+
+  public function getColumnModelConfig()
+  {
+    $plugins = false;
+    $cmItems = array();
+    $credArr = array();
+    $i=0;
+    foreach ($this->sortColumns($this->getListColumns($this->getConfigColumns())) as $column)
+    {
+      //don't create column config for invisible columns
+      if (($column->isInvisible()))
+      {
+        continue;
+      }
+
+      //captures the ^expander in the list.display and sets the rowexpander at that position
+      //new syntax is ^expander, need to obsolete plain *
+      if ($column->key == '*'||$column->key == '^expander')
+      {
+        $cmItems[] = "{xtype: 'rowexpander'}";
+        $i++;
+        continue;
+      }
+
+      //handle credentials for displaying the column
+      $listcreds = $this->getParameterValue('list.fields.'.$column->key.'.credentials');
+      if ($listcreds)
+      {
+        $listcreds = str_replace("\n", ' ', var_export($listcreds, true));
+        //if the user doesn't have the right permissions remove the columnconfig
+        $credArr[] = 'if(!$sf_user->hasCredential('.$listcreds.')) unset($columnmodel->config_array['.$i.']);';
+      }
+
+      $columnDefinition = $this->getColumnAjaxListDefinition($column, $this->getConfigColumns());
+
+      //captures the ^rowactions in the list.display and sets the rowexpander at that position
+      if ($column->key == '^rowactions')
+      {
+        //handle credentials for displaying the rowaction column
+        $listRowactions = $this->getParameterValue('list.rowactions');
+        foreach ((array) $listRowactions as $actionName => $params)
+        {
+          $actioncreds = (isset($params['credentials']))?$params['credentials']:false;
+          if ($actioncreds)
+          {
+            $actioncreds = str_replace("\n", ' ', var_export($actioncreds, true));
+            //if the user doesn't have the right permissions remove the button config
+            $credArr[] = 'if(!$sf_user->hasCredential('.$actioncreds.')) unset($columnmodel->config_array['.$i.']);';
+          }
+        }
+
+        $pluginArrName = strtolower($this->getModuleName()).'_rowactions';
+        //here are the defaults if nothing is set in the fields config
+        $plugins[$pluginArrName] = array('xtype' => 'list'.strtolower($this->getModuleName()).'rowactions', 'header' => '&nbsp;');
+        //merge in the fields config if it's there
+        if($this->getParameterValue('fields.'.$column->key,false)||$this->getParameterValue('list.fields.'.$column->key,false)){
+          $plugins[$pluginArrName] = array_merge($plugins[$pluginArrName], $columnDefinition);
+        }
+        //set the column item to our generated plugin
+        $cmItems[] = 'this.'.$pluginArrName;
+        $i++;
+        continue;
+      }
+
+      //handle edit credentials for plugin columns
+      if($this->getParameterValue('list.fields.'.$column->key.'.plugin'))
+      {
+        $pluginArrName = $column->key.'_'.$this->getParameterValue('list.fields.'.$column->key.'.plugin');
+        //setup the data for generating the new plugin instance
+        $plugins[$pluginArrName] = $columnDefinition;
+        if ($editcreds = $this->getParameterValue('edit.fields.'.$column->key.'.credentials'))
+        {
+          $editcreds = str_replace("\n", ' ', var_export($editcreds, true));
+          //pass our credentials down to the generated partial
+          $credArr[] = "if(!\$sf_user->hasCredential($editcreds)&& is_array(\$columnmodel->plugins['$pluginArrName'])) \$columnmodel->plugins['$pluginArrName']['editable'] = false;";
+        }
+        //set the column item to our generated plugin
+        $cmItems[] = 'this.'.$pluginArrName;
+        $i++;
+        continue;
+      }
+
+      //handle edit credentials for non-plugin columns
+      if ($editcreds = $this->getParameterValue('edit.fields.'.$column->key.'.credentials'))
+      {
+        $editcreds = str_replace("\n", ' ', var_export($editcreds, true));
+        //unset the editor if the user doesn't have the right credentials
+        $credArr[] = "if(!\$sf_user->hasCredential($editcreds)&& is_array(\$columnmodel->config_array['$i'])&& isset(\$columnmodel->config_array['$i']['editor'])) unset(\$columnmodel->config_array['$i']['editor']);";
+      }
+
+      $cmItems[] = $columnDefinition;
+
+      $i++;
+    }
+    return array('plugins'=>$plugins, 'cred_arr' =>$credArr, 'col_items'=>$cmItems);
+  }
+
+  public function getToolbarTopConfig()
+  {
+    $listActions = $this->getParameterValue('list.actions');
+    if (null === $listActions)
+    {
+      $listActions = array(
+        '_create' => array(),
+        '_refresh' => array()
+      );
+    }
+
+    $configArr = array();
+    $credArr = array();
+    $i=0;
+    foreach ((array) $listActions as $actionName => $params)
+    {
+      $buttoncreds = (isset($params['credentials']))?$params['credentials']:false;
+      if ($buttoncreds)
+      {
+        $buttoncreds = str_replace("\n", ' ', var_export($buttoncreds, true));
+        //if the user doesn't have the right permissions remove the button config
+        $credArr[] = 'if(!$sf_user->hasCredential('.$buttoncreds.')) unset($toolbar_top->config_array[\'items\']['.$i.']);';
+      }
+      $configArr[] = $this->getAjaxButtonToToolbarAction($actionName, $params, false);
+      $i++;
+    }
+    return array('actions_config'=>$configArr,'cred_arr'=>$credArr);
+  }
+
+  public function getFilterPanelConfig()
+  {
+    // iterate through all (related) columns of all classes
+    $groupedColumns = $this->getConfigColumns('filters');
+    $columns = $this->getListColumns($groupedColumns);
+    $tableName = $this->getTableName();
+
+    $temp = $formFields = array();
+    $credArr = array();
+    foreach ($columns as $column)
+    {
+      $temp[$column->index] = $column;
+    }
+    // do real sorting
+    ksort($temp);
+    // put sorted array back
+    $columns  = $temp;
+
+    $i = 0;
+    foreach ($columns as $column)
+    {
+      $type = $column->getCreoleType();
+      $columnName = $column->key;
+      $credentials = $this->getParameterValue('list.fields.'.$columnName.'.credentials');
+      if ($credentials)
+      {
+        $credentials = str_replace("\n", ' ', var_export($credentials, true));
+        $credArr[] = 'if(!$sf_user->hasCredential('.$credentials.')) unset($filterpanel->config_array["items"]['.$i.']);';
+      }
+
+      $fieldArr = $this->getColumnAjaxFilterDefinition($column, $groupedColumns);
+
+      if(isset($fieldArr['renderer'])) unset($fieldArr['renderer']);
+      $formFields[] = $fieldArr;
+
+      //TODO, change this so drop-down columnboxes and checkboxes appear...
+      //$formFields[] = array('fieldLabel' => str_replace("'", "\\'", $this->getParameterValue('list.fields.'.$columnName.'.name')), 'name' => 'filters['.str_replace('/', $this->tableDelimiter, $columnName).']');
+      $i++;
+    }
+    return array('filter_config'=>$formFields,'cred_arr'=>$credArr);
+  }
+
+  public function getGridPanelConfig()
+  {
+    if($this->getParameterValue('list.grouping.text_tpl',false))
+    {
+      $grid_view['groupTextTpl'] = $this->getParameterValue('list.grouping.text_tpl');
+    }
+
+    $pluginArr = false;
+    $listPlugins = $this->getParameterValue('list.plugins',false);
+    if($listPlugins)
+    {
+      $pluginArr = (!is_array($listPlugins)) ? array($listPlugins) : $listPlugins;
+    }
+
+    $listDisplay = $this->getParameterValue('list.display', false);
+    if ($listDisplay)
+    {
+      foreach($listDisplay as $col)
+      {
+        if($this->getParameterValue('list.fields.'.$col.'.plugin'))
+        {
+          $pluginArr[] = 'this.cm.'.$col.'_'.$this->getParameterValue('list.fields.'.$col.'.plugin');
+        }
+        if($col == '^rowactions')
+        {
+          $pluginArr[] = 'this.cm.'.strtolower($this->getModuleName()).'_rowactions';
+        }
+      }
+    }
+
+    $expander =  $this->getParameterValue('list.expand_columns');
+    $expanderPartial = '';
+    if (isset($expander['renderer_partial']))
+    {
+      $pluginArr[] = 'this.rowExpander';
+
+      if (!is_array($expander['renderer_partial']))
+      {
+        $expander['renderer_partial'] = array($expander['renderer_partial']);
+      }
+
+      if (isset($expander['fields']))
+      {
+        if (!is_array($expander['fields']))
+        {
+          $expander['fields'] = array($expander['fields']);
+        }
+        $template = '';
+        foreach($expander['fields'] as $field)
+        {
+          $template .= "<tr><td><p>{".str_replace('/','-',$field)."}</p></td></tr>";
+        }
+      }
+
+      $expanderPartial .= "\n// generator expand columns renderer partial\n";
+      foreach($expander['renderer_partial'] as $expanderRenderer)
+      {
+        $this->createPartialFile($expanderRenderer,'<?php // @object $sfExtjs2Plugin and @object $gridpanel provided
+    $configArr["source"] = "
+    if(typeof this.rowExpander ==\'undefined\')
+    {
+      this.rowExpander = Ext.ComponentMgr.create({
+        xtype: \'rowexpander\',
+        tpl : new Ext.Template(
+          \'<table width=\"100%\">'.$template.'</table>\'
+        )
+      });
+    }
+    return this.rowExpander";
+    $gridpanel->attributes["getRowExpander"] = $sfExtjs2Plugin->asMethod($configArr);
+  ?>');
+
+        $expanderPartial .= "include_partial('<?php echo substr($expanderRenderer,1) ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'gridpanel' => $gridpanel));\n";
+      }
+    }
+
+    $user_params = $this->getParameterValue('gridpanel.params', array());
+    if (isset($user_params['bbar'])) unset($user_params['bbar']);
+    if (isset($user_params['tbar'])) unset($user_params['tbar']);
+
+    return array('expander_partial'=>$expanderPartial,'user_params'=>$user_params,'plugin_arr'=>$pluginArr);
+  }
+
+  public function getRowActionsConfig()
+  {
+    $listRowactions = $this->getParameterValue('list.rowactions');
+
+    $configArr = array();
+    $credArr = array();
+    $i=0;
+    foreach ((array) $listRowactions as $actionName => $params)
+    {
+    //handle credentials for displaying the action
+      $actioncreds = (isset($params['credentials']))?$params['credentials']:false;
+      if ($actioncreds)
+      {
+        $actioncreds = str_replace("\n", ' ', var_export($actioncreds, true));
+        //if the user doesn't have the right permissions remove the button config
+        $credArr[] = 'if(!$sf_user->hasCredential('.$actioncreds.')) unset($rowactions->config_array[\'actions\']['.$i.']);';
+      }
+      $configArr[] = $this->getAjaxRowAction($actionName, $params);
+      $i++;
+    }
+    return array('actions_config'=>$configArr,'cred_arr'=>$credArr);
+  }
+
+  /**
+   * Configures the display columns config used in several modules
+   *
+   * @return array($listDisplay, $credArr)
+   *
+   */
+  public function getListDisplayColumnsConfig()
+  {
+    if(!$this->listDisplayColumnsConfig)
+    {
+      $i=0;
+      $this->listDisplayColumnsConfig['credArr'] = array();
+      $this->listDisplayColumnsConfig['listDisplay'] = array();
+      $uniqueCols = $this->getListUniqueColumns($this->getConfigColumns(), true);
+      foreach ($uniqueCols as $column)
+      {
+        if ($column->isPlugin()) continue;  //plugin placeholder columns not in json-data
+        if ($column->isPartial()) continue; //partials will not end up in json-data
+
+        $columnName = $column->key;
+        $fieldName = str_replace('/', $this->tableDelimiter, $columnName);
+
+        $credentials = $this->getParameterValue('list.fields.'.$columnName.'.credentials');
+        if ($credentials)
+        {
+          $credentials = str_replace("\n", ' ', var_export($credentials, true));
+          $this->listDisplayColumnsConfig['credArr'][] = 'if(!$sf_user->hasCredential('.$credentials.')) unset($reader["fields"]['.$i.']);';
+        }
+
+        $this->listDisplayColumnsConfig['listDisplay'][] = array(
+         'name' => $fieldName,
+         'type' => $this->getFieldTypeForReader($column)
+        );
+        $i++;
+      }
+    }
+    return $this->listDisplayColumnsConfig;
+  }
+
+  public function getConfigColumns($displays=array('display'))
+  {
+    if(!is_array($displays))
+    {
+      $displays = array($displays);
+    }
+
+    $columnsArr = array();
+    foreach($displays as $display)
+    {
+      $colArr = array();
+      switch($display)
+      {
+        case 'display':
+          if(!$this->displayColumns)
+          {
+            $this->displayColumns = $this->getColumnsForDisplay($this->colArr[0]);
+          }
+          $colArr = $this->displayColumns;
+          break;
+
+        case 'edit':
+          if(!$this->editColumns)
+          {
+            $this->editColumns = $this->getColumnsForDisplay($this->colArr[1]);
+          }
+          $colArr = $this->editColumns;
+          break;
+        case 'filter':
+          if(!$this->filterColumns)
+          {
+            $this->filterColumns = $this->getColumnsForDisplay($this->colArr[2]);
+          }
+          $colArr = $this->filterColumns;
+          break;
+        case 'expand':
+          if(!$this->expandColumns)
+          {
+            $this->expandColumns = $this->getColumnsForDisplay($this->colArr[3]);
+          }
+          $colArr = $this->expandColumns;
+          break;
+        case 'group':
+          if(!$this->groupColumns)
+          {
+            $this->groupColumns = $this->getColumnsForDisplay($this->colArr[4]);
+          }
+          $colArr = $this->groupColumns;
+          break;
+      }
+      $columnsArr = array_merge($columnsArr,$colArr);
+    }
+    return $columnsArr;
+  }
+
+  protected function getColumnsForDisplay($display)
+  {
+    //TODO:figure out how to do this properly and return only the array of objects for the display config
+//    $columnArr = array();
+//    $columns = $this->getListColumns($this->getColumnObjects());
+//    foreach($columns as $column)
+//    {
+//      if($column->displayArr && in_array($display,$column->displayArr))
+//      {
+//        $columnArr[$column];
+//      }
+//    }
+    return $this->getColumnObjects();
+  }
+
+  /**
+   * Gets all fields defined in the generator.yml
+   *
+   * @return array array(fieldName => array(identifying_parameter))
+   */
+  public function getFieldList()
+  {
+    if(!$this->fieldList)
+    {
+      $this->columnList = array();
+      $this->colArr = array('list.display','list.edit','list.filters','list.expand_columns.fields','list.grouping.field');
+
+      foreach ($this->colArr as $param)
+      {
+        $fields = $this->getParameterValue($param, array());
+
+        // if no fields are defined in generator.yml file, get all default fields
+        if ($param == 'list.display' && count($fields) == 0)
+        {
+          foreach ($this->getTableMap()->getColumns() as $column)
+          {
+            $fields[] = sfInflector::underscore($column->getPhpName());
+          }
+        }
+        if (!$fields) continue;
+
+        if (!is_array($fields))
+        {
+          $this->fieldList[$fields][] = $param;
+          continue;
+        }
+
+        foreach($fields as $field)
+        {
+          $this->fieldList[$field][] = $param;
+        }
+      }
+    }
+    return $this->fieldList;
   }
 
   /**
@@ -439,6 +1016,15 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     return new sfExtjsAdminColumn($pk, $pks[0], null);
   }
 
+  public function getColumnObjects()
+  {
+    if(!$this->columnObjects)
+    {
+      $this->columnObjects = $this->setupGroupedColumns();
+    }
+    return $this->columnObjects;
+  }
+
   /**
    * Protected method to recursively setup the groupedColumn-Array
    *
@@ -448,8 +1034,13 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
    * @param int field start index (used for recursion, to keep track of field-order)
    * @return unknown
    */
-  protected function setupGroupedColumns($columnNames, $peerName = null, $groupedColumns = array('pk'=> null, 'columns' => array(), 'related' => array()), $i = 0)
+  protected function setupGroupedColumns($columnNames=null, $peerName = null, $groupedColumns = array('pk'=> null, 'columns' => array(), 'related' => array()), $i = 0)
   {
+    //the array_keys gives a list of all columns specified anywhere in the generator.yml
+    //the value of each key is an array of the parameters that defined it
+    $fieldsArr = $this->getFieldList();
+    if(!$columnNames) $columnNames = array_keys($this->getFieldList());
+
     // the base peerName will be this->PeerName
     if ($peerName == null)
     {
@@ -509,6 +1100,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
         $fkColumn->visible = false;
         $fkColumn->key = $foreignKey;
         $fkColumn->index = $i; //foreign key have the same index!
+        $fkColumn->displayArr = $fieldsArr[$columnName];
         $groupedColumns['columns'][$group][] = $fkColumn; // Add foreign-key-Column to columns //TODO: maybe add them under their own key (fks or something, which would also remove the need for the property (in)visible)
 
         // check if related groupedColumn hierarchy is already defined, if not define it.
@@ -553,6 +1145,7 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
         // columns can be added multiple times to the hierarchy
         // filtering double fields should be done elsewhere (probably during json-encoding and columnmodel creation) or
         // else you cannot see a column multiple times in your grid (if someone happened to want that)
+        $column->displayArr = (isset($fieldsArr[$columnName]))?$fieldsArr[$columnName]:null;
         $groupedColumns['columns'][$group][] = $column;
       }
 
@@ -587,22 +1180,6 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
         {
           $for[] = 'list.expand_columns.fields';
         }
-
-        // add grouping.field if set
-//        if ($groupColumnName = $this->getParameterValue('list.grouping.field', null))
-//        {
-//          $columnNames[] = $groupColumnName;
-//        }
-
-        // you don't have to add 'list.grouping.display' to the arguments of this method, it is taken into account automatically if you provide 'list.display'
-//        if (!in_array('list.grouping.display', $for))
-//        {
-//
-//          if ($groupColumnDisplay = $this->getParameterValue('list.grouping.display', null))
-//          {
-//            $for[] = 'list.grouping.display';
-//          }
-//        }
       }
       // check if you want to display edit, add pages automatically
       if (in_array('edit.display', $for))
@@ -880,14 +1457,6 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     }
 
     return $group_field;
-  }
-
-  //obsolete
-  public function hasGroupField()
-  {
-    $group_field = $this->getParameterValue('list.grouping.field', null);
-
-    return $group_field ? true : false;
   }
 
   public function hasGroupFieldNotInDisplay()
@@ -1595,7 +2164,6 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     return $phpName;
   }
 
-
   /** This method overwrites the original method so it can handle foreign-field by providing a peerName
    */
   public function getAdminColumnForField($field, $flags = array(), $peerName = null)
@@ -1816,57 +2384,4 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     // No multiple foreign keys.
     return false;
   }
-}
-
-
-/**
- * Admin generator column for ExtJs generator.
- *
- * @package    sfExtjsThemePlugin
- * @subpackage generator
- * @author     Leon van der Ree
- * @version    0.1
- */
-class sfExtjsAdminColumn extends sfAdminColumn
-{
-  /**
-   * Returns true if the column is hidden.
-   *
-   * @return boolean true if the column is hidden, false otherwise
-   */
-  public function isHidden()
-  {
-    return in_array('-', $this->flags) ? true : false;
-  }
-
-  /**
-   * Returns true if the column is invisible (not part of the grids columns, usefull for renderers, partials and templates).
-   *
-   * @return boolean true if the column is very-hidden, false otherwise
-   */
-  public function isInvisible()
-  {
-    return in_array('+', $this->flags) ? true : false;
-  }
-
-  /**
-   * return the internal column
-   *
-   * @return ColumnMap
-   */
-  public function getColumn()
-  {
-    return $this->column;
-  }
-
-  /**
-   * Sets(/changes) the phpName after construction
-   *
-   * @param string $phpName
-   */
-  public function setPhpName($phpName)
-  {
-    $this->phpName = $phpName;
-  }
-
 }

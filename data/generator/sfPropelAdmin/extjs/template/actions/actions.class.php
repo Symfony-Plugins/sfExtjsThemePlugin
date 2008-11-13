@@ -9,10 +9,9 @@
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @version    SVN: $Id: actions.class.php 3501 2007-02-18 10:28:17Z fabien $
  */
-<?php
-  $tableDelimiter = sfConfig::get('app_sf_extjs_theme_plugin_table_delimiter', '-');
-?>
-class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
+require_once '<?php echo sfConfig::get('sf_plugins_dir') ?>'.DIRECTORY_SEPARATOR.'Extjs2DBFGeneratorThemePlugin'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'BaseExtjs2DBFGeneratorThemePluginActions.class.php';
+
+class <?php echo $this->getGeneratedModuleName() ?>Actions extends BasesfExtjsThemePluginActions
 {
   public function executeJsonResponse()
   {
@@ -135,40 +134,42 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     return $this->renderText($result);
   }
 
-  //JSON-data for the list
-  public function executeJsonList()
+  public function executeList()
   {
-    $limit = $this->getRequestParameter('limit', <?php echo $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20)) ?>);
-    $page = floor($this->getRequestParameter('start', 0) / $limit)+1;
-    $namespace = $this->getRequestParameter('namespace', '<?php echo $this->getSingularName() ?>');
+    if($this->getRequestParameter('json', false))
+    {
+      $limit = $this->getRequestParameter('limit', <?php echo $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20)) ?>);
+      $page = floor($this->getRequestParameter('start', 0) / $limit)+1;
+      $namespace = $this->getRequestParameter('namespace', '<?php echo $this->getSingularName() ?>');
 
-    $this->processSort(strtolower($this->getRequestParameter('dir')),$namespace);
-    $this->processFilters($namespace);
-    $this->filters = $this->getUser()->getAttributeHolder()->getAll('sf_admin/'.$namespace.'/filters');
+      $this->processSort(strtolower($this->getRequestParameter('dir')),$namespace);
+      $this->processFilters($namespace);
+      $this->filters = $this->getUser()->getAttributeHolder()->getAll('sf_admin/'.$namespace.'/filters');
 
-    // pager
-    $this->pager = new sfPropelPager('<?php echo $this->getClassName() ?>', $limit);
-    $c = new Criteria();
-    $this->addSortCriteria($c,$namespace);
-    $this->addFiltersCriteria($c,$namespace);
-    $this->pager->setCriteria($c);
-    $this->pager->setPage($page);
-<?php $peerMethod = $this->getParameterValue('list.peer_method') ? $this->getParameterValue('list.peer_method') : $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : 'doSelectJoinAll';
-    if (is_callable(array($this->getPeerClassName(), $peerMethod))): ?>
-    $this->pager->setPeerMethod('<?php echo $peerMethod ?>');
-<?php endif; ?>
+      // pager
+      $this->pager = new sfPropelPager('<?php echo $this->getClassName() ?>', $limit);
+      $c = new Criteria();
+      $this->addSortCriteria($c,$namespace);
+      $this->addFiltersCriteria($c,$namespace);
+      $this->pager->setCriteria($c);
+      $this->pager->setPage($page);
+  <?php $peerMethod = $this->getParameterValue('list.peer_method') ? $this->getParameterValue('list.peer_method') : $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : 'doSelectJoinAll';
+      if (is_callable(array($this->getPeerClassName(), $peerMethod))): ?>
+      $this->pager->setPeerMethod('<?php echo $peerMethod ?>');
+  <?php endif; ?>
 
-<?php $peerCountMethod = $this->getParameterValue('list.peer_count_method') ? $this->getParameterValue('list.peer_count_method') : $this->getParameterValue('peer_count_method') ? $this->getParameterValue('peer_count_method') : 'doCountJoinAll';
-    if (is_callable(array($this->getPeerClassName(), $peerCountMethod))): ?>
-    $this->pager->setPeerCountMethod('<?php echo $peerCountMethod ?>');
-<?php endif; ?>
-    $this->pager->init();
+  <?php $peerCountMethod = $this->getParameterValue('list.peer_count_method') ? $this->getParameterValue('list.peer_count_method') : $this->getParameterValue('peer_count_method') ? $this->getParameterValue('peer_count_method') : 'doCountJoinAll';
+      if (is_callable(array($this->getPeerClassName(), $peerCountMethod))): ?>
+      $this->pager->setPeerCountMethod('<?php echo $peerCountMethod ?>');
+  <?php endif; ?>
+      $this->pager->init();
 
-    $result = $this->json_encode_list_pager_results($this->pager);
+      $result = $this->json_encode_list_pager_results($this->pager);
 
-    $this->getResponse()->setHttpHeader("X-JSON", '()'); // set a header, although it is empty...
+      $this->getResponse()->setHttpHeader("X-JSON", '()'); // set a header, although it is empty...
 
-    return $this->renderText($result);
+      return $this->renderText($result);
+    }
   }
 
   //JSON-data for an edit-page
@@ -181,7 +182,7 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
     $this->pager = new sfPropelPager('<?php echo $this->getClassName() ?>', $limit);
     $c = new Criteria();
 
-    <?php $groupedColumns = $this->getColumnsGrouped('edit.display'); ?>
+    <?php $groupedColumns = $this->getConfigColumns('edit'); ?>
     if ($this->getRequest()->hasParameter('key'))
     {
       $key = $this->getRequest()->getParameter('key');
@@ -217,45 +218,6 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends sfActions
 
     $this->setLayout(false); // TODO: set to a print layout...
     $this->setTemplate('list');
-  }
-
-  public function executeList()
-  {
-    $this->processSort();
-
-    $this->processFilters();
-
-<?php if ($this->getParameterValue('list.filters')): ?>
-    $this->filters = $this->getUser()->getAttributeHolder()->getAll('sf_admin/<?php echo $this->getSingularName() ?>/filters');
-<?php endif; ?>
-
-    // pager
-    $this->pager = new sfPropelPager('<?php echo $this->getClassName() ?>', <?php echo $this->getParameterValue('list.max_per_page', 20) ?>);
-    $c = new Criteria();
-<?php if ($fields = $this->getParameterValue('list.fields')): ?>
-<?php foreach ($fields as $key => $field): ?>
-<?php if ($join_fields = $this->getParameterValue('list.fields.'.$key.'.join_fields')): ?>
-    $c->addJoin(<?php echo $join_fields[0]?>,<?php echo $join_fields[1]?>);
-<?php endif; ?>
-<?php endforeach; ?>
-<?php endif; ?>
-    $this->addSortCriteria($c);
-    $this->addFiltersCriteria($c);
-    $this->pager->setCriteria($c);
-    $this->pager->setPage($this->getRequestParameter('page', 1));
-<?php if ($peerMethod = $this->getParameterValue('list.peer_method') ? $this->getParameterValue('list.peer_method') : $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : false): ?>
-    $this->pager->setPeerMethod('<?php echo $peerMethod ?>');
-<?php endif; ?>
-<?php if ($peerCountMethod = $this->getParameterValue('list.peer_count_method') ? $this->getParameterValue('list.peer_count_method') : $this->getParameterValue('peer_count_method') ? $this->getParameterValue('peer_count_method') : false): ?>
-    $this->pager->setPeerCountMethod('<?php echo $peerCountMethod ?>');
-<?php endif; ?>
-    $this->pager->init();
-
-
-<?php if ($this->getParameterValue('ajax', sfConfig::get('app_sf_extjs_theme_plugin_ajax', true))): ?>
-    $this->setTemplate('listAjax');
-<?php endif; ?>
-
   }
 
   public function executeCreate()
@@ -536,7 +498,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   protected function update<?php echo $this->getClassName() ?>ListFromRequest($columnName, $columnValue)
   {
 <?php
-  $groupedColumns = $this->getColumnsGrouped('list.display');
+  $groupedColumns = $this->getConfigColumns('display');
   $columns = $this->getListUniqueColumns($groupedColumns, true);
 
   $tableName = $this->getTableName();
@@ -569,7 +531,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 
     $type = $column->getCreoleType();
 ?>
-    <?php echo !$first ? 'else' : '' ?>if ($columnName == '<?php echo str_replace('/', $tableDelimiter, $column->key) ?>')
+    <?php echo !$first ? 'else' : '' ?>if ($columnName == '<?php echo str_replace('/', $this->tableDelimiter, $column->key) ?>')
     {
 <?php $credentials = $this->getParameterValue('list.fields.'.$columnName.'.credentials') ?>
 <?php if ($credentials): $credentials = str_replace("\n", ' ', var_export($credentials, true)) ?>
@@ -620,7 +582,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     $<?php echo $this->getSingularName() ?> = $this->getRequestParameter('<?php echo $this->getTableName() ?>');
 
 <?php
-  $groupedColumns = $this->getColumnsGrouped('edit.display');
+  $groupedColumns = $this->getConfigColumns('edit');
   $columns = $this->getListUniqueColumns($groupedColumns, true);
   $tableName = $this->getTableName();
 
@@ -631,7 +593,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     if (false !== strpos($columnName, '/')) continue; // TODO: at the moment cannot handle foreign fields
 
     $type = $column->getCreoleType();
-    $name = str_replace('/', $tableDelimiter, $columnName);
+    $name = str_replace('/', $this->tableDelimiter, $columnName);
 
     $credentials = $this->getParameterValue('edit.fields.'.$columnName.'.credentials');
     $input_type = $this->getParameterValue('edit.fields.'.$columnName.'.type');
@@ -823,19 +785,19 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 <?php if (is_array($sort)): //multiple sort columns ?>
 
 <?php if (!$multisort) :?>
-      $this->getUser()->setAttribute('<?php echo str_replace('/', $tableDelimiter, $sort[0]) ?>', '<?php echo $sort[1] ?>', "sf_admin/$namespace/sort");
+      $this->getUser()->setAttribute('<?php echo str_replace('/', $this->tableDelimiter, $sort[0]) ?>', '<?php echo $sort[1] ?>', "sf_admin/$namespace/sort");
 <?php else: // if multisort ?>
 <?php foreach ($sort as $s) : ?>
 <?php if (is_array($s)): // if [column, direction] ?>
-      $this->getUser()->setAttribute('<?php echo str_replace('/', $tableDelimiter, $s[0]) ?>', '<?php echo $s[1] ?>', "sf_admin/$namespace/sort");
+      $this->getUser()->setAttribute('<?php echo str_replace('/', $this->tableDelimiter, $s[0]) ?>', '<?php echo $s[1] ?>', "sf_admin/$namespace/sort");
 <?php else: // if sort-column is not an array: only sort column ?>
-      $this->getUser()->setAttribute('<?php echo str_replace('/', $tableDelimiter, $s) ?>', 'asc', "sf_admin/$namespace/sort");
+      $this->getUser()->setAttribute('<?php echo str_replace('/', $this->tableDelimiter, $s) ?>', 'asc', "sf_admin/$namespace/sort");
 <?php endif; ?>
 <?php endforeach; ?>
 <?php endif; //end multisort ?>
 
 <?php else: // if only one sort column ?>
-      $this->getUser()->setAttribute('<?php echo str_replace('/', $tableDelimiter, $sort) ?>', 'asc', "sf_admin/$namespace/sort");
+      $this->getUser()->setAttribute('<?php echo str_replace('/', $this->tableDelimiter, $sort) ?>', 'asc', "sf_admin/$namespace/sort");
 <?php endif; //end columns array test ?>
     }
 <?php endif; // endif list.sort parameter ?>
@@ -844,8 +806,8 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   protected function addGroupCriteria($c)
   {
 <?php
-  $for = array('list.filters', 'list.display', 'edit.display');
-  $groupedColumns = $this->getColumnsGrouped($for, false);
+  $for = array('filters', 'display', 'edit');
+  $groupedColumns = $this->getConfigColumns($for);
 
   $pk = clone($groupedColumns['pk']);
   $pk->key = strtolower($pk->getName());
@@ -889,7 +851,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 ?>
 <?php if (($column->isPartial() || $column->isComponent()) && $this->getParameterValue('list.fields.'.$column->getName().'.filter_criteria_disabled')) continue; ?>
 <?php if (!$column->isPrimaryKey()): ?>
-    if (isset($this->groupby['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']))
+    if (isset($this->groupby['<?php echo str_replace('/', $this->tableDelimiter, $column->key) ?>']))
     {
       $c->addSelectColumn(<?php echo $peerClassName ?>::<?php echo $columnName ?>);
       $c->addGroupByColumn(<?php echo $peerClassName ?>::<?php echo $columnName ?>);
@@ -902,8 +864,8 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   {
 <?php
   // filtering is also used for drop-down combo-box filtering and retreiving json-data for edit-pages!
-  $for = array('list.filters', 'list.display', 'edit.display');
-  $groupedColumns = $this->getColumnsGrouped($for, false);
+  $for = array('filters', 'display', 'edit');
+  $groupedColumns = $this->getConfigColumns($for);
 
   $pk = clone($groupedColumns['pk']);
   $pk->key = strtolower($pk->getName());
@@ -947,9 +909,9 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 ?>
 <?php if (($column->isPartial() || $column->isComponent()) && $this->getParameterValue('list.fields.'.$column->getName().'.filter_criteria_disabled')) continue; ?>
 <?php if ($type == CreoleTypes::DATE || $type == CreoleTypes::TIMESTAMP): ?>
-    if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']) && $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>'] !== '')
+    if (isset($this->filters['<?php echo str_replace('/', $this->tableDelimiter, $column->key) ?>']) && $this->filters['<?php echo str_replace('/', $this->tableDelimiter, $column->key) ?>'] !== '')
     {
-      $dateStart = strtotime($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']);
+      $dateStart = strtotime($this->filters['<?php echo str_replace('/', $this->tableDelimiter, $column->key) ?>']);
       $dateEnd = mktime(0, 0, 0, date("m",$dateStart)  , date("d",$dateStart)+1, date("Y",$dateStart));
 
       $criterion = $c->getNewCriterion(<?php echo $peerClassName ?>::<?php echo $columnName ?>, date('Y-m-d', $dateStart), Criteria::GREATER_EQUAL);
@@ -962,17 +924,17 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
       }
     }
 <?php else: ?>
-    if (isset($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']) && $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>'] !== '')
+    if (isset($this->filters['<?php echo str_replace('/', $this->tableDelimiter, $column->key) ?>']) && $this->filters['<?php echo str_replace('/', $this->tableDelimiter, $column->key) ?>'] !== '')
     {
 <?php if ($type == CreoleTypes::CHAR || $type == CreoleTypes::VARCHAR || $type == CreoleTypes::LONGVARCHAR): ?>
       $q = '';
       if ($this->getRequest()->getParameter('filter') == 'query') $q = '%';
-      $c->add(<?php echo $peerClassName ?>::<?php echo $columnName ?>, strtr($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>'].$q, '*', '%'), Criteria::LIKE);
+      $c->add(<?php echo $peerClassName ?>::<?php echo $columnName ?>, strtr($this->filters['<?php echo str_replace('/', $this->tableDelimiter, $column->key) ?>'].$q, '*', '%'), Criteria::LIKE);
 <?php elseif ($type == CreoleTypes::BOOLEAN): ?>
-      $bool = ($this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']=='true')?true:false;
+      $bool = ($this->filters['<?php echo str_replace('/', $this->tableDelimiter, $column->key) ?>']=='true')?true:false;
       if($bool) $c->add(<?php echo $peerClassName ?>::<?php echo $columnName ?>, $bool);
 <?php else: ?>
-      $c->add(<?php echo $peerClassName ?>::<?php echo $columnName ?>, $this->filters['<?php echo str_replace('/', $tableDelimiter, $column->key) ?>']);
+      $c->add(<?php echo $peerClassName ?>::<?php echo $columnName ?>, $this->filters['<?php echo str_replace('/', $this->tableDelimiter, $column->key) ?>']);
 <?php endif; ?>
     }
 <?php endif; ?>
@@ -1074,14 +1036,14 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   {
     return array(
 <?php
-  $groupedColumns = $this->getColumnsGrouped('edit.display');
+  $groupedColumns = $this->getConfigColumns('edit');
   $columns = $this->getListUniqueColumns($groupedColumns, true);
   $tableName = $this->getTableName();
 
   foreach ($columns as $columnName => $column) :
     $columnName = $column->key;
 
-    $fieldName = str_replace('/', $tableDelimiter, $columnName);
+    $fieldName = str_replace('/', $this->tableDelimiter, $columnName);
 
     $labelName = str_replace("'", "\\'", $this->getParameterValue('edit.fields.'.$columnName.'.name'));
 ?>
@@ -1096,7 +1058,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     switch($tableName)
     {
 <?php
-  $relatedColumns = $this->getListRelatedGroupedColumns($this->getColumnsGrouped(array('list.display', 'edit.display')));
+  $relatedColumns = $this->getListRelatedGroupedColumns($this->getConfigColumns(array('display', 'edit')));
   foreach ($relatedColumns as $foreignKey => $relatedTable):
 ?>
       case '<?php echo $relatedTable['pk']->getTable()->getName(); ?>':
@@ -1222,9 +1184,9 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     switch ($for)
     {
       case 'autocomplete':
-        $for_display[] = 'list.filters';
+        $for_display[] = 'filters';
       case 'list':
-        $for_display[] = 'list.display';
+        $for_display[] = 'display';
         if ($for != 'autocomplete') break;
       case 'edit':
         $display = $this->getParameterValue('edit.display');
@@ -1233,13 +1195,14 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
         // iterate through all (related) columns of all classes
         if ((!isset($pages) && !isset($display)) || isset($display))
         {
-          $for_display[] = 'edit.display'; //TODO: this should probably return all columns instead to remain compatible with original generator
+          $for_display[] = 'edit'; //TODO: this should probably return all columns instead to remain compatible with original generator
         }
 
         if (isset($pages))
         {
           //add all edit.pages
           //TODO: add recursion for edit.pages.pagename.pages...etc
+          //TODO:fix this
           foreach($pages as $pageName => $page)
           {
             $for_display[] = 'edit.pages.'.$pageName.'.display';
@@ -1247,7 +1210,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
         }
     }
 
-    $groupedColumns = $this->getColumnsGrouped($for_display);
+    $groupedColumns = $this->getConfigColumns($for_display);
     $columns = $this->getListUniqueColumns($groupedColumns, true);
 
     foreach ($columns as $columnName => $column) :
