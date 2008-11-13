@@ -9,7 +9,7 @@
  * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
  * @version    SVN: $Id: actions.class.php 3501 2007-02-18 10:28:17Z fabien $
  */
-require_once '<?php echo sfConfig::get('sf_plugins_dir') ?>'.DIRECTORY_SEPARATOR.'Extjs2DBFGeneratorThemePlugin'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'BaseExtjs2DBFGeneratorThemePluginActions.class.php';
+require_once '<?php echo sfConfig::get('sf_plugins_dir') ?>'.DIRECTORY_SEPARATOR.'sfExtjsThemePlugin'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'BasesfExtjsThemePluginActions.class.php';
 
 class <?php echo $this->getGeneratedModuleName() ?>Actions extends BasesfExtjsThemePluginActions
 {
