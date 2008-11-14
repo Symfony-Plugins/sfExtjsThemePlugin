@@ -176,7 +176,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
     $group_field = $this->getParameterValue('list.grouping.field', null);
 
     $displayColumnsConfig = $this->getListDisplayColumnsConfig();
-    $groupedColumns = $this->getConfigColumns();
+    $groupedColumns = $this->getColumnsGrouped();
 
     $jsonReader = array(
       'id'            => $groupedColumns['pk']->getName(),
@@ -223,7 +223,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
     $cmItems = array();
     $credArr = array();
     $i=0;
-    foreach ($this->sortColumns($this->getListColumns($this->getConfigColumns())) as $column)
+    foreach ($this->sortColumns($this->getListColumns($this->getColumnsGrouped())) as $column)
     {
       //don't create column config for invisible columns
       if (($column->isInvisible()))
@@ -249,7 +249,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
         $credArr[] = 'if(!$sf_user->hasCredential('.$listcreds.')) unset($columnmodel->config_array['.$i.']);';
       }
 
-      $columnDefinition = $this->getColumnAjaxListDefinition($column, $this->getConfigColumns());
+      $columnDefinition = $this->getColumnAjaxListDefinition($column, $this->getColumnsGrouped());
 
       //captures the ^rowactions in the list.display and sets the rowexpander at that position
       if ($column->key == '^rowactions')
@@ -345,7 +345,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
   public function getFilterPanelConfig()
   {
     // iterate through all (related) columns of all classes
-    $groupedColumns = $this->getConfigColumns('filters');
+    $groupedColumns = $this->getColumnsGrouped('list.filters');
     $columns = $this->getListColumns($groupedColumns);
     $tableName = $this->getTableName();
 
@@ -503,7 +503,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
       $i=0;
       $this->listDisplayColumnsConfig['credArr'] = array();
       $this->listDisplayColumnsConfig['listDisplay'] = array();
-      $uniqueCols = $this->getListUniqueColumns($this->getConfigColumns(), true);
+      $uniqueCols = $this->getListUniqueColumns($this->getColumnsGrouped(), true);
       foreach ($uniqueCols as $column)
       {
         if ($column->isPlugin()) continue;  //plugin placeholder columns not in json-data
@@ -1072,8 +1072,8 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
   {
     //the array_keys gives a list of all columns specified anywhere in the generator.yml
     //the value of each key is an array of the parameters that defined it
-    $fieldsArr = $this->getFieldList();
-    if(!$columnNames) $columnNames = array_keys($this->getFieldList());
+    //$fieldsArr = $this->getFieldList();
+    //if(!$columnNames) $columnNames = array_keys($this->getFieldList());
 
     // the base peerName will be this->PeerName
     if ($peerName == null)
@@ -1179,7 +1179,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
         // columns can be added multiple times to the hierarchy
         // filtering double fields should be done elsewhere (probably during json-encoding and columnmodel creation) or
         // else you cannot see a column multiple times in your grid (if someone happened to want that)
-        $column->displayArr = (isset($fieldsArr[implode('\\',array($group,$flagPrefix.$columnName))]))?$fieldsArr[implode('\\',array($group,$flagPrefix.$columnName))]:null;
+        //$column->displayArr = (isset($fieldsArr[implode('\\',array($group,$flagPrefix.$columnName))]))?$fieldsArr[implode('\\',array($group,$flagPrefix.$columnName))]:null;
         $groupedColumns['columns'][$group][] = $column;
       }
 
@@ -1568,6 +1568,10 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
       )
     ) ? true : false;
 
+    //add ability to set field_type in field config params
+    $this->fieldType = (isset($params['field_type'])&&$params['field_type'])?$params['field_type']:$this->getFieldType($column);
+
+
     // columns with related data, which are editable
     if (strpos($column->key, '/') !== false && $editable)
     {
@@ -1584,31 +1588,16 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
 
       $groupBy = ($column->key == $this->getParameterValue('list.grouping.field', null)) ? true : false;
 
-      if ($groupBy) // group by this column
-      {
-        //deprecated I think
-        //if(!$renderParam) $renderParam = 'this.renderHeader';
-      }
-      else // not grouped by this column
+      if (!$groupBy)
       {
         if ($column->isLink() && !$renderParam) $renderParam = 'this.renderLink';
-
-//        // TODO: summaryRenderers of what? since we are not grouping here...
-//        $summaryAttributes = array(
-//          'summaryRenderer' => 'summary_renderer',
-//          'summaryType'     => 'summary_type'
-//          );
-//          foreach ($summaryAttributes as $extjsParam => $paramValue)
-//          {
-//            if (isset($params[$paramValue])) $definition[$extjsParam] = $params[$paramValue];
-//          }
       }
 
       //default
       $editor['xtype'] = $this->getXtypeForColumn($column);
       $typeRenderer = $this->getRendererForColumn($column);
 
-      switch($this->getFieldType($column))
+      switch($this->fieldType)
       {
         case 'date':
           $defaultFormat = sfConfig::get('app_sf_extjs_theme_plugin_format_date', 'm/d/Y'); // TODO set default format from symfony user culture (and replace "-" by "/")
@@ -1786,7 +1775,8 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
     $combo = ($this->getFieldType($column) != 'date' && strpos($column->key, '/') !== false)?true:false;
     $combo = (isset($params['filter_field']) && $params['filter_field'] == 'textfield')?false:$combo;
     $combo = (isset($params['filter_field']) && $params['filter_field'] == 'combo')?true:$combo;
-    if($combo){
+    if($combo)
+    {
       $definition['xtype'] = 'filtertwincombobox';
       $definition['url'] = $this->controller->genUrl($this->getModuleName().'/jsonCombo');
       $definition['valueField'] = $key;

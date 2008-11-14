@@ -182,7 +182,7 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends BasesfExtjsTh
     $this->pager = new sfPropelPager('<?php echo $this->getClassName() ?>', $limit);
     $c = new Criteria();
 
-    <?php $groupedColumns = $this->getConfigColumns('edit'); ?>
+    <?php $groupedColumns = $this->getColumnsGrouped('edit.display'); ?>
     if ($this->getRequest()->hasParameter('key'))
     {
       $key = $this->getRequest()->getParameter('key');
@@ -498,7 +498,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   protected function update<?php echo $this->getClassName() ?>ListFromRequest($columnName, $columnValue)
   {
 <?php
-  $groupedColumns = $this->getConfigColumns('display');
+  $groupedColumns = $this->getColumnsGrouped('list.display');
   $columns = $this->getListUniqueColumns($groupedColumns, true);
 
   $tableName = $this->getTableName();
@@ -582,7 +582,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     $<?php echo $this->getSingularName() ?> = $this->getRequestParameter('<?php echo $this->getTableName() ?>');
 
 <?php
-  $groupedColumns = $this->getConfigColumns('edit');
+  $groupedColumns = $this->getColumnsGrouped('edit.display');
   $columns = $this->getListUniqueColumns($groupedColumns, true);
   $tableName = $this->getTableName();
 
@@ -806,8 +806,8 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   protected function addGroupCriteria($c)
   {
 <?php
-  $for = array('filters', 'display', 'edit');
-  $groupedColumns = $this->getConfigColumns($for);
+  $for = array('list.filters', 'list.display', 'edit.display');
+  $groupedColumns = $this->getColumnsGrouped($for, false);
 
   $pk = clone($groupedColumns['pk']);
   $pk->key = strtolower($pk->getName());
@@ -864,8 +864,8 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   {
 <?php
   // filtering is also used for drop-down combo-box filtering and retreiving json-data for edit-pages!
-  $for = array('filters', 'display', 'edit');
-  $groupedColumns = $this->getConfigColumns($for);
+  $for = array('list.filters', 'list.display', 'edit.display');
+  $groupedColumns = $this->getColumnsGrouped($for, false);
 
   $pk = clone($groupedColumns['pk']);
   $pk->key = strtolower($pk->getName());
@@ -1036,7 +1036,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
   {
     return array(
 <?php
-  $groupedColumns = $this->getConfigColumns('edit');
+  $groupedColumns = $this->getColumnsGrouped('edit.display');
   $columns = $this->getListUniqueColumns($groupedColumns, true);
   $tableName = $this->getTableName();
 
@@ -1058,7 +1058,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     switch($tableName)
     {
 <?php
-  $relatedColumns = $this->getListRelatedGroupedColumns($this->getConfigColumns(array('display', 'edit')));
+  $relatedColumns = $this->getListRelatedGroupedColumns($this->getColumnsGrouped(array('list.display', 'edit.display')));
   foreach ($relatedColumns as $foreignKey => $relatedTable):
 ?>
       case '<?php echo $relatedTable['pk']->getTable()->getName(); ?>':
@@ -1184,9 +1184,9 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     switch ($for)
     {
       case 'autocomplete':
-        $for_display[] = 'filters';
+        $for_display[] = 'list.filters';
       case 'list':
-        $for_display[] = 'display';
+        $for_display[] = 'list.display';
         if ($for != 'autocomplete') break;
       case 'edit':
         $display = $this->getParameterValue('edit.display');
@@ -1195,14 +1195,13 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
         // iterate through all (related) columns of all classes
         if ((!isset($pages) && !isset($display)) || isset($display))
         {
-          $for_display[] = 'edit'; //TODO: this should probably return all columns instead to remain compatible with original generator
+          $for_display[] = 'edit.display'; //TODO: this should probably return all columns instead to remain compatible with original generator
         }
 
         if (isset($pages))
         {
           //add all edit.pages
           //TODO: add recursion for edit.pages.pagename.pages...etc
-          //TODO:fix this
           foreach($pages as $pageName => $page)
           {
             $for_display[] = 'edit.pages.'.$pageName.'.display';
@@ -1210,7 +1209,7 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
         }
     }
 
-    $groupedColumns = $this->getConfigColumns($for_display);
+    $groupedColumns = $this->getColumnsGrouped($for_display);
     $columns = $this->getListUniqueColumns($groupedColumns, true);
 
     foreach ($columns as $columnName => $column) :
