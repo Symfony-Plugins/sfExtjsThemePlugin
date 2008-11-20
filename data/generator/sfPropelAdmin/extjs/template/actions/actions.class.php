@@ -352,42 +352,6 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends BasesfExtjsTh
 
   public function executeDelete()
   {
-    $this-><?php echo $this->getSingularName() ?> = <?php echo $this->getPeerClassName() ?>::retrieveByPk(<?php echo $this->getRetrieveByPkParamsForAction(40) ?>);
-    $this->forward404Unless($this-><?php echo $this->getSingularName() ?>);
-
-    try
-    {
-      $this->delete<?php echo $this->getClassName() ?>($this-><?php echo $this->getSingularName() ?>);
-    }
-    catch (PropelException $e)
-    {
-      $this->getRequest()->setError('delete', 'Could not delete the selected <?php echo sfInflector::humanize($this->getSingularName()) ?>. Make sure it does not have any associated items.');
-      return $this->forward('<?php echo $this->getModuleName() ?>', 'list');
-    }
-
-<?php foreach ($this->getColumnCategories('edit.display') as $category): ?>
-<?php foreach ($this->getColumns('edit.display', $category) as $name => $column): ?>
-<?php $input_type = $this->getParameterValue('edit.fields.'.$column->getName().'.type') ?>
-<?php if ($input_type == 'admin_input_file_tag'): ?>
-<?php $upload_dir = $this->replaceConstants($this->getParameterValue('edit.fields.'.$column->getName().'.upload_dir')) ?>
-      $currentFile = sfConfig::get('sf_upload_dir')."/<?php echo $upload_dir ?>/".$this-><?php echo $this->getSingularName() ?>->get<?php echo $column->getPhpName() ?>();
-      if (is_file($currentFile))
-      {
-        unlink($currentFile);
-      }
-
-<?php endif; ?>
-<?php endforeach; ?>
-<?php endforeach; ?>
-<?php $objectName = $this->getParameterValue('object_name', $this->getModuleName()) ?>
-<?php if(! ($deleteNotification = $this->getParameterValue('edit.delete_notification'))) $deleteNotification = 'The '.$objectName.' has been deleted' ?>
-    $this->setFlash('notice', '<?php echo $deleteNotification ?>');
-
-    return $this->redirect('<?php echo $this->getModuleName() ?>/list');
-  }
-
-  public function executeAjaxDelete()
-  {
     $id = json_decode($this->getRequestParameter('id'));
 
     if(!is_array($id)){
