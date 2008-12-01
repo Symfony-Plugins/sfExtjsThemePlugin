@@ -230,7 +230,7 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends BasesfExtjsTh
     return $this->forward('<?php echo $this->getModuleName() ?>', 'edit');
   }
 
-  public function executeAjaxEdit()
+  public function executeEdit()
   {
     $this-><?php echo $this->getSingularName() ?> = $this->get<?php echo $this->getClassName() ?>OrCreate();
 
@@ -308,46 +308,6 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends BasesfExtjsTh
     $this->id = $this->getRequestParameter('ids');
     $this->title = count($ids)." issue(s) marked $value";
     return $this->sendAjaxResponse();
-  }
-
-  public function executeEdit()
-  {
-    $this-><?php echo $this->getSingularName() ?> = $this->get<?php echo $this->getClassName() ?>OrCreate();
-
-    if ($this->getRequest()->getMethod() == sfRequest::POST)
-    {
-      $this->update<?php echo $this->getClassName() ?>FromRequest();
-
-      $this->save<?php echo $this->getClassName() ?>($this-><?php echo $this->getSingularName() ?>);
-
-      $this->setFlash('notice', 'Your modifications have been saved');
-
-      if ($this->getRequestParameter('save_and_add'))
-      {
-        return $this->redirect('<?php echo $this->getModuleName() ?>/create');
-      }
-      else if ($this->getRequestParameter('save_and_list'))
-      {
-        return $this->redirect('<?php echo $this->getModuleName() ?>/list');
-      }
-      else
-      {
-        return $this->redirect('<?php echo $this->getModuleName() ?>/edit?<?php echo $this->getPrimaryKeyUrlParams('this->') ?>);
-      }
-    }
-    else
-    {
-      $this->labels = $this->getLabels();
-    }
-
-<?php if ($this->getParameterValue('ajax', sfConfig::get('app_sf_extjs_theme_plugin_ajax', true))): ?>
-    if ($this->getRequest()->isXmlHttpRequest())
-    {
-      $this->setLayout(false);
-    }
-    return 'AjaxSuccess';
-<?php endif; ?>
-
   }
 
   public function executeDelete()
@@ -734,37 +694,21 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
 
     if ($sort)
     {
-<?php if (!$multisort) :?>
-      // if not multisort, first reset sort-order before setting new sort-order
       $this->getUser()->getAttributeHolder()->removeNamespace("sf_admin/$namespace/sort");
-<?php endif; ?>
 
       $this->getUser()->setAttribute($sort, $type, "sf_admin/$namespace/sort");
-    }
-
 <?php if ($sort = $this->getParameterValue('list.sort')): ?>
-    // If not yet sorting, sort as specified in generator.yml (if specified)
-    if (!$this->getUser()->getAttributeHolder()->getAll("sf_admin/$namespace/sort"))
-    {
-<?php if (is_array($sort)): //multiple sort columns ?>
-
-<?php if (!$multisort) :?>
-      $this->getUser()->setAttribute('<?php echo str_replace('/', $this->tableDelimiter, $sort[0]) ?>', '<?php echo $sort[1] ?>', "sf_admin/$namespace/sort");
-<?php else: // if multisort ?>
-<?php foreach ($sort as $s) : ?>
-<?php if (is_array($s)): // if [column, direction] ?>
-      $this->getUser()->setAttribute('<?php echo str_replace('/', $this->tableDelimiter, $s[0]) ?>', '<?php echo $s[1] ?>', "sf_admin/$namespace/sort");
-<?php else: // if sort-column is not an array: only sort column ?>
-      $this->getUser()->setAttribute('<?php echo str_replace('/', $this->tableDelimiter, $s) ?>', 'asc', "sf_admin/$namespace/sort");
-<?php endif; ?>
-<?php endforeach; ?>
-<?php endif; //end multisort ?>
-
-<?php else: // if only one sort column ?>
-      $this->getUser()->setAttribute('<?php echo str_replace('/', $this->tableDelimiter, $sort) ?>', 'asc', "sf_admin/$namespace/sort");
-<?php endif; //end columns array test ?>
-    }
+      // If not yet sorting, sort as specified in generator.yml (if specified)
+      if (!$this->getUser()->getAttributeHolder()->getAll("sf_admin/$namespace/sort"))
+      {
+        $this->getUser()->setAttribute('<?php echo str_replace('/', $this->tableDelimiter, $sort) ?>', 'asc', "sf_admin/$namespace/sort");
+      }
 <?php endif; // endif list.sort parameter ?>
+    }
+    else
+    {
+      $this->getUser()->getAttributeHolder()->removeNamespace('sf_admin/'.$namespace.'/sort');
+    }
   }
 
   protected function addGroupCriteria($c)
@@ -1033,39 +977,9 @@ $column = sfPropelManyToMany::getColumn($class, $through_class);
     throw new Exception('Unknown table name: "'.$tableName.'"');
   }
 
-  public function executeListAjaxJs()
-  {
-
-  }
-
-  public function executeListAjaxGridPanelJs()
-  {
-
-  }
-
-  public function executeListAjaxFilterPanelJs()
-  {
-
-  }
-
-  public function executeListAjaxTabPanelJs()
-  {
-
-  }
-
-  public function executeListAjaxRowActionsJs()
-  {
-
-  }
-
   public function executeRelatedAjaxEditors()
   {
     $this->setTemplate('relatedAjaxEditors');
-  }
-
-  public function executeEditAjaxJs()
-  {
-
   }
 
   public function executeAjaxUploadReceive()
