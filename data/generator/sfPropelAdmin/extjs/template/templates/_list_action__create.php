@@ -12,5 +12,5 @@
   }
 ?>
   $configArr["source"] = "<?php echo  $handler_function ?>";
-  $toolbar_top->attributes["_delete"] = $sfExtjs2Plugin->asMethod($configArr);
+  $toolbar_top->attributes["_create"] = $sfExtjs2Plugin->asMethod($configArr);
 ?]

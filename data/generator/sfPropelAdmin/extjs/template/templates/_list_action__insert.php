@@ -1,7 +1,7 @@
 [?php // @object $sfExtjs2Plugin and @object $toolbar_top provided
   $configArr["source"] = "
           Ext.Ajax.request({
-            url : '<?php echo $this->controller->genUrl($this->getModuleName().'/ajaxEdit')?>',
+            url : '<?php echo $this->controller->genUrl($this->getModuleName().'/edit')?>',
             method: 'POST',
             params: {
               cmd:   'save'
@@ -23,5 +23,5 @@
             }
           });
           ";
-  $toolbar_top->attributes["_upload"] = $sfExtjs2Plugin->asMethod($configArr);
+  $toolbar_top->attributes["_insert"] = $sfExtjs2Plugin->asMethod($configArr);
 ?]
