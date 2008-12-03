@@ -15,7 +15,7 @@
     // initialise CodeLoader
     Ext.app.CodeLoader = new Ext.ux.ModuleManager({modulePath: '[?php echo $this->getContext()->getRequest()->getScriptName() ?]' });
 
-<?php if ($use_tinymce = sfConfig::get('app_extjs2_dbfgen_theme_plugin_use_tinymce', false)): ?>
+<?php if ($use_tinymce = sfConfig::get('sf_extjs_theme_plugin_use_tinymce', false)): ?>
     //init TinyMCE
     Ext.ux.TinyMCE.initTinyMCE();
 <?php endif ?>
@@ -30,7 +30,7 @@ $js = sfConfig::get('extjs_default_javascripts', array());
 <?php endif ?>
 
 // TODO: Need to put in a mechanism to only include extensions we are currently using in the generator.yml
-$sfExtjs2Plugin = new sfExtjs2Plugin(array('theme'   => sfConfig::get('app_extjs2_dbfgen_theme_plugin_theme'),
+$sfExtjs2Plugin = new sfExtjs2Plugin(array('theme'   => sfConfig::get('sf_extjs_theme_plugin_theme'),
                                            'adapter' => '<?php echo $this->getParameterValue('adapter'); ?>'),
                                      array('css' => array('/sfExtjsThemePlugin/css/symfony-extjs.css'),
                                            'js'  => $js
@@ -87,14 +87,14 @@ $sfExtjs2Plugin->load();
     editPanel.on('deleted', function(panel) {alert('deleted: ' + panel.getKey() )} );
     editPanel.on('close_request', function(panel) {alert('Close Request: ' + panel.getKey() )} );
 
-<?php if (sfConfig::get('app_extjs2_dbfgen_theme_plugin_module_returns_layout', true)):  ?>
+<?php if (sfConfig::get('sf_extjs_theme_plugin_module_returns_layout', true)):  ?>
     var viewport = [?php echo $sfExtjs2Plugin->Viewport(array(
       'layout'  => 'fit',
       'items'   => array($sfExtjs2Plugin->asVar('editPanel'))
     )); ?]
     viewport.doLayout();
 <?php else: ?>
-    <?php echo sfConfig::get('app_extjs2_dbfgen_theme_plugin_module_panel_name', 'App.RequestedModulePanel') ?> = editPanel;
+    <?php echo sfConfig::get('sf_extjs_theme_plugin_module_panel_name', 'App.RequestedModulePanel') ?> = editPanel;
 <?php endif; ?>
   });
 

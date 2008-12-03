@@ -2,7 +2,7 @@
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $className = "List".$moduleName."FilterPanel";
   $filterConfig = $this->getFilterPanelConfig();
-  $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('app_extjs2_dbfgen_theme_plugin_list_max_per_page', 20));
+  $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('sf_extjs_theme_plugin_list_max_per_page', 20));
 ?>
 <?php if($this->getParameterValue('filterpanel.params.saveState')): ?>
 <?php echo 'Ext.state.Manager.setProvider(new Ext.state.CookieProvider());'?>

@@ -1,7 +1,7 @@
 [?php
-<?php $css = sfConfig::get('extjs2_dbfgen_default_stylesheets', array()); ?>
-<?php $js = sfConfig::get('extjs2_dbfgen_default_javascripts', array()); ?>
-<?php if ($use_tinymce = sfConfig::get('app_extjs2_dbfgen_theme_plugin_use_tinymce', false)): ?>
+<?php $css = sfConfig::get('extjs_default_stylesheets', array()); ?>
+<?php $js = sfConfig::get('extjs_default_javascripts', array()); ?>
+<?php if ($use_tinymce = sfConfig::get('sf_extjs_theme_plugin_use_tinymce', false)): ?>
    $js[] = '/sfExtjsThemePlugin/js/tiny_mce/tiny_mce';
    $js[] = '/sfExtjsThemePlugin/js/ext.ux.tinymce/Ext.ux.TinyMCE.min.js';
    $js[] = '/sfExtjsThemePlugin/js/ext.ux.managediframe/miframe-min.js';
@@ -10,7 +10,7 @@
 // TODO: Need to put in a mechanism to only include extensions we are currently using in the generator.yml
 $sfExtjs2Plugin = new sfExtjs2Plugin(
   array(
-    'theme'   => sfConfig::get('app_extjs2_dbfgen_theme_plugin_theme'),
+    'theme'   => sfConfig::get('sf_extjs_theme_plugin_theme'),
     'adapter' => '<?php echo $this->getParameterValue('adapter'); ?>'
   ),
   array(

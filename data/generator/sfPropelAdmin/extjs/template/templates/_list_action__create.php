@@ -1,12 +1,12 @@
 [?php // @object $sfExtjs2Plugin and @object $toolbar_top provided
 <?php
   $handler_function = "window.location = '".$this->controller->genUrl($this->getModuleName().'/create')."'";
-  if ($openPanelFunction = sfConfig::get('app_extjs2_dbfgen_theme_plugin_open_panel', null))
+  if ($openPanelFunction = sfConfig::get('sf_extjs_theme_plugin_open_panel', null))
   {
     $handler_function = $openPanelFunction."('".strtolower($this->getModuleName())."')";
   }
 
-  if ($gridListCreateLink = sfConfig::get('app_extjs2_dbfgen_theme_plugin_list_action_handler', null))
+  if ($gridListCreateLink = sfConfig::get('sf_extjs_theme_plugin_list_action_handler', null))
   {
     $handler_function = $gridListCreateLink."('".$this->controller->genUrl($this->getModuleName().'/create')."', null,  '".$default_name."')";
   }

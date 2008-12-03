@@ -5,7 +5,7 @@
     // initialise CodeLoader
     Ext.app.CodeLoader = new Ext.ux.ModuleManager({modulePath: '[?php echo $this->getContext()->getRequest()->getScriptName() ?]' });
 
-<?php if ($use_tinymce = sfConfig::get('app_extjs2_dbfgen_theme_plugin_use_tinymce', false)): ?>
+<?php if ($use_tinymce = sfConfig::get('sf_extjs_theme_plugin_use_tinymce', false)): ?>
     //init TinyMCE
     Ext.ux.TinyMCE.initTinyMCE();
 <?php endif ?>

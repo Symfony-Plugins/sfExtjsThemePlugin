@@ -10,7 +10,7 @@ $configArr = array(
       }
     });
 
-<?php if (sfConfig::get('app_extjs2_dbfgen_theme_plugin_open_panel_handler', null)): ?>
+<?php if (sfConfig::get('sf_extjs_theme_plugin_open_panel_handler', null)): ?>
     this.body.on({
       scope:    this,
       click:    this.onLinkClick,

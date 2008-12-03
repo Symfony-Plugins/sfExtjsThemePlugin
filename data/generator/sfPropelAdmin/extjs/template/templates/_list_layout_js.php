@@ -26,9 +26,9 @@ Ext.onReady(function(){
 <?php endif;?>
 <?php $objectName = $this->getParameterValue('object_name', $this->getModuleName()) ?>
   var list<?php echo $moduleName ?>GridPanel = new Ext.app.sx.List<?php echo $moduleName ?>GridPanel();
-<?php if (sfConfig::get('app_extjs2_dbfgen_theme_plugin_module_returns_layout', true)): ?>
+<?php if (sfConfig::get('sf_extjs_theme_plugin_module_returns_layout', true)): ?>
 [?php include_partial('list_viewport_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin))?]
 <?php else: ?>
-    <?php echo sfConfig::get('app_extjs2_dbfgen_theme_plugin_module_panel_name', 'App.RequestedModulePanel') ?> = list<?php echo $moduleName ?>GridPanel;
+    <?php echo sfConfig::get('sf_extjs_theme_plugin_module_panel_name', 'App.RequestedModulePanel') ?> = list<?php echo $moduleName ?>GridPanel;
 <?php endif; ?>
 });

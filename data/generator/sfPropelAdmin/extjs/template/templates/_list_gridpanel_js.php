@@ -4,7 +4,7 @@
   $panelName_xtype = strtolower($className);
   $group_field = $this->getParameterValue('list.grouping.field', false);
   $objectName = $this->getParameterValue('object_name', $this->getModuleName());
-  $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('app_extjs2_dbfgen_theme_plugin_list_max_per_page', 20));
+  $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('sf_extjs_theme_plugin_list_max_per_page', 20));
   $gridConfig = $this->getGridPanelConfig();
 ?>
 [?php
@@ -38,7 +38,7 @@ $gridpanel->config_array = array(
   'viewConfig'          => $sfExtjs2Plugin->asAnonymousClass(array('forceFit'=>true)),
 );
 
-<?php if (sfConfig::get('app_extjs2_dbfgen_theme_plugin_list_tabbed')): ?>
+<?php if (sfConfig::get('sf_extjs_theme_plugin_list_tabbed')): ?>
 $gridpanel->config_array['header'] = false;
 
 <?php endif; ?>

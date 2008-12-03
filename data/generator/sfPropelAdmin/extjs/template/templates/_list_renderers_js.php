@@ -46,7 +46,7 @@ $renderers->attributes['renderWeight'] = $sfExtjs2Plugin->asMethod(array(
 // formatDate
 $renderers->attributes['formatDate'] = $sfExtjs2Plugin->asMethod(array(
   'parameters' => 'v',
-  'source' => "return Ext.util.Format.date(v, '<?php echo sfConfig::get('app_extjs2_dbfgen_theme_plugin_format_date', 'm/d/Y') ?>')"
+  'source' => "return Ext.util.Format.date(v, '<?php echo sfConfig::get('sf_extjs_theme_plugin_format_date', 'm/d/Y') ?>')"
 ));
 
 $renderers->attributes['formatLongstring'] = $sfExtjs2Plugin->asMethod(array(
