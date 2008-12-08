@@ -138,30 +138,31 @@ class <?php echo $this->getGeneratedModuleName() ?>Actions extends BasesfExtjsTh
   {
     if($this->getRequestParameter('json', false))
     {
-      $limit = $this->getRequestParameter('limit', <?php echo $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20)) ?>);
-      $page = floor($this->getRequestParameter('start', 0) / $limit)+1;
       $namespace = $this->getRequestParameter('namespace', '<?php echo $this->getSingularName() ?>');
 
       $this->processSort(strtolower($this->getRequestParameter('dir')),$namespace);
       $this->processFilters($namespace);
       $this->filters = $this->getUser()->getAttributeHolder()->getAll('sf_admin/'.$namespace.'/filters');
-
-      // pager
-      $this->pager = new sfPropelPager('<?php echo $this->getClassName() ?>', $limit);
       $c = new Criteria();
       $this->addSortCriteria($c,$namespace);
       $this->addFiltersCriteria($c,$namespace);
+
+      $limit = $this->getRequestParameter('limit', <?php echo $this->getParameterValue('list.max_per_page', sfConfig::get('app_sf_extjs_theme_plugin_list_max_per_page', 20)) ?>);
+      $page = floor($this->getRequestParameter('start', 0) / $limit)+1;
+
+      // pager
+      $this->pager = new sfPropelPager('<?php echo $this->getClassName() ?>', $limit);
       $this->pager->setCriteria($c);
       $this->pager->setPage($page);
-  <?php $peerMethod = $this->getParameterValue('list.peer_method') ? $this->getParameterValue('list.peer_method') : $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : 'doSelectJoinAll';
+<?php $peerMethod = $this->getParameterValue('list.peer_method') ? $this->getParameterValue('list.peer_method') : $this->getParameterValue('peer_method') ? $this->getParameterValue('peer_method') : 'doSelectJoinAll';
       if (is_callable(array($this->getPeerClassName(), $peerMethod))): ?>
       $this->pager->setPeerMethod('<?php echo $peerMethod ?>');
-  <?php endif; ?>
+<?php endif; ?>
 
-  <?php $peerCountMethod = $this->getParameterValue('list.peer_count_method') ? $this->getParameterValue('list.peer_count_method') : $this->getParameterValue('peer_count_method') ? $this->getParameterValue('peer_count_method') : 'doCountJoinAll';
+<?php $peerCountMethod = $this->getParameterValue('list.peer_count_method') ? $this->getParameterValue('list.peer_count_method') : $this->getParameterValue('peer_count_method') ? $this->getParameterValue('peer_count_method') : 'doCountJoinAll';
       if (is_callable(array($this->getPeerClassName(), $peerCountMethod))): ?>
       $this->pager->setPeerCountMethod('<?php echo $peerCountMethod ?>');
-  <?php endif; ?>
+<?php endif; ?>
       $this->pager->init();
 
       $result = $this->json_encode_list_pager_results($this->pager);
