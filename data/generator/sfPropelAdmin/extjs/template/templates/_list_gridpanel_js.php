@@ -1,6 +1,7 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $className = "List".$moduleName."GridPanel";
+  $xtype = "list".$this->getModuleName()."gridpanel";
   $panelName_xtype = strtolower($className);
   $group_field = $this->getParameterValue('list.grouping.field', false);
   $objectName = $this->getParameterValue('object_name', $this->getModuleName());
@@ -114,4 +115,4 @@ $sfExtjs2Plugin->beginClass(
 $sfExtjs2Plugin->endClass();
 ?]
 // register xtype
-Ext.reg('<?php echo strtolower($className) ?>', Ext.app.sx.<?php echo $className ?>);
+Ext.reg('<?php echo $xtype ?>', Ext.app.sx.<?php echo $className ?>);

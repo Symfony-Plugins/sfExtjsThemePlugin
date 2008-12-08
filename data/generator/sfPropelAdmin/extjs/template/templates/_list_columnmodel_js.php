@@ -2,6 +2,7 @@
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $cmConfig = $this->getColumnModelConfig();
   $className = "List".$moduleName."ColumnModel";
+  $xtype = "list".$this->getModuleName()."columnmodel";
 ?>
 [?php
 $className = '<?php echo $className ?>';
@@ -39,4 +40,4 @@ $sfExtjs2Plugin->beginClass(
 $sfExtjs2Plugin->endClass();
 ?]
 // register xtype
-Ext.reg('<?php echo strtolower($className) ?>', Ext.app.sx.<?php echo $className ?>);
+Ext.reg('<?php echo $xtype ?>', Ext.app.sx.<?php echo $className ?>);

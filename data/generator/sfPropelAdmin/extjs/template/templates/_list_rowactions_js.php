@@ -1,6 +1,7 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $className = "List".$moduleName."RowActions";
+  $xtype = "list".$this->getModuleName()."rowactions";
   $raConfig = $this->getRowActionsConfig();
 ?>
 [?php
@@ -56,4 +57,4 @@ $sfExtjs2Plugin->beginClass(
 $sfExtjs2Plugin->endClass();
 ?]
 // register xtype
-Ext.reg('<?php echo strtolower($className) ?>', Ext.app.sx.<?php echo $className ?>);
+Ext.reg('<?php echo $xtype ?>', Ext.app.sx.<?php echo $className ?>);

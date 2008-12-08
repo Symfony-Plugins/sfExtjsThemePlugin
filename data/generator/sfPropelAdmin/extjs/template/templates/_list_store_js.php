@@ -10,6 +10,7 @@
   $store = 'Store'; if ($group_field) $store = 'Grouping'.$store;
 
   $className = "List".$moduleName.$store;
+  $xtype = "list".$this->getModuleName().$store;
   $storeConfig = $this->getDataStoreConfig();
 ?>
 [?php
@@ -52,4 +53,4 @@ $sfExtjs2Plugin->beginClass(
 $sfExtjs2Plugin->endClass();
 ?]
 // register xtype
-Ext.reg('<?php echo strtolower($className) ?>', Ext.app.sx.<?php echo $className ?>);
+Ext.reg('<?php echo $xtype ?>', Ext.app.sx.<?php echo $className ?>);

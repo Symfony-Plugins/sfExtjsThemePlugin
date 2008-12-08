@@ -1,6 +1,7 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $className = "List".$moduleName."TabPanel";
+  $xtype = "list".$this->getModuleName()."tabpanel";
 ?>
 [?php
 $className = '<?php echo $className ?>';
@@ -43,4 +44,4 @@ $sfExtjs2Plugin->beginClass(
 $sfExtjs2Plugin->endClass();
 ?]
 // register xtype
-Ext.reg('<?php echo strtolower($className) ?>', Ext.app.sx.<?php echo $className ?>);
+Ext.reg('<?php echo $xtype ?>', Ext.app.sx.<?php echo $className ?>);

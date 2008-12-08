@@ -1,6 +1,7 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $className = "List".$moduleName."ToolbarPaging";
+  $xtype = "list".$this->getModuleName()."toolbarpaging";
   $limit = $this->getParameterValue('list.max_per_page', sfConfig::get('sf_extjs_theme_plugin_list_max_per_page', 20));
 ?>
 [?php
@@ -37,4 +38,4 @@ $sfExtjs2Plugin->beginClass(
 $sfExtjs2Plugin->endClass();
 ?]
 // register xtype
-Ext.reg('<?php echo strtolower($className) ?>', Ext.app.sx.<?php echo $className ?>);
+Ext.reg('<?php echo $xtype ?>', Ext.app.sx.<?php echo $className ?>);

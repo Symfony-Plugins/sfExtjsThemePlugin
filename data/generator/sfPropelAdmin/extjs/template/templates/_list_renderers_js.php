@@ -1,6 +1,7 @@
 <?php
   $moduleName = ucfirst(sfInflector::camelize($this->getModuleName()));
   $className = "List".$moduleName.'Renderers';
+  $xtype = "list".$this->getModuleName().'renderers';
 
   $tableName = $this->getTableName();
   $prefix = $tableName.$this->tableDelimiter;
@@ -94,4 +95,4 @@ $sfExtjs2Plugin->beginClass(
 $sfExtjs2Plugin->endClass();
 ?]
 // register xtype
-Ext.reg('<?php echo strtolower($className) ?>', Ext.app.sx.<?php echo $className ?>);
+Ext.reg('<?php echo $xtype ?>', Ext.app.sx.<?php echo $className ?>);
