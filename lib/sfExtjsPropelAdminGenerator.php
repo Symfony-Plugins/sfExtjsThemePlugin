@@ -456,7 +456,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
     $gridpanel->attributes["getRowExpander"] = $sfExtjs2Plugin->asMethod($configArr);
   ?>');
 
-        $expanderPartial .= "include_partial('<?php echo substr($expanderRenderer,1) ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'gridpanel' => $gridpanel));\n";
+        $expanderPartial .= "include_partial('".substr($expanderRenderer,1)."', array('sfExtjs2Plugin' => \$sfExtjs2Plugin, 'gridpanel' => \$gridpanel));\n";
       }
     }
 
