@@ -1242,6 +1242,21 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
     {
       $fields = $this->getParameterValue($param, array());
 
+      // add plus in front of our expand columns so they don't show
+      if($param == 'list.expand_columns.fields')
+      {
+        if(!is_array($fields))
+        {
+          $fields = array($fields);
+        }
+
+        foreach($fields as $key => $value)
+        {
+          $fieldArr[$key] = '+'.$value;
+        }
+        $fields = $fieldArr;
+      }
+
       // if no fields are defined in generator.yml file, get all default fields
       if (in_array($param, array('list.display', 'edit.display')) && count($fields) == 0)
       {
