@@ -320,7 +320,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
     {
       $listActions = array(
         '_create' => array(),
-        '_refresh' => array()
+        '_refresh' => array(),
       );
     }
 
@@ -339,7 +339,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
       $configArr[] = $this->getAjaxButtonToToolbarAction($actionName, $params, false);
       $i++;
     }
-    return array('actions_config'=>$configArr,'cred_arr'=>$credArr);
+    return array('actions_config'=>$configArr,'cred_arr'=>$credArr, 'list_actions'=>$listActions);
   }
 
   public function getFilterPanelConfig()

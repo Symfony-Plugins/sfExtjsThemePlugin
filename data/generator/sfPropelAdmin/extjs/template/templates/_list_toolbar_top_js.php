@@ -36,12 +36,10 @@ $toolbar_top->config_array = array_merge($toolbar_top->config_array, <?php var_e
 <?php echo $this->getStandardPartials('toolbar_top') ?>
 <?php echo $this->getCustomPartials('toolbar_top','method'); ?>
 <?php echo $this->getCustomPartials('toolbar_top','variable'); ?>
-<?php
-$listActions = $this->getParameterValue('list.actions');
-?>
+
 // generate toolbar action handler partials
 <?php
-  foreach ((array) $listActions as $actionName => $params):
+  foreach ((array) $ttbConfig['list_actions'] as $actionName => $params):
     if(in_array($actionName,array('_separator','_fill','_text','_spacer')) || isset($params['handler_function'])) continue;?>
 include_partial('<?php echo 'list_action_'.$actionName ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'toolbar_top' => $toolbar_top));
 <?php
