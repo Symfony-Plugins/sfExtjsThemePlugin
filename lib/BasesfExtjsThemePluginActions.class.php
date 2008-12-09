@@ -4,6 +4,11 @@ class BasesfExtjsThemePluginActions extends sfActions
   /**
    * PJS Include methods
    */
+  public function executeEditJs()
+  {
+
+  }
+
   public function executeListJs()
   {
 
