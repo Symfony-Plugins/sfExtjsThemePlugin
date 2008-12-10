@@ -10,6 +10,7 @@
   include_partial('list_gridpanel_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin));
   //include_partial('list_tabpanel_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin));
   //include_partial('list_filterpanel_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin));
+  //include_partial('edit_formpanel_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin));
 
 ?]
 

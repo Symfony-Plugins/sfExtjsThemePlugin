@@ -42,15 +42,17 @@ class BasesfExtjsThemePluginXtypeManagerActions extends sfActions
         if (substr($xtype,-9) == 'formpanel')
         {
           $module = substr($xtype,4,-9);
-          $action = 'editJs';
+          $action = 'editFormPanelJs';
         }
-        elseif (substr($xtype,-5) == 'panel')
-        {
-          $module = substr($xtype,4,-5);
-          $action = 'editJs';
-        }
+//        //OBSOLETE
+//        elseif (substr($xtype,-5) == 'panel')
+//        {
+//          $module = substr($xtype,4,-5);
+//          $action = 'editJs';
+//        }
 
-        if ($module) $url = 'js/'.$module.'/editJs.pjs';
+//        if ($module) $url = 'js/'.$module.'/editJs.pjs';
+        if ($module) $url = 'js/'.$module.'/'.$action.'.pjs';
         break;
     }
 
