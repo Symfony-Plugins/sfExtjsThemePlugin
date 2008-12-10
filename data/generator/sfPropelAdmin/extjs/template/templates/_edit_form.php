@@ -71,17 +71,7 @@ $formpanel->config_array = array_merge($formpanel->config_array, <?php var_expor
         //this.panelType = 'edit';
       //"));
 
-$formpanel->methods['getModulename'] = $sfExtjs2Plugin->asMethod("
-  return this.modulename;
-");
-
-$formpanel->methods['getPanelType'] = $sfExtjs2Plugin->asMethod("
-  return this.panelType;
-");
-
-$formpanel->methods['getKey'] = $sfExtjs2Plugin->asMethod("
-  return this.key;
-");
+<?php echo $this->getClassGetters('gridpanel',array('modulename','panelType','key')); ?>
 
 $formpanel->methods['setKey'] = $sfExtjs2Plugin->asMethod(array(
       'parameters'  => 'key',
