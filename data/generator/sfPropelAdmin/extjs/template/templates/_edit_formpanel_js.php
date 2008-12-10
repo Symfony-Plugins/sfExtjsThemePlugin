@@ -94,14 +94,21 @@ $formpanel->methods['isNew'] = $sfExtjs2Plugin->asMethod("
 // updateButtonsVisibility
 $formpanel->methods['updateButtonsVisibility'] = $sfExtjs2Plugin->asMethod("
   // hide delete button when new item
-  //console.log(this);
   if (this.topToolbar) {
     var len;
-    for(var i = 0, len = this.topToolbar.length; i < len; i++){
-      var button = this.topToolbar[i];
-      //console.log(button);
-      if((typeof button.hide_when_new!='undefined') && button.hide_when_new){
-        button.hidden = true;
+    var topToolbar = (typeof this.topToolbar.items != 'undefined')?this.topToolbar.items.items:this.topToolbar;
+    for(var i = 0, len = topToolbar.length; i < len; i++){
+      var button = topToolbar[i];
+      if((typeof button.hide_when_new!='undefined') && button.hide_when_new)
+      {
+        if(typeof button.rendered == 'undefined')
+        {
+          button.hidden = this.isNew();
+        }
+        else
+        {
+          button.setVisible(this.isNew()?false:true);
+        }
       }
     }
   }
@@ -239,16 +246,13 @@ $formpanel->methods['deleteItem'] = $sfExtjs2Plugin->asMethod("
   Ext.Msg.confirm('Confirm','Are you surse you want to delete this?',function(btn,text){
     if(btn == 'yes'){
       var onSuccess = function(response){
-        var message = 'Item successfully deleted';
         try {
           var json_response = Ext.util.JSON.decode(response.responseText);
-
           //check for application-level failure and redirect if necessary
           if (json_response.success === false) return this.failure(response);
-
-          message = json_response.message;
         } catch (e) {};
-//          Ext.Msg.alert('Delete Status',message);
+        this.item.ownerCt.getComponent(0).store.reload();
+        this.item.ownerCt.remove(this.item);
 
         //fire deleted event
         this.item.fireEvent('deleted', this.item);

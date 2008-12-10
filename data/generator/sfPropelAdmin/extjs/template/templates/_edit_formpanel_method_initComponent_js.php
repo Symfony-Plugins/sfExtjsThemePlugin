@@ -51,6 +51,7 @@ this.addEvents(
    'keychange'
 );
 // show/hide appropriate buttons
+this.loadItem();
 this.updateButtonsVisibility();
 "
 );
