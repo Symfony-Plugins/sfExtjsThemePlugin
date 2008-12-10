@@ -3,17 +3,16 @@ $edit_key = 'edit';
 
 $edit_ns = ucfirst(sfInflector::camelize($this->getModuleName()))."Edit";
 $moduleName = sfInflector::camelize($this->getModuleName());
-$formName = "Edit".$moduleName."FormPanel";
-$formName_xtype = strtolower("Edit".$this->getModuleName()."FormPanel");
+$className = "Edit".$moduleName."FormPanel";
+$xtype = "edit".$this->getModuleName()."formpanel";
 
 $groupedColumns = $this->getColumnsGrouped($edit_key.'.display', true);
 $pkn = $groupedColumns['pk']->getName();
 
 ?>
 [?php
-use_helper('I18N', 'Date');
 sfLoader::loadHelpers('Extjs');
-
+$className = '<?php echo $className ?>';
 $formpanel = new stdClass();
 $formpanel->attributes = array();
 $formpanel->methods    = array();
@@ -23,45 +22,26 @@ ob_start();
   require('_edit_reader.php');
 $formpanel->reader = trim(ob_get_clean());
 
-
 <?php $objectName = $this->getParameterValue('object_name', $this->getModuleName()) ?>
 
 $formpanel->config_array = array(
   'xtype'               => 'form',
-//  'baseCls              => 'x-plain',
-
-  'title'               => <?php echo $this->getI18NString('edit.newtitle', 'New '.$objectName, false) ?>,
-
+  'title'               => '<?php echo 'New '.$objectName ?>',
 <?php if (($width = $this->getParameterValue('edit.params.width', 400)) != 'fill'): ?>
   'width'               => <?php echo $width  ?>,
 <?php endif; ?>
-//  'autoHeight'          => true,
-//  'height'              => 200,
-
   'autoScroll'          => true,
-
   'labelWidth'          => 120,
   'labelAlign'          => 'left',
-  'frame'               => true,
-
-//  'bodyStyle'           => 'padding: 5px 5px 10px 10px;',
-
-//  'layoutConfig'        => array(),
-  'defaults'            => array(
-                          'margin' => '0px -5px',
-//                        'width' => 230
-                        ),
   'defaultType'         => 'textfield',
-
+  'bodyStyle'           => 'padding: 10px 0px 10px 5px;',
   'reader'              => $formpanel->reader,
   'trackResetOnLoad'    => true,
-
   'baseParams'          => array(
     'cmd' => 'load',
   ),
   'url'                 => '<?php echo $this->controller->genUrl($this->getModuleName().'/edit') ?>',
-  'method'              => 'post',
-
+  'method'              => 'post'
 );
 <?php
   $user_params = $this->getParameterValue('edit.params', null);
@@ -69,112 +49,27 @@ $formpanel->config_array = array(
 ?>
 $formpanel->config_array = array_merge($formpanel->config_array, <?php var_export($user_params) ?>);
 <?php endif; ?>
-<?php
 
-
-$methods =  $this->getParameterValue('formpanel.method');
-if (isset($methods['partials'])):
-if (!is_array($methods['partials']))
-{
-  $methods['partials'] = array($methods['partials']);
-}
-?>
-// generator method partials
 <?php
-  foreach($methods['partials'] as $method):
-?>
-include_partial('<?php echo substr($method,1) ?>', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'formpanel' => $formpanel));
-<?php
-    $this->createPartialFile($method,'<?php // @object $sfExtjs2Plugin and @object $formpanel provided ?>');
-  endforeach;
-endif;
-
-
-?>
-<?php
+  //TODO: move this to the generator
   // add fields, fieldsets, tab-pages and buttons
   include('__edit_form_inner.php');
 ?>
 
+<?php echo $this->getStandardPartials('formpanel', array('constructor','initComponent','initEvents'), 'edit') ?>
+<?php echo $this->getCustomPartials('formpanel','method'); ?>
+<?php echo $this->getCustomPartials('formpanel','variable'); ?>
 
 // constructor
-$formpanel->methods['constructor'] = $sfExtjs2Plugin->asMethod(array(
-      'parameters' => 'c',
-      'source'     => "
-        // combine <?php echo $formName ?>Config with arguments
-        Ext.app.sx.<?php echo $formName ?>.superclass.constructor.call(this, Ext.apply(".$sfExtjs2Plugin->asAnonymousClass($formpanel->config_array).", c));
+//$formpanel->methods['constructor'] = $sfExtjs2Plugin->asMethod(array(
+      //'parameters' => 'c',
+      //'source'     => "
+        // combine <?php echo $className ?>Config with arguments
+        //Ext.app.sx.<?php echo $className ?>.superclass.constructor.call(this, Ext.apply(".$sfExtjs2Plugin->asAnonymousClass($formpanel->config_array).", c));
 
-        this.modulename = '<?php echo $this->getModuleName() ?>';
-        this.panelType = 'edit';
-      "));
-
-// initComponent
-$formpanel->methods['initComponent'] = $sfExtjs2Plugin->asMethod("
-  //call parent
-  Ext.app.sx.<?php echo $formName ?>.superclass.initComponent.apply(this, arguments);
-
-  this.addEvents(
-    /**
-     * @event load_item_failed
-     * Fires when the item is not loaded successfully
-     * @param {Ext.app.sx.<?php echo $formName ?>} this Edit-FormPanel
-     */
-    'load_item_failed',
-    /**
-     * @event load_item_success
-     * Fires when the item is loaded successfully
-     * @param {Ext.app.sx.<?php echo $formName ?>} this Edit-FormPanel
-     */
-    'load_item_success',
-    /**
-     * @event saved
-     * Fires when the item is saved successfully
-     * @param {Ext.app.sx.<?php echo $formName ?>} this Edit-FormPanel
-     */
-    'saved',
-    /**
-     * @event save_failed
-     * Fires when the item is not saved successfully
-     * @param {Ext.app.sx.<?php echo $formName ?>} this Edit-FormPanel
-     */
-    'save_failed',
-    /**
-     * @event deleted
-     * Fires when the item is deleted successfully
-     * @param {Ext.app.sx.<?php echo $formName ?>} this Edit-FormPanel
-     */
-    'deleted',
-    /**
-     * @event close_request
-     * Fires when the panel request to close itself (it cannot do this itself, the window/tabpabel should do this)
-     * @param {Ext.app.sx.<?php echo $formName ?>} this Edit-FormPanel
-     */
-    'close_request',
-    /**
-     * @event keychange
-     * Fires when the items (primary) key has been set (after saving a new item)
-     * @param number key
-     * @param number oldkey
-     * @param {Ext.app.sx.<?php echo $formName ?>} this Edit-FormPanel
-     */
-     'keychange'
-  );
-
-  // show/hide appropriate buttons
-  this.updateButtonsVisibility();
-
-");
-
-// obsolete, use: iconCls: "Ext.ux.IconMgr.getIcon('icon-file')"
-//$formpanel->methods['afterRender'] = $sfExtjs2Plugin->asMethod(array(
-//  'parameters' => 'ct',
-//  'source'     => "
-//    //call parent
-//    Ext.app.sx.<?php echo $formName ?>.superclass.afterRender.apply(this, arguments);
-//
-//    Ext.app.IconMgrCreate.defer(25, this, [ct.dom]); //TODO: how to get rid of the defer method?
-//"));
-
+        //this.modulename = '<?php echo $this->getModuleName() ?>';
+        //this.panelType = 'edit';
+      //"));
 
 $formpanel->methods['getModulename'] = $sfExtjs2Plugin->asMethod("
   return this.modulename;
@@ -202,17 +97,21 @@ $formpanel->methods['setKey'] = $sfExtjs2Plugin->asMethod(array(
 ));
 
 $formpanel->methods['isNew'] = $sfExtjs2Plugin->asMethod("
+  //console.log(((typeof this.key=='undefined') || (this.key==null)));
   return ((typeof this.key=='undefined') || (this.key==null)); // OBSOLETE (this.key=='create_<?php echo $this->getModuleName() ?>')
 ");
 
 // updateButtonsVisibility
 $formpanel->methods['updateButtonsVisibility'] = $sfExtjs2Plugin->asMethod("
   // hide delete button when new item
-  if (this.buttons) {
-    for(var i = 0, len = this.buttons.length; i < len; i++){
-      var button = this.buttons[i];
+  //console.log(this);
+  if (this.topToolbar) {
+    var len;
+    for(var i = 0, len = this.topToolbar.length; i < len; i++){
+      var button = this.topToolbar[i];
+      //console.log(button);
       if((typeof button.hide_when_new!='undefined') && button.hide_when_new){
-        button.setVisible(!this.isNew());
+        button.hidden = true;
       }
     }
   }
@@ -403,7 +302,7 @@ $formpanel->methods['showError'] = $sfExtjs2Plugin->asMethod(array(
 // app.sx from Symfony eXtended (instead of ux: user eXtention)
 $sfExtjs2Plugin->beginClass(
   'Ext.app.sx',
-  '<?php echo $formName ?>',
+  '<?php echo $className ?>',
   'Ext.FormPanel',
   array_merge(
     $formpanel->methods,
@@ -414,4 +313,4 @@ $sfExtjs2Plugin->endClass();
 
 ?]
 // register xtype
-Ext.reg('<?php echo $formName_xtype ?>', Ext.app.sx.<?php echo $formName ?>);
+Ext.reg('<?php echo $xtype ?>', Ext.app.sx.<?php echo $className ?>);

@@ -1,14 +1,13 @@
 <?php $moduleName = sfInflector::camelize($this->getModuleName()) ?>
-  var viewport = [?php echo $sfExtjs2Plugin->Viewport(array(
-    'layout'  => 'fit',
-    'items'   => array(
-      $sfExtjs2Plugin->TabPanel(array(
-        'region'    => 'center',
-        'items'     => array(
-          $sfExtjs2Plugin->asVar('list<?php echo $moduleName ?>GridPanel'),
-        ),
-      ))
-    ),
-  )); ?]
+  var list<?php echo $moduleName ?>TabPanel = Ext.ComponentMgr.create({
+    xtype : 'list<?php echo $this->getModuleName() ?>tabpanel',
+    items : [list<?php echo $moduleName ?>GridPanel]
+  });
 
-  viewport.doLayout();
+  var list<?php echo $moduleName ?>ViewPort = Ext.ComponentMgr.create({
+    xtype : 'viewport',
+    layout: 'fit',
+    items : [list<?php echo $moduleName ?>TabPanel]
+  });
+
+  list<?php echo $moduleName ?>ViewPort.doLayout();

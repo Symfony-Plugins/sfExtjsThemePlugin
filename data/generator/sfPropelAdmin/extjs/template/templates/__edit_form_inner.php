@@ -215,9 +215,9 @@ if (($editActions === null) && ($edit_key == 'edit'))
 }
 
 if (count($editActions) > 0): ?>
-  $formpanel->config_array['buttons'] = array();
+  $formpanel->config_array['tbar'] = array();
 <?php foreach ($editActions as $actionName => $params): ?>
     //TODO: add credential check
-    $formpanel->config_array['buttons'][] = <?php var_export($this->getEditAjaxActionToButton($actionName, $params, $edit_ns, true)) ?>;
+    $formpanel->config_array['tbar'][] = <?php var_export($this->getEditAjaxActionToButton($actionName, $params, $edit_ns, true)) ?>;
 <?php endforeach ?>
 <?php endif ?>
