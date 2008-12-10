@@ -58,16 +58,16 @@ $formpanel->config_array = array_merge($formpanel->config_array, <?php var_expor
 <?php echo $this->getClassGetters('gridpanel',array('key')); ?>
 
 $formpanel->methods['setKey'] = $sfExtjs2Plugin->asMethod(array(
-      'parameters'  => 'key',
-      'source'      => "
-        var old_key = this.key;
-        if (old_key != key) {
-          this.key = key;
-
-          //fire keychange event
-          this.fireEvent('keychange', this.key, old_key, this);
-        }
-      "
+  'parameters'  => 'key',
+  'source'      => "
+  var old_key = this.key;
+  if (old_key != key)
+  {
+    this.key = key;
+    //fire keychange event
+    this.fireEvent('keychange', this.key, old_key, this);
+  }
+"
 ));
 
 $formpanel->methods['isNew'] = $sfExtjs2Plugin->asMethod("
