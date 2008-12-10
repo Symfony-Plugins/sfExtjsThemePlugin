@@ -1,17 +1,12 @@
 <?php
 $edit_key = 'edit';
-
 $edit_ns = ucfirst(sfInflector::camelize($this->getModuleName()))."Edit";
 $moduleName = sfInflector::camelize($this->getModuleName());
 $className = "Edit".$moduleName."FormPanel";
 $xtype = "edit".$this->getModuleName()."formpanel";
-
 $groupedColumns = $this->getColumnsGrouped($edit_key.'.display', true);
-$pkn = $groupedColumns['pk']->getName();
-
 ?>
 [?php
-sfLoader::loadHelpers('Extjs');
 $className = '<?php echo $className ?>';
 $formpanel = new stdClass();
 $formpanel->attributes = array();
@@ -60,18 +55,7 @@ $formpanel->config_array = array_merge($formpanel->config_array, <?php var_expor
 <?php echo $this->getCustomPartials('formpanel','method'); ?>
 <?php echo $this->getCustomPartials('formpanel','variable'); ?>
 
-// constructor
-//$formpanel->methods['constructor'] = $sfExtjs2Plugin->asMethod(array(
-      //'parameters' => 'c',
-      //'source'     => "
-        // combine <?php echo $className ?>Config with arguments
-        //Ext.app.sx.<?php echo $className ?>.superclass.constructor.call(this, Ext.apply(".$sfExtjs2Plugin->asAnonymousClass($formpanel->config_array).", c));
-
-        //this.modulename = '<?php echo $this->getModuleName() ?>';
-        //this.panelType = 'edit';
-      //"));
-
-<?php echo $this->getClassGetters('gridpanel',array('modulename','panelType','key')); ?>
+<?php echo $this->getClassGetters('gridpanel',array('key')); ?>
 
 $formpanel->methods['setKey'] = $sfExtjs2Plugin->asMethod(array(
       'parameters'  => 'key',
@@ -87,17 +71,18 @@ $formpanel->methods['setKey'] = $sfExtjs2Plugin->asMethod(array(
 ));
 
 $formpanel->methods['isNew'] = $sfExtjs2Plugin->asMethod("
-  //console.log(((typeof this.key=='undefined') || (this.key==null)));
-  return ((typeof this.key=='undefined') || (this.key==null)); // OBSOLETE (this.key=='create_<?php echo $this->getModuleName() ?>')
+  return ((typeof this.key=='undefined') || (this.key==null));
 ");
 
 // updateButtonsVisibility
 $formpanel->methods['updateButtonsVisibility'] = $sfExtjs2Plugin->asMethod("
   // hide delete button when new item
-  if (this.topToolbar) {
+  if (this.topToolbar)
+  {
     var len;
     var topToolbar = (typeof this.topToolbar.items != 'undefined')?this.topToolbar.items.items:this.topToolbar;
-    for(var i = 0, len = topToolbar.length; i < len; i++){
+    for(var i = 0, len = topToolbar.length; i < len; i++)
+    {
       var button = topToolbar[i];
       if((typeof button.hide_when_new!='undefined') && button.hide_when_new)
       {
@@ -128,7 +113,7 @@ $formpanel->methods['loadItem'] = $sfExtjs2Plugin->asMethod("
     'failure' => $sfExtjs2Plugin->asVar('this.onLoadFailure'),
     'scope'   => $sfExtjs2Plugin->asVar('this'),
     'params'  => array(
-        'key' => $sfExtjs2Plugin->asVar('this.key'),
+      'key' => $sfExtjs2Plugin->asVar('this.key'),
     )
   )).";
 
@@ -137,31 +122,32 @@ $formpanel->methods['loadItem'] = $sfExtjs2Plugin->asMethod("
 
 
 $formpanel->methods['onLoadFailure'] = $sfExtjs2Plugin->asMethod(array(
-      'parameters'  => 'form, action',
-      'source'      => "
-        Ext.Msg.show({
-          title:'Loading failed!',
-          msg: 'Loading of the data failed!',
-          buttons: Ext.Msg.OK
-        });
-        //throw load (item) failed
-        this.fireEvent('load_item_failed', this);
-      "
+  'parameters'  => 'form, action',
+  'source'      => "
+  Ext.Msg.show({
+    title:'Loading failed!',
+    msg: 'Loading of the data failed!',
+    buttons: Ext.Msg.OK
+  });
+  //throw load (item) failed
+  this.fireEvent('load_item_failed', this);
+"
 ));
 
 
 $formpanel->methods['onLoadSuccess'] = $sfExtjs2Plugin->asMethod(array(
-      'parameters'  => 'form, action',
-      'source'      => "
-        this.setTitle(action.reader.jsonData.title);
-        //throw load (item) succes
-        this.fireEvent('load_item_success', this);
-      "
+  'parameters'  => 'form, action',
+  'source'      => "
+  this.setTitle(action.reader.jsonData.title);
+  //throw load (item) succes
+  this.fireEvent('load_item_success', this);
+"
 ));
 
 
 $formpanel->methods['doSubmit'] = $sfExtjs2Plugin->asMethod("
-  if (!this.getForm().isValid()) {
+  if (!this.getForm().isValid())
+  {
     Ext.Msg.show(".$sfExtjs2Plugin->asAnonymousClass(array(
       'title'   =>  'Problem',
       'msg'     =>  'Not all fields (in every tab-page) contain valid data,<br>Please check all fields first',
@@ -169,7 +155,9 @@ $formpanel->methods['doSubmit'] = $sfExtjs2Plugin->asMethod("
       'icon'    =>  $sfExtjs2Plugin->asVar('Ext.Msg.INFO'),
       'buttons' =>  $sfExtjs2Plugin->asVar('Ext.Msg.OK')
     )).");
-  } else {
+  }
+  else
+  {
     var url_key = '';
     // add key to url if key is set to an existing primary-key
     if (!this.isNew())
@@ -191,66 +179,77 @@ $formpanel->methods['doSubmit'] = $sfExtjs2Plugin->asMethod("
 ");
 
 $formpanel->methods['onSubmitSuccess'] = $sfExtjs2Plugin->asMethod(array(
-      'parameters'  => 'form, action',
-      'source'      => "
-        this.setKey(action.result.id);
-        this.setTitle(action.result.title);
+  'parameters'  => 'form, action',
+  'source'      => "
+  this.setKey(action.result.id);
+  this.setTitle(action.result.title);
 
-        // update all fields their originalValue
-        if (this.trackResetOnLoad) {
-          form.items.each(function (i) {
-            if (i.isFormField) {
-              if (i.xtype != 'tinymce') {
-                i.originalValue = i.getValue();
-              } else {
-                i.ed.startContent = i.ed.getContent({format : 'raw', no_events : 1});
-              }
-            }
-          });
+  // update all fields their originalValue
+  if (this.trackResetOnLoad)
+  {
+    form.items.each(function (i)
+    {
+      if (i.isFormField)
+      {
+        if (i.xtype != 'tinymce')
+        {
+          i.originalValue = i.getValue();
         }
+        else
+        {
+          i.ed.startContent = i.ed.getContent({format : 'raw', no_events : 1});
+        }
+      }
+    });
+  }
 
-        // show/hide appropriate buttons
-        this.updateButtonsVisibility();
+  // show/hide appropriate buttons
+  this.updateButtonsVisibility();
 
-        //fire saved event
-        this.fireEvent('saved', this);
+  //fire saved event
+  this.fireEvent('saved', this);
 
-        //TODO: maybe re-enable this by adding a config-option, which can also set the succes message
-      //  Ext.Msg.show({
-      //    title:'Success',
-      //    msg:'Form submitted successfully!',
-      //    modal:true,
-      //    icon:Ext.Msg.INFO,
-      //    buttons:Ext.Msg.OK
-      //  });
-      "
+//  //TODO: maybe re-enable this by adding a config-option, which can also set the succes message
+//  Ext.Msg.show({
+//    title:'Success',
+//    msg:'Form submitted successfully!',
+//    modal:true,
+//    icon:Ext.Msg.INFO,
+//    buttons:Ext.Msg.OK
+//  });
+"
 ));
 
 $formpanel->methods['onSubmitFailure'] = $sfExtjs2Plugin->asMethod(array(
-      'parameters'  => 'form, action',
-      'source'      => "
-        //fire saved event
-        this.fireEvent('save_failed', this);
+  'parameters'  => 'form, action',
+  'source'      => "
+  //fire saved event
+  this.fireEvent('save_failed', this);
 
-        var msg = 'Unknown problem';
-        if (action.result)
-        {
-          msg = action.result.error || action.response.responseText;
-        }
-        this.showError(msg);
-      "
+  var msg = 'Unknown problem';
+  if (action.result)
+  {
+    msg = action.result.error || action.response.responseText;
+  }
+  this.showError(msg);
+"
 ));
 
 // deleteItem
 $formpanel->methods['deleteItem'] = $sfExtjs2Plugin->asMethod("
-  Ext.Msg.confirm('Confirm','Are you surse you want to delete this?',function(btn,text){
-    if(btn == 'yes'){
-      var onSuccess = function(response){
-        try {
+  Ext.Msg.confirm('Confirm','Are you surse you want to delete this?',function(btn,text)
+  {
+    if(btn == 'yes')
+    {
+      var onSuccess = function(response)
+      {
+        try
+        {
           var json_response = Ext.util.JSON.decode(response.responseText);
           //check for application-level failure and redirect if necessary
           if (json_response.success === false) return this.failure(response);
-        } catch (e) {};
+        }
+        catch (e) {};
         this.item.ownerCt.getComponent(0).store.reload();
         this.item.ownerCt.remove(this.item);
 
@@ -258,9 +257,11 @@ $formpanel->methods['deleteItem'] = $sfExtjs2Plugin->asMethod("
         this.item.fireEvent('deleted', this.item);
       };
 
-      var onFailure = function(response){
+      var onFailure = function(response)
+      {
         var message = 'Error while deleting!';
-        try {
+        try
+        {
           var json_response = Ext.util.JSON.decode(response.responseText);
           message  = json_response.message;
         } catch (e) {};
@@ -280,17 +281,17 @@ $formpanel->methods['deleteItem'] = $sfExtjs2Plugin->asMethod("
 ");
 
 $formpanel->methods['showError'] = $sfExtjs2Plugin->asMethod(array(
-      'parameters'  => 'msg, title',
-      'source'      => "
-        title = title || 'Error';
-        Ext.Msg.show(".$sfExtjs2Plugin->asAnonymousClass(array(
-          'title'   => $sfExtjs2Plugin->asVar('title'),
-          'msg'     => $sfExtjs2Plugin->asVar('msg'),
-          'modal'   => true,
-          'icon'    => $sfExtjs2Plugin->asVar('Ext.Msg.ERROR'),
-          'buttons' => $sfExtjs2Plugin->asVar('Ext.Msg.OK')
-        )).");
-      "
+  'parameters'  => 'msg, title',
+  'source'      => "
+  var title = title || 'Error';
+  Ext.Msg.show(".$sfExtjs2Plugin->asAnonymousClass(array(
+    'title'   => $sfExtjs2Plugin->asVar('title'),
+    'msg'     => $sfExtjs2Plugin->asVar('msg'),
+    'modal'   => true,
+    'icon'    => $sfExtjs2Plugin->asVar('Ext.Msg.ERROR'),
+    'buttons' => $sfExtjs2Plugin->asVar('Ext.Msg.OK')
+  )).");
+"
 ));
 
 // app.sx from Symfony eXtended (instead of ux: user eXtention)
