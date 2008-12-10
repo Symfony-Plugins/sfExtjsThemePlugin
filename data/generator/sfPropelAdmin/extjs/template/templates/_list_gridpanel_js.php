@@ -89,21 +89,7 @@ $gridpanel->attributes['resetFilter'] = $sfExtjs2Plugin->asMethod("
   this.store.load({params:{start:0,limit:<?php echo $limit ?>}});
 ");
 
-// create the getters
-// have to do this as lcfirst is still in php cvs
-//TODO: move this to a library!
-function lcfirst( $str ) {
-  $str[0] = strtolower($str[0]);
-  return (string)$str;
-}
-
-$getterArr = array('getModulename','getPanelType');
-foreach($getterArr as $getter)
-{
-  $configArr = array();
-  $configArr['source'] = "return this.".lcfirst(substr($getter,3));
-  $gridpanel->attributes[$getter] = $sfExtjs2Plugin->asMethod($configArr);
-}
+<?php echo $this->getClassGetters('gridpanel',array('modulename','panelType')); ?>
 
 // create the Ext.app.sx.<?php echo $className ?> class
 $sfExtjs2Plugin->beginClass(

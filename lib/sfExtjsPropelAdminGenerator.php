@@ -105,7 +105,18 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
     chmod($cacheFile,0666);
   }
 
-  public function getStandardPartials($objName,$partialsArr=array('constructor','initComponent','initEvents'))
+
+  public function getClassGetters($objName,$getters)
+  {
+    $getterStr = "/* %1\$s class getters */\n";
+    foreach($getters as $getter)
+    {
+      $getterStr .= '$gridpanel->attributes["get".ucfirst("'.$getter.'")] = $sfExtjs2Plugin->asMethod("return this.'.$getter.'");'."\n";
+    }
+    return sprintf($getterStr,$objName);
+  }
+
+  public function getStandardPartials($objName,$partialsArr=array('constructor','initComponent','initEvents'),$prefix='list')
   {
     $partialStr = "\n/* %1\$s methods and variables */\n";
     foreach($partialsArr as $partials)
@@ -113,16 +124,16 @@ class sfExtjsPropelAdminGenerator extends sfAdminCustomGenerator
       switch($partials)
       {
         case 'constructor':
-          $this->createPartialFile('_list_'.$objName.'_method_constructor_js',$this->createStandardConstructorPartial($objName),false);
-          $partialStr .= "// constructor\n".'include_partial("list_%1$s_method_constructor_js", array("sfExtjs2Plugin" => $sfExtjs2Plugin, "%1$s" => $%1$s, "className" => $className));'."\n";
+          $this->createPartialFile('_'.$prefix.'_'.$objName.'_method_constructor_js',$this->createStandardConstructorPartial($objName),false);
+          $partialStr .= "// constructor\n".'include_partial("'.$prefix.'_%1$s_method_constructor_js", array("sfExtjs2Plugin" => $sfExtjs2Plugin, "%1$s" => $%1$s, "className" => $className));'."\n";
           break;
         case 'initComponent':
-          $this->createPartialFile('_list_'.$objName.'_method_initComponent_js',$this->createStandardInitComponentPartial($objName),false);
-          $partialStr .= "// initComponent\n".'include_partial("list_%1$s_method_initComponent_js", array("sfExtjs2Plugin" => $sfExtjs2Plugin, "%1$s" => $%1$s, "className" => $className));'."\n";
+          $this->createPartialFile('_'.$prefix.'_'.$objName.'_method_initComponent_js',$this->createStandardInitComponentPartial($objName),false);
+          $partialStr .= "// initComponent\n".'include_partial("'.$prefix.'_%1$s_method_initComponent_js", array("sfExtjs2Plugin" => $sfExtjs2Plugin, "%1$s" => $%1$s, "className" => $className));'."\n";
           break;
         case 'initEvents':
-          $this->createPartialFile('_list_'.$objName.'_method_initEvents_js',$this->createStandardInitEventsPartial($objName),false);
-          $partialStr .= "// initEvents\n".'include_partial("list_%1$s_method_initEvents_js", array("sfExtjs2Plugin" => $sfExtjs2Plugin, "%1$s" => $%1$s, "className" => $className));'."\n";
+          $this->createPartialFile('_'.$prefix.'_'.$objName.'_method_initEvents_js',$this->createStandardInitEventsPartial($objName),false);
+          $partialStr .= "// initEvents\n".'include_partial("'.$prefix.'_%1$s_method_initEvents_js", array("sfExtjs2Plugin" => $sfExtjs2Plugin, "%1$s" => $%1$s, "className" => $className));'."\n";
           break;
       }
     }
