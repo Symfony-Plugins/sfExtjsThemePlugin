@@ -207,8 +207,9 @@ $editActions = $this->getParameterValue($edit_key.'.actions');
 if (($editActions === null) && ($edit_key == 'edit'))
 {
   $editActions = array(
-//    '_reload' => false,
+    '_reload' => false,
     '_save'   => false,
+    '_savenew' => false,
     '_delete' => false,
     '_cancel' => false,
   );

@@ -949,6 +949,14 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
           $default_handler_function = "function() { this.doSubmit() }";
           break;
 
+        case 'savenew':
+          $default_icon = 'page_white_add';
+          $default_name = 'Save as New';
+          $type = 'submit';
+          $default_handler_function = "function() { this.doSubmit(true) }";
+          $default_hide_when_new = true;
+          break;
+
         case 'delete':
           $default_icon = 'page_white_delete';
           $default_handler_function = "function() { this.deleteItem(); }";

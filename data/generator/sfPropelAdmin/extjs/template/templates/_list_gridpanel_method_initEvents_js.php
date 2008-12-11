@@ -31,7 +31,7 @@ this.on({
             xtype: 'editlbrequestconfigformpanel',
             id: record.id,
             title: 'Edit <?php echo $objectName ?> '+record.id,
-            key: record.id,
+            key: record.id
           });
           this.ownerCt.add(formpanel).show()
           formpanel.on('close_request', function(){

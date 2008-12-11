@@ -145,7 +145,9 @@ $formpanel->methods['onLoadSuccess'] = $sfExtjs2Plugin->asMethod(array(
 ));
 
 
-$formpanel->methods['doSubmit'] = $sfExtjs2Plugin->asMethod("
+$formpanel->methods['doSubmit'] = $sfExtjs2Plugin->asMethod(array(
+  'parameters'  => 'submitnew',
+  'source'      => "
   if (!this.getForm().isValid())
   {
     Ext.Msg.show(".$sfExtjs2Plugin->asAnonymousClass(array(
@@ -158,25 +160,23 @@ $formpanel->methods['doSubmit'] = $sfExtjs2Plugin->asMethod("
   }
   else
   {
-    var url_key = '';
-    // add key to url if key is set to an existing primary-key
-    if (!this.isNew())
-    {
-      url_key = '?<?php echo sfInflector::underscore($groupedColumns['pk']->getPhpName()) ?>='+this.key;
-    }
+    // add key to url if key is set to an existing primary-key and submitnew isn't set
+    var url_key = (!this.isNew()&& typeof submitnew == 'undefined')?this.key:'';
+
 <?php if ($this->getParameterValue('tinyMCE', false)): ?>
     tinyMCE.triggerSave();
 <?php endif; ?>
     this.getForm().submit(".$sfExtjs2Plugin->asAnonymousClass(array(
-      'url'     => $sfExtjs2Plugin->asVar('this.url + url_key'),
+      'url'     => $sfExtjs2Plugin->asVar('this.url'),
       'scope'   => $sfExtjs2Plugin->asVar('this'),
       'success' => $sfExtjs2Plugin->asVar('this.onSubmitSuccess'),
       'failure' => $sfExtjs2Plugin->asVar('this.onSubmitFailure'),
-      'params'  => $sfExtjs2Plugin->asAnonymousClass(array('cmd' => 'save')),
+      'params'  => $sfExtjs2Plugin->asAnonymousClass(array('cmd' => 'save', '<?php echo sfInflector::underscore($groupedColumns['pk']->getPhpName()) ?>'=> $sfExtjs2Plugin->asVar('url_key'))),
       'waitMsg' => 'Saving...'
     )).");
   }
-");
+"
+));
 
 $formpanel->methods['onSubmitSuccess'] = $sfExtjs2Plugin->asMethod(array(
   'parameters'  => 'form, action',
