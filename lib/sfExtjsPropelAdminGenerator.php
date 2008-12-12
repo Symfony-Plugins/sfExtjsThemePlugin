@@ -1799,14 +1799,13 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
     $params = is_array($user_params) ? $user_params : sfToolkit::stringToArray($user_params);
     $user_params = $this->getParameterValue('list.fields.'.$column->key.'.params');
 
-    //add ability to set field_type in field config params
+    //add ability to set field_type in field config params, this should be move to $this->getFieldType()
     $this->fieldType = (isset($params['field_type'])&&$params['field_type'])?$params['field_type']:$this->getFieldType($column);
 
     // if combo set in the generator create a combo that gets unique values for the local column
-
     $key = (strpos($column->key, '/')) ? str_replace('/','-',$column->key) : $column->key ;
     //foreign keys that are not dates and with filter_field that is not filterfield and local columns with filter_filed that is combo
-    $combo = ($this->getFieldType($column) != 'date' && strpos($column->key, '/') !== false)?true:false;
+    $combo = ($this->fieldType != 'date' && $this->fieldType != 'boolean' && strpos($column->key, '/') !== false)?true:false;
     $combo = (isset($params['filter_field']) && $params['filter_field'] == 'textfield')?false:$combo;
     $combo = (isset($params['filter_field']) && $params['filter_field'] == 'combo')?true:$combo;
     if($combo)
