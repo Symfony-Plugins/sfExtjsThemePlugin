@@ -138,7 +138,7 @@ $formpanel->methods['onLoadFailure'] = $sfExtjs2Plugin->asMethod(array(
 $formpanel->methods['onLoadSuccess'] = $sfExtjs2Plugin->asMethod(array(
   'parameters'  => 'form, action',
   'source'      => "
-  this.setTitle(action.reader.jsonData.title);
+  //this.setTitle(action.reader.jsonData.title);
   //throw load (item) succes
   this.fireEvent('load_item_success', this);
 "

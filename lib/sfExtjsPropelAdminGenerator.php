@@ -301,7 +301,7 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
         {
           $editcreds = str_replace("\n", ' ', var_export($editcreds, true));
           //pass our credentials down to the generated partial
-          $credArr[] = "if(!\$sf_user->hasCredential($editcreds)&& is_array(\$columnmodel->plugins['$pluginArrName'])) \$columnmodel->plugins['$pluginArrName']['editable'] = false;";
+          $credArr[] = "if(!\$sf_user->hasCredential($editcreds)&& is_array(\$columnmodel->plugins['$pluginArrName']))\$columnmodel->plugins['$pluginArrName']['editable'] = false;";
         }
         //set the column item to our generated plugin
         $cmItems[] = 'this.'.$pluginArrName;
@@ -314,7 +314,8 @@ $%1$s->attributes["initEvents"] = $sfExtjs2Plugin->asMethod($configArr);',
       {
         $editcreds = str_replace("\n", ' ', var_export($editcreds, true));
         //unset the editor if the user doesn't have the right credentials
-        $credArr[] = "if(!\$sf_user->hasCredential($editcreds)&& is_array(\$columnmodel->config_array['$i'])&& isset(\$columnmodel->config_array['$i']['editor'])) unset(\$columnmodel->config_array['$i']['editor']);";
+        $credArr[] = "if(!\$sf_user->hasCredential($editcreds)&& is_array(\$columnmodel->config_array['$i'])&& isset(\$columnmodel->config_array['$i']['editor'])) unset(\$columnmodel->config_array['$i']['editor']);
+if(!\$sf_user->hasCredential($editcreds)&& is_array(\$columnmodel->config_array['$i'])) \$columnmodel->config_array['$i']['editable'] = false;";
       }
 
       $cmItems[] = $columnDefinition;

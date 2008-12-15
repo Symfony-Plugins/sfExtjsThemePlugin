@@ -25,7 +25,7 @@ Ext.extend(Ext.ux.grid.NoteColumn, Ext.util.Observable, {
 
   onDblClick : function(e, t)
   {
-    if (t.className && t.className.indexOf('x-grid3-nc-' + this.id) != -1)
+    if (t.className && t.className.indexOf('x-grid3-nc-' + this.id) != -1 && this.editable)
     {
       e.stopEvent();
       var index = this.grid.getView().findRowIndex(t);
