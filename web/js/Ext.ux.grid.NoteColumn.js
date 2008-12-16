@@ -1,6 +1,7 @@
 Ext.namespace('Ext.ux.grid');
 Ext.ux.grid.NoteColumn = function(config)
 {
+  this.editable = (typeof config.editable != 'undefined') ? config.editable : true;
   Ext.apply(this, config);
   if (!this.id)
   {
