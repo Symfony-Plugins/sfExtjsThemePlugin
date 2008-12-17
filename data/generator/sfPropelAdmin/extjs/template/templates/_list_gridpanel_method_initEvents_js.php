@@ -28,7 +28,7 @@ this.on({
         var record = grid.getStore().getAt(rowIndex);
         if(!this.ownerCt.findById(record.id)){
           var formpanel = Ext.ComponentMgr.create({
-            xtype: 'editlbrequestconfigformpanel',
+            xtype: 'edit<?php echo $this->getModuleName() ?>formpanel',
             id: record.id,
             title: 'Edit <?php echo $objectName ?> '+record.id,
             key: record.id

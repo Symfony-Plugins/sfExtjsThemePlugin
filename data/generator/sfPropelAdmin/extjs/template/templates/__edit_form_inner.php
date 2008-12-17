@@ -45,10 +45,9 @@
 
     $credentials = $this->getParameterValue($edit_key.'.fields.'.$column->key.'.credentials');
 ?>
-if ($sf_user->hasCredential(<?php echo str_replace("\n", ' ', var_export($credentials, true)) ?>))
-{
-  $formpanel->config_array['items'][] = <?php var_export($this->getColumnAjaxEditDefinition($column, $groupedColumns, $edit_key)) ?>;
-}
+
+$formpanel->config_array['items'][] = <?php var_export($this->getColumnAjaxEditDefinition($column, $groupedColumns, $edit_key)) ?>;
+
 <?php endforeach; ?>
 <?php foreach ($this->getColumnCategories($edit_key.'.display') as $category): ?>
 <?php if ($category == 'NONE') continue; ?>
@@ -88,10 +87,7 @@ $fieldset = array(
     $credentials = $this->getParameterValue($edit_key.'.fields.'.$column->key.'.credentials');
 ?>
 
-if ($sf_user->hasCredential(<?php echo str_replace("\n", ' ', var_export($credentials, true)) ?>))
-{
-  $fieldset['items'][] = <?php var_export($this->getColumnAjaxEditDefinition($column, $groupedColumns, $edit_key)) ?>;
-}
+$fieldset['items'][] = <?php var_export($this->getColumnAjaxEditDefinition($column, $groupedColumns, $edit_key)) ?>;
 
 <?php endforeach; ?>
 $formpanel->config_array['items'][] = $fieldset;
