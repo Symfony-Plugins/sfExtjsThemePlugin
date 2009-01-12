@@ -2083,7 +2083,9 @@ if(!\$sf_user->hasCredential($editcreds)&& is_array(\$columnmodel->config_array[
    */
   function getFieldTypeForReader($column)
   {
-    $dataType =  $this->getFieldType($column);
+    $user_params = $this->getParameterValue('list.fields.'.$column->key.'.params');
+    $params = is_array($user_params) ? $user_params : sfToolkit::stringToArray($user_params);
+    $dataType = (isset($params['field_type'])&&$params['field_type'])?$params['field_type']:$this->getFieldType($column);
 
     switch($dataType)
     {
