@@ -209,6 +209,8 @@ $formpanel->methods['onSubmitSuccess'] = $sfExtjs2Plugin->asMethod(array(
   //fire saved event
   this.fireEvent('saved', this);
 
+  this.ownerCt.getComponent(0).store.reload();
+
 //  //TODO: maybe re-enable this by adding a config-option, which can also set the succes message
 //  Ext.Msg.show({
 //    title:'Success',

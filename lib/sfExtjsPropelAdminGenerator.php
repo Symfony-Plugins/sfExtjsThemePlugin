@@ -919,7 +919,7 @@ if(!\$sf_user->hasCredential($editcreds)&& is_array(\$columnmodel->config_array[
       {
         case 'cancel':
           $default_icon = 'decline';
-          $default_handler_function = "function() { this.fireEvent('close_request', this); }";
+          $default_handler_function = "function() { this.ownerCt.remove(this); this.fireEvent('close_request', this); }";
           break;
 
         case 'reload':
