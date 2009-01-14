@@ -18,36 +18,7 @@ this.body.on({
   stopEvent: true
 });
 <?php endif; ?>
-
-<?php if (is_array($this->getParameterValue('edit.display'))): ?>
-<?php $objectName = $this->getParameterValue('object_name', $this->getModuleName()) ?>
-this.on({
-  'celldblclick' : {
-    fn: function(grid, rowIndex, columnIndex, e){
-      if(columnIndex == 0) {
-        var record = grid.getStore().getAt(rowIndex);
-        if(!this.ownerCt.findById(record.id)){
-          var formpanel = Ext.ComponentMgr.create({
-            xtype: 'edit<?php echo $this->getModuleName() ?>formpanel',
-            id: record.id,
-            title: 'Edit <?php echo $objectName ?> '+record.id,
-            key: record.id
-          });
-          this.ownerCt.add(formpanel).show()
-          formpanel.on('close_request', function(){
-            this.ownerCt.getComponent(0).store.reload();
-            this.ownerCt.remove(this);
-          });
-        } else {
-          this.ownerCt.setActiveTab(this.ownerCt.findById(record.id));
-        }
-      }
-    },
-    scope:  this
-  }
-});
-<?php endif; ?>
-  "
+"
 );
 
 $gridpanel->attributes['initEvents'] = $sfExtjs2Plugin->asMethod($configArr);
