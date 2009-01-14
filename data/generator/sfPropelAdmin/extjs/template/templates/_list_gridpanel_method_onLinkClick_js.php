@@ -12,7 +12,7 @@ $configArr = Array(
         id: id,
         title: 'Edit <?php echo $objectName ?> '+id,
         key: id,
-        bodyStyle: 'padding: 10px 0px 10px 0px;',
+        bodyStyle: 'padding: 10px 0px 10px 0px;'
       }).show()
     } else {
       this.ownerCt.setActiveTab(this.ownerCt.findById(id));
