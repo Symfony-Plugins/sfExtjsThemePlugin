@@ -79,14 +79,14 @@ include_partial('list_gridpanel_method_updateDB_js', array('sfExtjs2Plugin' => $
 $gridpanel->attributes['setFilter'] = $sfExtjs2Plugin->asMethod(array(
   'parameters' => 'params',
   'source' => "
-    this.store.baseParams.filter = 'query';
+    this.store.baseParams = Ext.apply({filter: 'query'}, this.store.baseParams);
     this.store.load({params:params});
 "));
 
 // resetFilter
 $gridpanel->attributes['resetFilter'] = $sfExtjs2Plugin->asMethod("
-  this.store.baseParams.filter = null;
-  this.store.load({params:{start:0,limit:<?php echo $limit ?>}});
+  this.store.baseParams = Ext.apply({filter: null}, this.store.baseParams);
+  this.store.load();
 ");
 
 <?php echo $this->getClassGetters('gridpanel',array('modulename','panelType')); ?>
