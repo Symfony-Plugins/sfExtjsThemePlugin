@@ -61,6 +61,9 @@ $filterpanel->config_array = array(
 ?>
 $filterpanel->config_array = array_merge($filterpanel->config_array, <?php var_export($user_params) ?>);
 <?php endif; ?>
+
+// initEvents
+include_partial('list_filterpanel_method_initEvents_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'filterpanel' => $filterpanel, 'className' => $className));
 <?php echo $this->getStandardPartials('filterpanel',array('initComponent','constructor')) ?>
 <?php echo $this->getCustomPartials('filterpanel','method'); ?>
 <?php echo $this->getCustomPartials('filterpanel','variable'); ?>

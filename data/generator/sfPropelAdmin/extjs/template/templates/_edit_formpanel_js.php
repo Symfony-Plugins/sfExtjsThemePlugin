@@ -51,7 +51,9 @@ $formpanel->config_array = array_merge($formpanel->config_array, <?php var_expor
   include('__edit_form_inner.php');
 ?>
 
-<?php echo $this->getStandardPartials('formpanel', array('constructor','initComponent','initEvents'), 'edit') ?>
+// initComponent
+include_partial('list_filterpanel_method_initComponent_js', array('sfExtjs2Plugin' => $sfExtjs2Plugin, 'formpanel' => $formpanel, 'className' => $className));
+<?php echo $this->getStandardPartials('formpanel', array('constructor','initEvents'), 'edit') ?>
 <?php echo $this->getCustomPartials('formpanel','method'); ?>
 <?php echo $this->getCustomPartials('formpanel','variable'); ?>
 
