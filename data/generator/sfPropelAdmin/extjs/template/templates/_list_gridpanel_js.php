@@ -79,8 +79,30 @@ include_partial('list_gridpanel_method_updateDB_js', array('sfExtjs2Plugin' => $
 $gridpanel->attributes['setFilter'] = $sfExtjs2Plugin->asMethod(array(
   'parameters' => 'params',
   'source' => "
-    if('undefined' == typeof this.store.preFilterParams) this.store.preFilterParams = this.store.baseParams;
-    this.store.baseParams = Ext.apply({filter: 'query'}, this.store.baseParams);
+    var baseParams = this.store.baseParams;
+    var nparams = new Object();
+    nparams['filter'] = 'query';
+    if('undefined' == typeof this.store.preFilterParams)
+    {
+      this.store.preFilterParams = this.store.baseParams;
+      nparams = Ext.apply(nparams, this.store.baseParams);
+    }
+    else
+    {      
+      preFilter = this.store.preFilterParams;
+      for(var i in preFilter)
+      {
+        if(i.indexOf('filters[')!=-1)
+        {
+          params[i] = preFilter[i];
+        }
+        else
+        {
+          nparams[i] = preFilter[i];
+        }
+      }
+    }
+    this.store.baseParams = nparams;
     this.store.load({params:params});
 "));
 
